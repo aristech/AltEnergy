@@ -66,7 +66,7 @@ class AuthController extends Controller
         $user_role = $request->user()->role->id;
         if($user_role < 5)
         {
-            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role->title." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"],401);
+            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->title." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"],401);
         }
         //
         $role = Role::where('id',$request->role_id)->first();
