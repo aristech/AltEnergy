@@ -2,19 +2,20 @@
 
 namespace App;
 
-use App\User;
 use Illuminate\Database\Eloquent\Model;
 
-class Role extends Model
+class Location extends Model
 {
-    protected $table = 'roles';
+    protected $table = 'locations';
 
     protected $fillable = ['title'];
 
     protected $hidden = ['created_at','updated_at'];
 
-    public function users()
+    public function addresses()
     {
-        return $this->belongsToMany(User::class);
+        return $this->hasMany(Address::class);
     }
+
+
 }

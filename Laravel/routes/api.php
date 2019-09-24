@@ -29,7 +29,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1'], function ()
         Route::post('/createUser','AuthController@createUser');
         Route::put('/edituser','AuthController@editUser');
         Route::get('/allusers','AuthController@allUsers');
-
+        //Role routes
         Route::get('/roles','RoleController@index');
+        //Location routes
+        Route::get('/locations','LocationController@index');
+
     });
 });

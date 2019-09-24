@@ -3,11 +3,10 @@
 namespace App\Http\Controllers\v1;
 
 use Illuminate\Http\Request;
+use App\Location;
 use App\Http\Controllers\Controller;
 
-use App\Role;
-
-class RoleController extends Controller
+class LocationController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,7 +15,7 @@ class RoleController extends Controller
      */
     public function index()
     {
-        return Role::all();
+        return response()->json(Location::all());
     }
 
     /**

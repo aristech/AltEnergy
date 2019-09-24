@@ -31,8 +31,8 @@ class AuthController extends Controller
             'lastname' => 'required|string',
             'firstname' => 'required|string',
             'email' => 'required|string|email|unique:users',
-            'password' => 'required|string|confirmed',
-            'role_id' => 'required|integer'
+            'password' => 'required|string|confirmed'
+            // 'role_id' => 'required|integer'
         ]);
 
         if($validator->fails())
@@ -52,7 +52,8 @@ class AuthController extends Controller
             'firstname' => $request->firstname,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'active' => true
+            'active' => true,
+            'role_id' => 5
         ]);
 
         $user->save();
