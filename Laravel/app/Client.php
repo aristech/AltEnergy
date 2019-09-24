@@ -13,8 +13,8 @@ class Client extends Model
 
     protected $hidden = ['created_at','updated_at'];
 
-    public function addresses()
+    public function manager()
     {
-        return $this->hasMany(Address::class);
+        return $this->belongsTo(App\Manager::class,'manager_id');
     }
 }

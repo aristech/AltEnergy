@@ -17,15 +17,9 @@ class CreateManagersTable extends Migration
             $table->increments('id');
             $table->string('lastname');
             $table->string('firstname');
-            $table->string('afm');
-            $table->string('doy');
             $table->string('telephone');
             $table->string('telephone2');
             $table->string('mobile');
-            $table->string('address');
-            $table->string('zipcode');
-            $table->integer('location_id')->unsigned();
-            $table->foreign('location_id')->references('id')->on('locations');
             $table->timestamps();
         });
     }

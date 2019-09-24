@@ -32,7 +32,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1'], function ()
         //Role routes
         Route::get('/roles','RoleController@index');
         //Location routes
-        Route::get('/locations','LocationController@index');
+        Route::get('/clients','ClientController@index');
+        Route::post('/clients','ClientController@store');
+        Route::put('/clients','ClientController@update');
+
+        Route::get('/managers','ManagerController@index');
+        Route::post('/managers','ManagerController@store');
+        Route::put('/managers','ManagerController@update');
 
     });
 });

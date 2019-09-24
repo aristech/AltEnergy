@@ -12,14 +12,9 @@ class Manager extends Model
 
     protected $hidden = ['created_at','updated_at'];
 
-    public function location()
+    public function clients()
     {
-        return $this->belongsTo(Location::class,'location_id');
-    }
-
-    public function addresses()
-    {
-        return $this->hasMany(Address::class);
+        return $this->hasMany(App\Client::class);
     }
 
 }

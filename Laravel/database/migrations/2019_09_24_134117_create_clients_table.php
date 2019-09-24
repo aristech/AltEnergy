@@ -19,9 +19,15 @@ class CreateClientsTable extends Migration
             $table->string('firstname');
             $table->string('afm');
             $table->string('doy');
-            $table->string('telephone');
+            $table->string('telephone')->nullable();
             $table->string('telephone2')->nullable();
-            $table->string('mobile');
+            $table->string('mobile')->nullable();
+            $table->string('address');
+            $table->string('zipcode');
+            $table->string('location');
+            $table->string('level')->nullable();
+            $table->integer('manager_id')->nullable()->unsigned();
+            $table->foreign('manager_id')->references('id')->on('managers')->onDelete('set null');
             $table->timestamps();
         });
     }

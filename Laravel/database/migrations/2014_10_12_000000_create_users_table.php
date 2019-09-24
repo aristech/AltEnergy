@@ -21,6 +21,10 @@ class CreateUsersTable extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->boolean('active')->default(true);
+            $table->integer('manager_id')->nullable()->unsigned();
+            $table->foreign('manager_id')->references('id')->on('managers')->onDelete('cascade');
+            $table->integer('client_id')->nullable()->unsigned();
+            $table->foreign('client_id')->references('id')->on('clients')->onDelete('cascade');
             $table->rememberToken();
             $table->timestamps();
         });

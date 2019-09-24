@@ -82,7 +82,9 @@ class AuthController extends Controller
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed',
             'role_id' => 'required|integer',
-            'active' => 'nullable|boolean'
+            'active' => 'nullable|boolean',
+            'manager_id' => 'nullable|integer',
+            'client_id' => 'nullable|integer'
         ]);
 
         if($validator->fails())
@@ -90,6 +92,8 @@ class AuthController extends Controller
             $failedRules = $validator->errors()->first();//todo for future: na allaksw
             return response()->json(["message" => $failedRules],422);
         }
+
+
 
         $user = new User([
             'lastname' => $request->lastname,
@@ -203,13 +207,24 @@ class AuthController extends Controller
             return response()->json(["message" => "Δεν υπάρχει ο χρήστης για να αλλάξουν τα στοιχεία του"],404);
         }
 
+        // $validator = Validator::make($request->all(),[
+        //     'lastname' => 'required|string',
+        //     'firstname' => 'required|string',
+        //     'email' => 'required|string|email|unique:users',
+        //     'password' => 'required|string|confirmed',
+        //     'role_id' => 'required|integer',
+        //     'active' => 'required|boolean'
+        // ]);
+
         $validator = Validator::make($request->all(),[
             'lastname' => 'required|string',
             'firstname' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed',
             'role_id' => 'required|integer',
-            'active' => 'required|boolean'
+            'active' => 'nullable|boolean',
+            'manager_id' => 'nullable|integer',
+            'client_id' => 'nullable|integer'
         ]);
 
         if($validator->fails())
