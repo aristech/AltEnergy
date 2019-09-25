@@ -41,7 +41,10 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->active == false)
+
+        //return $role_id;
+
+        if($role_id < 4 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -60,7 +63,7 @@ class ClientController extends Controller
             'location' => 'required|string',
             'level' =>'required|string',
             'manager_id' => 'nullable|integer',
-            'email' => 'required|string|email'
+            'email' => 'nullable|string|email'
 
         ]);
 
@@ -104,7 +107,7 @@ class ClientController extends Controller
     public function show(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->active == false)
+        if($role_id < 4 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -141,7 +144,7 @@ class ClientController extends Controller
     public function update(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->active == false)
+        if($role_id < 4 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }

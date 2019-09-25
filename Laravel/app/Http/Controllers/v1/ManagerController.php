@@ -38,7 +38,7 @@ class ManagerController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->active == false)
+        if($role_id < 4 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -111,7 +111,7 @@ class ManagerController extends Controller
     public function update(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->active == false)
+        if($role_id < 4 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
