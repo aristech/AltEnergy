@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Client;
 use Validator;
 use App\Manager;
+use App\Http\Resources\ClientResource;
 
 
 class ClientController extends Controller
@@ -18,7 +19,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        return Client::all();
+        return ClientResource::collection(Client::all());
     }
 
     /**
@@ -40,7 +41,7 @@ class ClientController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4)
+        if($role_id < 4 || $request->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -59,6 +60,7 @@ class ClientController extends Controller
             'location' => 'required|string',
             'level' =>'required|string',
             'manager_id' => 'nullable|integer',
+            'email' => 'required|string|email'
 
         ]);
 
@@ -66,6 +68,16 @@ class ClientController extends Controller
         {
             $failedRules = $validator->errors()->first();//todo for future: na allaksw
             return response()->json(["message" => $failedRules],422);
+        }
+
+        if($request->email != null)
+        {
+            $client = Client::where('email',$request->email)->first();
+
+            if($client)
+            {
+                return response()->json(["message" => "Υπάρχει ήδη πελάτης με το email ".$request->email],422);
+            }
         }
 
         if($request->manager_id != null)
@@ -76,6 +88,7 @@ class ClientController extends Controller
                 return response()->json(["message" => "Ο συγκεκριμένος διαχειριστής δεν είναι καταψχωρημένος στο σύστημα"],404);
             }
         }
+
 
         Client::create($request->all());
 
@@ -91,7 +104,7 @@ class ClientController extends Controller
     public function show(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4)
+        if($role_id < 4 || $request->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -128,7 +141,7 @@ class ClientController extends Controller
     public function update(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4)
+        if($role_id < 4 || $request->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -146,8 +159,7 @@ class ClientController extends Controller
             'zipcode' => 'required|string',
             'location' => 'required|string',
             'level' =>'required|string',
-            'manager_id' => 'nullable|integer',
-
+            'manager_id' => 'nullable|integer'
         ]);
 
         if($validator->fails())
@@ -171,9 +183,16 @@ class ClientController extends Controller
             return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος πελάτης με κωδικό ".$request->id],404);
         }
 
+        $email = Client::where('email',$request->email)->where('id',"!=",$request->id)->first();
+
+        if($client->email != $request->email || $email)
+        {
+            return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο χρήστη"],422);
+        }
+
         $client->update($request->except(['id']));
 
-        return response()->json(["message" => "Ο νέος χρήστης καταχωρήθηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Τα στοιχεία πελάτη ενημερώθηκαν επιτυχώς!"],200);
     }
 
     /**

@@ -3,18 +3,19 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Client;
 
 class Manager extends Model
 {
     protected $table = 'managers';
 
-    protected $fillable = ['lastname', 'firstname', 'afm',	'doy', 'telephone',	'telephone2', 'mobile', 'address', 	'zipcode', 	'location_id'];
+    protected $fillable = ['lastname', 'firstname', 'telephone', 'telephone2', 'mobile', 'email'];
 
     protected $hidden = ['created_at','updated_at'];
 
     public function clients()
     {
-        return $this->hasMany(App\Client::class);
+        return $this->hasMany(Client::class);
     }
 
 }

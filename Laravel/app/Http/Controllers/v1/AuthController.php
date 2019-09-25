@@ -25,14 +25,11 @@ class AuthController extends Controller
      */
     public function signup(Request $request)
     {
-
-        //
         $validator = Validator::make($request->all(),[
             'lastname' => 'required|string',
             'firstname' => 'required|string',
             'email' => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed'
-            // 'role_id' => 'required|integer'
         ]);
 
         if($validator->fails())
@@ -41,24 +38,17 @@ class AuthController extends Controller
             return response()->json(["message" => $failedRules],422);
         }
 
-        $role = Role::where('id',$request->role_id)->first();
-        if(!$role)
-        {
-            return response()->json(['message' => 'Ο ρόλος χρήστη δεν είναι διαθέσιμος'],404);
-        }
-
         $user = new User([
             'lastname' => $request->lastname,
             'firstname' => $request->firstname,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'active' => true,
-            'role_id' => 5
+            'active' => true
         ]);
 
         $user->save();
 
-        UsersRoles::create(['role_id' => $request->role_id, 'user_id' => $user->id ]);
+        UsersRoles::create(['role_id' => 5, 'user_id' => $user->id ]);
         return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς! Στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password], 201);
     }
 
@@ -84,7 +74,10 @@ class AuthController extends Controller
             'role_id' => 'required|integer',
             'active' => 'nullable|boolean',
             'manager_id' => 'nullable|integer',
-            'client_id' => 'nullable|integer'
+            'client_id' => 'nullable|integer',
+            'telephone' => 'nullable|string',
+            'telephone2' => 'nullable|string',
+            'mobile' => 'nullable|string'
         ]);
 
         if($validator->fails())
@@ -93,20 +86,26 @@ class AuthController extends Controller
             return response()->json(["message" => $failedRules],422);
         }
 
-
+        if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
+        {
+            return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"],422);
+        }
 
         $user = new User([
             'lastname' => $request->lastname,
             'firstname' => $request->firstname,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'active' => true
+            'active' => true,
+            'telephone' => $request->telephone,
+            'telephone2' => $request->telephone2,
+            'mobile' => $request->mobile
         ]);
         $user->save();
 
         UsersRoles::create(['role_id' => $request->role_id, 'user_id' => $user->id ]);
 
-        return response()->json(['message' => 'Successfully created user!'], 201);
+        return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς! Στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password], 201);
     }
 
     /**
@@ -207,24 +206,19 @@ class AuthController extends Controller
             return response()->json(["message" => "Δεν υπάρχει ο χρήστης για να αλλάξουν τα στοιχεία του"],404);
         }
 
-        // $validator = Validator::make($request->all(),[
-        //     'lastname' => 'required|string',
-        //     'firstname' => 'required|string',
-        //     'email' => 'required|string|email|unique:users',
-        //     'password' => 'required|string|confirmed',
-        //     'role_id' => 'required|integer',
-        //     'active' => 'required|boolean'
-        // ]);
 
         $validator = Validator::make($request->all(),[
             'lastname' => 'required|string',
             'firstname' => 'required|string',
-            'email' => 'required|string|email|unique:users',
+            'email' => 'required|string|email|',
             'password' => 'required|string|confirmed',
             'role_id' => 'required|integer',
             'active' => 'nullable|boolean',
             'manager_id' => 'nullable|integer',
-            'client_id' => 'nullable|integer'
+            'client_id' => 'nullable|integer',
+            'telephone' => 'nullable|string',
+            'telephone2' => 'nullable|string',
+            'mobile' => 'nullable|string'
         ]);
 
         if($validator->fails())
@@ -233,16 +227,32 @@ class AuthController extends Controller
             return response()->json(["message" => $failedRules],422);
         }
 
+        $mail_exists = User::where('email',$request->id)->where('id',"!=",$request->id)->first();
+
+        if($request->email != $user->email || $mail_exists)
+        {
+            return response()->json(["message" => "To email ".$request->email." είναι σε χρήση από αλλόν χρήστη"],422);
+        }
+
         $user->update([
             "lastname" => $request->lastname,
             "firstname" => $request->firstname,
             "email" => $request->email,
             "password" => bcrypt($request->password),
-            "active" => $request->active
+            "active" => $request->active,
+            'telephone' => $request->telephone,
+            'telephone2' => $request->telephone2,
+            'mobile' => $request->mobile
         ]);
+
+        if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
+        {
+            return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"],422);
+        }
 
         UsersRoles::where('user_id',$request->id)->first()->update(["role_id" => $request->role_id]);
 
-        return response()->json(["message" => "Τα στοιχεία του χρήστη άλλαξαν επιτυχώς!", UserResource::make($user)],200);
+        return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς!Νέα στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password, UserResource::make($user)], 201);
+        //return response()->json(["message" => "Τα στοιχεία του χρήστη άλλαξαν επιτυχώς!", UserResource::make($user)],200);
     }
 }

@@ -17,9 +17,10 @@ class CreateManagersTable extends Migration
             $table->increments('id');
             $table->string('lastname');
             $table->string('firstname');
-            $table->string('telephone');
-            $table->string('telephone2');
-            $table->string('mobile');
+            $table->string('telephone')->nullable();
+            $table->string('telephone2')->nullable();
+            $table->string('mobile')->nullable();
+            $table->string('email')->nullable();
             $table->timestamps();
         });
     }

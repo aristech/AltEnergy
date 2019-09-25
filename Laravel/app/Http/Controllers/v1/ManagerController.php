@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Manager;
+use Validator;
 
 class ManagerController extends Controller
 {
@@ -15,7 +16,7 @@ class ManagerController extends Controller
      */
     public function index(Request $request)
     {
-        return Manager::all();
+        return Manager::with('clients')->get();
     }
 
     /**
@@ -37,7 +38,7 @@ class ManagerController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4)
+        if($role_id < 4 || $request->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -48,7 +49,8 @@ class ManagerController extends Controller
             'firstname' => 'required|string',
             'telephone' => 'nullable|string',
             'telephone2' => 'nullable|string',
-            'mobile' => 'nullable|string'
+            'mobile' => 'nullable|string',
+            'email' => 'nullable|string|email'
         ]);
 
         if($validator->fails())
@@ -57,7 +59,17 @@ class ManagerController extends Controller
             return response()->json(["message" => $failedRules],422);
         }
 
-        if($request->telephone == null && $request->telephone2 && $request->mobile == null)
+        if($request->email != null)
+        {
+            $manager = Manager::where('email',$request->email)->first();
+
+            if($manager)
+            {
+                return response()->json(["message" => "Υπάρχει ήδη πελάτης με το email ".$request->email],422);
+            }
+        }
+
+        if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
         {
             return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"],422);
         }
@@ -98,13 +110,20 @@ class ManagerController extends Controller
      */
     public function update(Request $request)
     {
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 4 || $request->active == false)
+        {
+            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        }
+
         $validator = Validator::make($request->all(),
         [
             'lastname' => 'required|string',
             'firstname' => 'required|string',
             'telephone' => 'nullable|string',
             'telephone2' => 'nullable|string',
-            'mobile' => 'nullable|string'
+            'mobile' => 'nullable|string',
+            'email' => 'nullable|string|email'
         ]);
 
         if($validator->fails())
@@ -118,16 +137,22 @@ class ManagerController extends Controller
             return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"],422);
         }
 
-
         $manager = Manager::where('id',$request->id)->first();
         if(!$manager)
         {
             return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος πελάτης με κωδικό ".$request->id],404);
         }
 
+        $email = Manager::where('email',$request->email)->where('id',"!=",$request->id)->first();
+
+        if($manager->email != $request->email || $email)
+        {
+            return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο διαχειριστή"],422);
+        }
+
         $manager->update($request->except(['id']));
 
-        return response()->json(["message" => "Ο νέος διαχειριστής καταχωρήθηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Ο διαχειριστής με κωδικο ".$request->id." ενημερώθηκε επιτυχώς!"],200);
     }
 
     /**

@@ -25,6 +25,7 @@ class CreateClientsTable extends Migration
             $table->string('address');
             $table->string('zipcode');
             $table->string('location');
+            $table->string('email')->nullable();
             $table->string('level')->nullable();
             $table->integer('manager_id')->nullable()->unsigned();
             $table->foreign('manager_id')->references('id')->on('managers')->onDelete('set null');
