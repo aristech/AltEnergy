@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Device;
 use app\DeviceMark;
+use Validator;
 
 class DeviceController extends Controller
 {
