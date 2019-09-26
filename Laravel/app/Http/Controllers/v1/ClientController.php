@@ -93,7 +93,9 @@ class ClientController extends Controller
         }
 
 
-        Client::create($request->all());
+        $client = Client::create($request->all());
+        mkdir(public_path()."/Clients/".$client->id);
+
 
         return response()->json(["message" => "Ο νέος χρήστης καταχωρήθηκε επιτυχώς!"],200);
     }
@@ -204,8 +206,34 @@ class ClientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 4 || $request->user()->active == false)
+        {
+            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        }
+
+        $validator = Validator::make($request->all(),
+        [
+            'client_id' => 'required|integer'
+        ]);
+
+        if($validator->fails())
+        {
+            $failedRules = $validator->errors()->first();//todo for future: na allaksw
+            return response()->json(["message" => $failedRules],422);
+        }
+
+       $client = Client::where('id',$request->id)->first();
+       if(!$client)
+       {
+            return response()->json(["message" => "Ο πελάτης που θέλετε να διαγράψετε δεν υπάρχει στο σύστημα!"],404);
+       }
+
+       $client->delete();
+
+       return response()->json(["message" => "Ο χρήστης διαγράφηκε επιτυχώς!"],200);
+
     }
 }

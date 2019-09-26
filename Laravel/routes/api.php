@@ -40,5 +40,17 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1'], function ()
         Route::post('/managers','ManagerController@store');
         Route::put('/managers','ManagerController@update');
 
+        Route::get('/manufacturers','ManufacturerController@index');
+        Route::post('/manufacturers','ManufacturerController@store');
+        Route::delete('/manufacturers','ManufacturerController@destroy');
+
+        Route::get('/marks','MarkController@index');
+        Route::post('/marks','MarkController@store');
+        Route::delete('/marks','MarkController@destroy');
+
+        Route::get('/devices','DeviceController@index');
+        Route::post('/devices','DeviceController@store');
+        Route::delete('/devices','DeviceController@destroy');
+
     });
 });
