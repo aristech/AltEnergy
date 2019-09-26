@@ -50,18 +50,19 @@ class VcfController extends Controller
                 fclose($myfile);
 
                 $email = new PHPMailer();
+                $email->CharSet = "UTF-8";
                 $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
                 $email->Subject   = 'Λίστα Διαχειριστών';
                 $email->Body      = 'Αποστολή Λίστας Διαχειριστών';
                 $email->AddAddress($request->email);
 
-                $file_to_attach = public_path()."/VCF";
+                $file_to_attach = public_path()."\VCF\managers.vcf";
 
                 $email->AddAttachment( $file_to_attach , 'managers.vcf' );
 
                 $email->Send();
 
-                unlink(public_path()."/VCF/managers.vcf");
+                unlink(public_path()."\VCF\managers.vcf");
 
                 return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
             }
@@ -91,18 +92,19 @@ class VcfController extends Controller
                 fclose($myfile);
 
                 $email = new PHPMailer();
+                $email->CharSet = "UTF-8";
                 $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
                 $email->Subject   = 'Λίστα Πελατών';
                 $email->Body      = 'Αποστολή Λίστα Πελατών';
                 $email->AddAddress($request->email);
 
-                $file_to_attach = public_path()."/VCF";
+                $file_to_attach = public_path()."\VCF\clients.vcf";
 
                 $email->AddAttachment( $file_to_attach , 'clients.vcf' );
 
                 $email->Send();
 
-                unlink(public_path()."/VCF/clients.vcf");
+                unlink(public_path()."\VCF\clients.vcf");
 
                 return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
 
