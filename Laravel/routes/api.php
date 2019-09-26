@@ -17,7 +17,7 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
-Route::group(['prefix' => 'v1', 'namespace' => 'v1'], function ()
+Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], function ()
 {
     Route::post('/login', 'AuthController@login');
     Route::post('/signup', 'AuthController@signup');

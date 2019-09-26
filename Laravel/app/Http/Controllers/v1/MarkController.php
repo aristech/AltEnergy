@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mark;
+use App\Manufacturer;
 
 
 class MarkController extends Controller
@@ -59,7 +60,14 @@ class MarkController extends Controller
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
 
-        $input = array(["name" => $request->name, "manufacturer_id" => $request->id]);
+        $manufacturer = Manufacturer::find($request->manufacturer_id);
+        if(!$manufacturer)
+        {
+            return response()->json(["message" => "Ο κατασκευαστής αυτος δεν βρέθηκε!"],404);
+        }
+
+        $input = ["name" => $request->name, "manufacturer_id" => $request->manufacturer_id];
+
         Mark::create($input);
         return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"],200);
     }
