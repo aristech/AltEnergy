@@ -46,6 +46,10 @@ class DamageSuperAdmin
             $this->error = response()->json(["message" => $validator->errors()->first()],422);
         }
 
+    }
+
+    public function checkDevice()
+    {
         $manufacturer_id = $this->request->manufacturer_id;
         $mark_id = $this->request->mark_id;
         $device_id = $this->request->device_id;
@@ -67,20 +71,32 @@ class DamageSuperAdmin
             $this->error = response()->json(["message"=>"Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"],422);
         }
 
-        $client = Client::where('id',$this->request->device_id)->first();
+    }
+
+    public function checkClient()
+    {
+        $client = Client::where('id',$this->request->client_id)->first();
         if(!$client)
+        {
+            $this->hasErrors = true;
+            $this->error = response()->json(["message"=>"Ο πελάτης αυτός δεν υπάρχει στο σύστημα!"],404);
+        }
     }
 
     public function storeDamage()
     {
+        $this->validatorCreate();
+        $this->checkDevice();
+        $this->checkClient();
+
         if($this->hasErrors == true)
         {
             return $this->error;
         }
 
-        Damage::create($request->all());
+        Damage::create($this->request->all());
 
-        return response()->json(["message" => "Η ζημιά του πελάτη"])
+        return response()->json(["message" => "Η ζημιά του πελάτη καταχωρήθηκε επιτυχως!"],200);
     }
 
 

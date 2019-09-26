@@ -52,5 +52,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
         Route::post('/devices','DeviceController@store');
         Route::delete('/devices','DeviceController@destroy');
 
+        Route::post('/vcfexport','VcfController@export');
+
     });
 });
