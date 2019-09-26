@@ -55,9 +55,9 @@ class ClientController extends Controller
             'firstname' => 'required|string',
             'afm' => 'required|string',
             'doy' => 'required|string',
-            'telephone' => 'required|string',
-            'telephone2' => 'required|string',
-            'mobile' => 'required|string',
+            'telephone' => 'nullable|string',
+            'telephone2' => 'nullable|string',
+            'mobile' => 'nullable|string',
             'address' => 'required|string',
             'zipcode' => 'required|string',
             'location' => 'required|string',
@@ -71,6 +71,11 @@ class ClientController extends Controller
         {
             $failedRules = $validator->errors()->first();//todo for future: na allaksw
             return response()->json(["message" => $failedRules],422);
+        }
+
+        if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
+        {
+            return response()->json(["message" => "Τουλάχιστον έαν τηλέφωνο είναι υποχρεωτικό!"],422);
         }
 
         if($request->email != null)
@@ -88,7 +93,7 @@ class ClientController extends Controller
             $manager = Manager::find($request->manager_id);
             if(!$manager)
             {
-                return response()->json(["message" => "Ο συγκεκριμένος διαχειριστής δεν είναι καταψχωρημένος στο σύστημα"],404);
+                return response()->json(["message" => "Ο συγκεκριμένος διαχειριστής δεν είναι καταχωρημένος στο σύστημα"],404);
             }
         }
 
@@ -121,8 +126,6 @@ class ClientController extends Controller
         }
 
         return $client;
-
-
     }
 
     /**
@@ -153,13 +156,14 @@ class ClientController extends Controller
 
         $validator = Validator::make($request->all(),
         [
+            'id' => 'required|integer',
             'lastname' => 'required|string',
             'firstname' => 'required|string',
             'afm' => 'required|string',
             'doy' => 'required|string',
-            'telephone' => 'required|string',
-            'telephone2' => 'required|string',
-            'mobile' => 'required|string',
+            'telephone' => 'nullable|string',
+            'telephone2' => 'nullable|string',
+            'mobile' => 'nullable|string',
             'address' => 'required|string',
             'zipcode' => 'required|string',
             'location' => 'required|string',
@@ -171,6 +175,11 @@ class ClientController extends Controller
         {
             $failedRules = $validator->errors()->first();//todo for future: na allaksw
             return response()->json(["message" => $failedRules],422);
+        }
+
+        if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
+        {
+            return response()->json(["message" => "Τουλάχιστον ένα τηλέφωνο είναι υποχρεωτικό!"],422);
         }
 
         if($request->manager_id != null)
@@ -216,7 +225,7 @@ class ClientController extends Controller
 
         $validator = Validator::make($request->all(),
         [
-            'client_id' => 'required|integer'
+            'id' => 'required|integer'
         ]);
 
         if($validator->fails())

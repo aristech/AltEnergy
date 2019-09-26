@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Manager;
 use Validator;
+use App\Http\Resources\ManagerResource;
 
 class ManagerController extends Controller
 {
@@ -16,7 +17,12 @@ class ManagerController extends Controller
      */
     public function index(Request $request)
     {
-        return Manager::with('clients')->get();
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 4)
+        {
+            return reponse()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"],401);
+        }
+        return ManagerResource::collection(Manager::all());
     }
 
     /**
