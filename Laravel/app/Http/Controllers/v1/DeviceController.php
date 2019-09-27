@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Device;
 use App\Mark;
 use Validator;
+use App\Http\Resources\DeviceResource;
 
 class DeviceController extends Controller
 {
@@ -33,14 +34,14 @@ class DeviceController extends Controller
 
         $mark_id = $request->mark_id;
 
-        $devs = Device::whereHas('marks', function($query) use ($mark_id)
+        $devs = Device::whereHas('mark', function($query) use ($mark_id)
         {
             $query->where('mark_id',$mark_id);
 
         })
         ->get();
 
-        return Device::all();
+        return DeviceResource::collection(Device::all());
     }
 
     /**

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mark;
 use App\Manufacturer;
+use App\Http\Resources\MarkResource;
 
 
 class MarkController extends Controller
@@ -23,7 +24,7 @@ class MarkController extends Controller
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
 
-        $manu_id = $request->id;
+        $manu_id = $request->manu_id;
 
         $marks = Mark::whereHas('manufacturer', function($query) use ($manu_id)
         {
@@ -32,7 +33,7 @@ class MarkController extends Controller
         })
         ->get();
 
-        return $marks;
+        return MarkResource::collection($marks);
 
     }
 

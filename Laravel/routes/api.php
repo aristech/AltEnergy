@@ -56,6 +56,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
 
         Route::get('/tech','TechController@index');
 
+        Route::get('/damagetypes','DamageTypeController@index');
+        Route::post('/damagetypes','DamageTypeController@store');
+        Route::delete('/damagetypes','DamageTypeController@destroy');
+
         Route::get('/damages','DamageController@index');
         Route::post('/damages','DamageController@store');
         Route::put('/damages','DamageController@update');
