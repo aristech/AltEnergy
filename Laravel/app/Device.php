@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Mark;
+use App\Damage;
 
 class Device extends Model
 {
@@ -14,9 +15,9 @@ class Device extends Model
     protected $hidden = ['created_at','updated_at'];
 
 
-    public function marks()
+    public function mark()
     {
-        return $this->belongsTο(Mark::class);
+        return $this->belongsTo(Mark::class);
     }
 
     public function damages()

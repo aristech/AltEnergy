@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Role;
+use App\Damage;
 
 class User extends Authenticatable
 {
@@ -42,5 +43,10 @@ class User extends Authenticatable
     public function role()
     {
         return $this->belongsToMany(Role::class);
+    }
+
+    public function damages()
+    {
+        return $this->hasMany(Damage::class);
     }
 }

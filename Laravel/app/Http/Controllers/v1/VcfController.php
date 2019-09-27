@@ -27,7 +27,6 @@ class VcfController extends Controller
             return response()->json(["message" => $validator->errors()->first()],422);
         }
 
-
         $variable = "";
 
         if($request->task == "managers")
@@ -44,31 +43,30 @@ class VcfController extends Controller
                 $vcard->addPhoneNumber($manager->telephone2, 'TELEPHONE2');
                 $vcard->addPhoneNumber($manager->mobile, 'MOBILE');
                 $variable .= $vcard->getOutput();
+        	}
 
-                $myfile = fopen(public_path()."\VCF\managers.vcf", "w") or die("Unable to open file!");
-                fwrite($myfile, $variable);
-                fclose($myfile);
+			$myfile = fopen(public_path()."\VCF\managers.vcf", "w") or die("Unable to open file!");
+			fwrite($myfile, $variable);
+			fclose($myfile);
 
-                $email = new PHPMailer();
-                $email->CharSet = "UTF-8";
-                $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
-                $email->Subject   = 'Λίστα Διαχειριστών';
-                $email->Body      = 'Αποστολή Λίστας Διαχειριστών';
-                $email->AddAddress($request->email);
+			$email = new PHPMailer();
+			$email->CharSet = "UTF-8";
+			$email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
+			$email->Subject   = 'Λίστα Διαχειριστών';
+			$email->Body      = 'Αποστολή Λίστας Διαχειριστών';
+			$email->AddAddress($request->email);
 
-                $file_to_attach = public_path()."\VCF\managers.vcf";
+			$file_to_attach = public_path()."\VCF\managers.vcf";
 
-                $email->AddAttachment( $file_to_attach , 'managers.vcf' );
+			$email->AddAttachment( $file_to_attach , 'managers.vcf' );
 
-                $email->Send();
+			$email->Send();
 
-                unlink(public_path()."\VCF\managers.vcf");
+			unlink(public_path()."\VCF\managers.vcf");
 
-                return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
-            }
-        }
+			return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
 
-
+		}
         if($request->task == "clients")
         {
             $clients = ClientResource::collection(Client::all());
@@ -86,33 +84,28 @@ class VcfController extends Controller
                 // $vcard->addPhoneNumber(123456789, 'WORK');
                 $vcard->addAddress(null, null, $client->address, $client->location, null, $client->zipcode, 'Ελλάδα');
                 $variable .= $vcard->getOutput();
-
-                $myfile = fopen(public_path()."\VCF\clients.vcf", "w") or die("Unable to open file!");
-                fwrite($myfile, $variable);
-                fclose($myfile);
-
-                $email = new PHPMailer();
-                $email->CharSet = "UTF-8";
-                $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
-                $email->Subject   = 'Λίστα Πελατών';
-                $email->Body      = 'Αποστολή Λίστα Πελατών';
-                $email->AddAddress($request->email);
-
-                $file_to_attach = public_path()."\VCF\clients.vcf";
-
-                $email->AddAttachment( $file_to_attach , 'clients.vcf' );
-
-                $email->Send();
-
-                unlink(public_path()."\VCF\clients.vcf");
-
-                return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
-
-
             }
 
+			$myfile = fopen(public_path()."\VCF\clients.vcf", "w") or die("Unable to open file!");
+			fwrite($myfile, $variable);
+			fclose($myfile);
 
+			$email = new PHPMailer();
+			$email->CharSet = "UTF-8";
+			$email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
+			$email->Subject   = 'Λίστα Πελατών';
+			$email->Body      = 'Αποστολή Λίστα Πελατών';
+			$email->AddAddress($request->email);
 
+			$file_to_attach = public_path()."\VCF\clients.vcf";
+
+			$email->AddAttachment( $file_to_attach , 'clients.vcf' );
+
+			$email->Send();
+
+			unlink(public_path()."\VCF\clients.vcf");
+
+			return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
         }
     }
 }

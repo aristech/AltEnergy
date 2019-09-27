@@ -54,5 +54,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
 
         Route::post('/vcfexport','VcfController@export');
 
+        Route::get('/tech','TechController@index');
+
+        Route::get('/damages','DamageController@index');
+        Route::post('/damages','DamageController@store');
+        Route::put('/damages','DamageController@update');
+        Route::delete('/damages','DamageController@destroy');
+
     });
 });

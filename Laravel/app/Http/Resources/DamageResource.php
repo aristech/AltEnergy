@@ -16,7 +16,7 @@ class DamageResource extends JsonResource
     {
         return [
             "id" => $this->id,
-            "damage_type" => $this->damage_type,
+            "damage_type" => $this->type['name'],
             "damage_comments" => $this->damage_comments,
             "cost" => $this->cost,
             "guarantee" => $this->guarantee,
@@ -28,16 +28,23 @@ class DamageResource extends JsonResource
             "damage_fixed" => $this->damage_fixed,
             "damage_paid" => $this->damage_paid,
             "client_id" => $this->client_id,
-            "client_lastname" => $this->client->lastname,
-            "client_firstname" => $this->client->firstname,
+            "client_lastname" => $this->client['lastname'],
+            "client_firstname" => $this->client['firstname'],
             "manufacturer_id" => $this->manufacturer_id,
-            "manufacturer" => $this->device->mark->manufacturer->name,
+            "manufacturer" => $this->device['mark']['manufacturer']['name'],
             "mark_id" => $this->mark_id,
-            "mark" => $this->device->mark->name,
+            "mark" => $this->device['mark']['name'],
             "device_id" => $this->device_id,
-            "device" => $this->device,
+            "device" => $this->device['name'],
             "supplement" => $this->supplement,
-            "comments" => $this->comments
+            "comments" => $this->comments,
+            "repeatable" => $this->repeatable,
+            "repeat_frequency" => $this->repeat_frequency,
+            "repeat_type" => $this->repeat_type,
+            "appointment_start" => $this->appointment_start,
+            "appointment_end" => $this->appointment_end,
+            "user_id" => $this->user_id,
+            "user" => $this->user['lastname']
         ];
     }
 }

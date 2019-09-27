@@ -54,7 +54,7 @@ class AuthController extends Controller
 
     public function createUser(Request $request)
     {
-        $user_role = $request->user()->role->id;
+        $user_role = $request->user()->role()->first()->id;
         if($user_role < 5)
         {
             return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->title." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"],401);
@@ -104,8 +104,9 @@ class AuthController extends Controller
         $user->save();
 
         UsersRoles::create(['role_id' => $request->role_id, 'user_id' => $user->id ]);
+        $role_name = Role::where("id",$request->role_id)->first();
 
-        return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς! Στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password], 201);
+        return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς με ρόλο ".$role_name->title."! Στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password], 201);
     }
 
     /**
@@ -251,8 +252,9 @@ class AuthController extends Controller
         }
 
         UsersRoles::where('user_id',$request->id)->first()->update(["role_id" => $request->role_id]);
+        $role_name = Role::where("id",$request->role_id)->first();
 
-        return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς!Νέα στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password, UserResource::make($user)], 201);
+        return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς με ρόλο ".$role_name->role_title."!Νέα στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password, UserResource::make($user)], 201);
         //return response()->json(["message" => "Τα στοιχεία του χρήστη άλλαξαν επιτυχώς!", UserResource::make($user)],200);
     }
 }

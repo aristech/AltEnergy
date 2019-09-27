@@ -22,6 +22,6 @@ class Mark extends Model
 
     public function devices()
     {
-        return $this->belongsToMany(Device::class);
+        return $this->hasMany(Device::class,'device_id');
     }
 }

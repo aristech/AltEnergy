@@ -40,7 +40,7 @@ class DeviceController extends Controller
         })
         ->get();
 
-        return $devs;
+        return Device::all();
     }
 
     /**

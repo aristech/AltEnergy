@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\v1;
 
+use App\Damage;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Http\CustomClasses\v1\DamageSuperAdmin;
 
 class DamageController extends Controller
 {
@@ -12,9 +14,13 @@ class DamageController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id >= 5)
+        {
+            return DamageSuperAdmin::getDamages();
+        }
     }
 
     /**
@@ -24,7 +30,8 @@ class DamageController extends Controller
      */
     public function create()
     {
-        //
+
+
     }
 
     /**
@@ -35,7 +42,17 @@ class DamageController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id >= 4)
+        {
+            $damage = new DamageSuperAdmin($request);
+            return $damage->storeDamage();
+        }
+        else
+        {
+            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να εισάγει βλάβες στο σύστημα!"],401);
+        }
+
     }
 
     /**
@@ -67,9 +84,10 @@ class DamageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request)
     {
-        //
+        $damage = new DamageSuperAdmin($request);
+        return $damage->updateDamage();
     }
 
     /**
@@ -78,8 +96,21 @@ class DamageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 4)
+        {
+            return response()->json(["message" => "Χρήστες με δικαίωμα ".$request->user()->role()->first()->name." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"],401);
+        }
+
+        $damage = Damage::where('id',$request->id)->first();
+        if(!$damage)
+        {
+            return response()->json(["message" => "Η ζημιά που αναζητείτε δεν είναι καταχωρημένη!"],404);
+        }
+
+        $damage->delete();
+        return response()->json(["message" => "Η βλάβη διαγραφηκε επιτυχώς!"],200);
     }
 }
