@@ -167,8 +167,33 @@ class ManagerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 4 || $request->user()->active == false)
+        {
+            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        }
+
+        $validator = Validator::make($request->all(),
+        [
+            'id' => 'required|integer'
+        ]);
+
+        if($validator->fails())
+        {
+            $failedRules = $validator->errors()->first();//todo for future: na allaksw
+            return response()->json(["message" => $failedRules],422);
+        }
+
+       $manager = Manager::where('id',$request->id)->first();
+       if(!$manager)
+       {
+            return response()->json(["message" => "Ο διαχειριστής που θέλετε να διαγράψετε δεν υπάρχει στο σύστημα!"],404);
+       }
+
+       $manager->delete();
+
+       return response()->json(["message" => "Ο διαχειριστής διαγράφηκε επιτυχώς!"],200);
     }
 }

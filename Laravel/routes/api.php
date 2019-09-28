@@ -35,10 +35,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
         Route::get('/clients','ClientController@index');
         Route::post('/clients','ClientController@store');
         Route::put('/clients','ClientController@update');
+        Route::delete('/clients','ClientController@destroy');
 
         Route::get('/managers','ManagerController@index');
         Route::post('/managers','ManagerController@store');
         Route::put('/managers','ManagerController@update');
+        Route::delete('/managers','ManagerController@destroy');
 
         Route::get('/manufacturers','ManufacturerController@index');
         Route::post('/manufacturers','ManufacturerController@store');
