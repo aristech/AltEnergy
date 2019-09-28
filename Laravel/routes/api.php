@@ -46,13 +46,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
         Route::post('/manufacturers','ManufacturerController@store');
         Route::delete('/manufacturers','ManufacturerController@destroy');
 
-        Route::get('/marks','MarkController@index');
-        Route::post('/marks','MarkController@store');
-        Route::delete('/marks','MarkController@destroy');
+        Route::get('/manufacturers/{manufacturer}/marks','MarkController@index');
+        Route::post('/manufacturers/{manufacturer}/marks','MarkController@store');
+        Route::delete('/manufacturers/{manufacturer}/marks','MarkController@destroy');
 
-        Route::get('/devices','DeviceController@index');
-        Route::post('/devices','DeviceController@store');
-        Route::delete('/devices','DeviceController@destroy');
+        Route::get('/manufacturers/{manufacturer}/marks/{mark}/devices','DeviceController@index');
+        Route::post('/manufacturers/{manufacturer}/marks/{mark}/devices','DeviceController@store');
+        Route::delete('/manufacturers/{manufacturer}/marks/{mark}/devices','DeviceController@destroy');
 
         Route::post('/vcfexport','VcfController@export');
 

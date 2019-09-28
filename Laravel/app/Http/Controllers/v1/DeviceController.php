@@ -16,7 +16,7 @@ class DeviceController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $manufacturer, $mark)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4 || $request->user()->active == false)
@@ -24,24 +24,19 @@ class DeviceController extends Controller
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
 
-        $validator = Validator::make($request->all(),
-        ["mark_id" => "required|integer"]);
-
-        if($validator->fails())
-        {
-            return response()->json(["message" => $validator->errors()->first()],404);
-        }
-
-        $mark_id = $request->mark_id;
+        $mark_id = $mark;
 
         $devs = Device::whereHas('mark', function($query) use ($mark_id)
         {
-            $query->where('mark_id',$mark_id);
+            $query->where('id',$mark_id);
 
+        })->whereHas('mark.manufacturer',function($query) use ($manufacturer)
+        {
+            $query->where('id',$manufacturer);
         })
         ->get();
 
-        return DeviceResource::collection(Device::all());
+        return DeviceResource::collection($devs);
     }
 
     /**
@@ -60,7 +55,7 @@ class DeviceController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $manufacturer, $mark)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4 || $request->user()->active == false)
@@ -70,20 +65,23 @@ class DeviceController extends Controller
 
         $validator = Validator::make($request->all(),
         [
-            "name" => "required|string",
-            "mark_id" => "required|integer"
+            "name" => "required|string"
         ]);
 
-        $mark = Mark::where('id',$request->mark_id)->first();
-        if($mark)
+        $mark = Mark::where('id',$manufacturer)->whereHas("mark.manufacturer",function($query) use ($manufacturer)
+        {
+            $query->where('id',$manufacturer);
+        })
+        ->find($mark);
+
+        if(!$mark)
         {
             return response()->json(["message" => "Δεν ύπαρχει το συγκεκριμένο μοντέλο"],200);
         }
 
-        $input = array(["name" => $request->name]);
+        $input = array(["name" => $request->name, "mark_id" => $mark]);
 
         $device = Device::create($input);
-        DeviceMark::create(["device_id" => $device->id, "mark_id" => $request->mark_id]);
 
         return response()->json(["message" => "Η νέα συσκευή καταχωρήθηκε επιτυχώς!"],200);
     }
@@ -128,7 +126,7 @@ class DeviceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, $manufacturer, $mark)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4 || $request->user()->active == false)
@@ -138,19 +136,20 @@ class DeviceController extends Controller
 
         $validator = Validator::make($request->all(),
         [
-            "name" => "required|string",
-            "mark_id" => "required|integer"
+            "id" => "required|integer"
         ]);
 
-        $mark = Mark::where('id',$request->mark_id)->first();
-        if($mark)
+        $device = Device::whereHas("mark",function($query) use ($mark)
         {
-            return response()->json(["message" => "Δεν ύπαρχει το συγκεκριμένο μοντέλο"],200);
-        }
+            $query->where('id',$mark);
+        })
+        ->whereHas("mark.manufacturer",function($query) use ($manufacturer)
+        {
+            $query->where('id',$manufacturer);
+        })
+        ->find($request->id);
 
-        $input = array(["name" => $request->name]);
-        $device = Device::create($input);
-        DeviceMark::create(["device_id" => $device->id, "mark_id" => $request->mark_id]);
+        $device->delete();
 
         return response()->json(["message" => "Η συσκευή διεγράφη επιτυχώς!"],200);
     }

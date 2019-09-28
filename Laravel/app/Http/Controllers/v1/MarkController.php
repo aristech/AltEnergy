@@ -16,7 +16,7 @@ class MarkController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $manufacturer)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4 || $request->user()->active == false)
@@ -24,7 +24,7 @@ class MarkController extends Controller
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
 
-        $manu_id = $request->manu_id;
+        $manu_id = $manufacturer;
 
         $marks = Mark::whereHas('manufacturer', function($query) use ($manu_id)
         {
@@ -53,7 +53,7 @@ class MarkController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(Request $request, $manufacturer)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4 || $request->user()->active == false)
@@ -61,13 +61,13 @@ class MarkController extends Controller
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
 
-        $manufacturer = Manufacturer::find($request->manufacturer_id);
+        $manufacturer = Manufacturer::find($manufacturer);
         if(!$manufacturer)
         {
             return response()->json(["message" => "Ο κατασκευαστής αυτος δεν βρέθηκε!"],404);
         }
 
-        $input = ["name" => $request->name, "manufacturer_id" => $request->manufacturer_id];
+        $input = ["name" => $request->name, "manufacturer_id" => $manufacturer];
 
         Mark::create($input);
         return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"],200);
@@ -79,9 +79,9 @@ class MarkController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $manufacturer)
     {
-        //
+
     }
 
     /**
@@ -113,7 +113,7 @@ class MarkController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Request $request)
+    public function destroy(Request $request, $manufacturer)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4 || $request->user()->active == false)
@@ -121,7 +121,12 @@ class MarkController extends Controller
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
 
-        $mark = Mark::where('id',$request->id)->first();
+        $mark = Mark::whereHas('manufacturer',function($query) use ($manufacturer)
+        {
+            $query->where('id',$manufacturer);
+        })
+        ->find($request->id);
+
         if($mark)
         {
             return response()->json(["message" => "Δεν υπάρχει το συγκεκριμένο μοντέλο!"],404);
