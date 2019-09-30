@@ -253,17 +253,17 @@ class DamageSuperAdmin
             return $this->error;
         }
         $this->checkTechnician();
-
-        if($this->hasError == false)
-        {
-            $this->createUpdateInput();
-            $this->damage->update($this->input);
-            return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
-        }
-        else
+        if($this->hasError == true)
         {
             return $this->error;
         }
+        $this->createUpdateInput();
+        if($this->hasError == true)
+        {
+            return $this->error;
+        }
+        $this->damage->update($this->input);
+        return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }
 
     public function createUpdateInput()
@@ -326,6 +326,11 @@ class DamageSuperAdmin
                 "user_id" => $this->request->user_id
             ];
 
+        }
+        elseif($this->request->completed_no_transaction == true && $this->request->damage_fixed == true)
+        {
+            $this->hasError = true;
+            $this->error = request()->json(["message" => "Η συναλλαγή δεν μπορεί να έιναι ακυρωμένη και επιδιορθωμένη!"],200);
         }
         else
         {
