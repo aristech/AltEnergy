@@ -127,7 +127,7 @@ class MarkController extends Controller
         })
         ->find($request->id);
 
-        if($mark)
+        if(!$mark)
         {
             return response()->json(["message" => "Δεν υπάρχει το συγκεκριμένο μοντέλο!"],404);
         }
