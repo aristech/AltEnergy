@@ -18,8 +18,8 @@ class VcfController extends Controller
     public function export(Request $request)
     {
         $validator = Validator::make($request->all(),[
-            "task" => "required|string",
-            "email" => "required|string|email"
+            "task" => "required|string"
+           // "email" => "required|string|email"
         ]);
 
         if($validator->fails())
@@ -90,20 +90,20 @@ class VcfController extends Controller
 			fwrite($myfile, $variable);
 			fclose($myfile);
 
-			$email = new PHPMailer();
-			$email->CharSet = "UTF-8";
-			$email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
-			$email->Subject   = 'Λίστα Πελατών';
-			$email->Body      = 'Αποστολή Λίστα Πελατών';
-			$email->AddAddress($request->email);
+			// $email = new PHPMailer();
+			// $email->CharSet = "UTF-8";
+			// $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
+			// $email->Subject   = 'Λίστα Πελατών';
+			// $email->Body      = 'Αποστολή Λίστα Πελατών';
+			// $email->AddAddress($request->email);
 
-			$file_to_attach = public_path()."\VCF\clients.vcf";
+			// $file_to_attach = public_path()."\VCF\clients.vcf";
 
-			$email->AddAttachment( $file_to_attach , 'clients.vcf' );
+			// $email->AddAttachment( $file_to_attach , 'clients.vcf' );
 
-			$email->Send();
+			// $email->Send();
 
-			unlink(public_path()."\VCF\clients.vcf");
+			// unlink(public_path()."\VCF\clients.vcf");
 
 			return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
         }

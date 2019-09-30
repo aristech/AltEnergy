@@ -47,10 +47,7 @@ class DamageSuperAdmin
             'mark_id' => 'required|integer',
             'appointment_start' => 'nullable|string',
             'appointment_end' => 'nullable|string',
-            'user_id' => 'nullable|integer',
-            'repeatable' => 'required|boolean',
-            'repeat_frequency' => 'nullable|integer',
-            'repeat_type' => 'string|nullable'
+            'user_id' => 'nullable|integer'
 
         ]);
 
@@ -73,22 +70,23 @@ class DamageSuperAdmin
             'cost' => 'nullable|numeric|between:0.00,999999.99',
             'guarantee' => 'required|boolean',
             'status' => 'required|string',
-            'estimation_appointment' => 'required|boolean',
-            'cost_information' => 'required|boolean',
-            'supplement_available' => 'required|boolean',
-            'fixing_appointment' => 'required|boolean',
+            'appointment_pending' => 'required|boolean',
+            'technician_left' => 'required|boolean',
+            'technician_arrived' => 'required|boolean',
+            'appointment_completed' => 'required|boolean',
+            'appointment_needed' => 'required|boolean',
+            'supplement_pending' => 'required|boolean',
             'damage_fixed' => 'required|boolean',
-            'damage_paid' => 'required|boolean',
+            'completed_no_transaction' => 'required|boolean',
             'client_id' => 'required|integer',
             'device_id' => 'required|integer',
             'comments' => 'nullable|min:4|max:100000',
             'manufacturer_id' => 'required|integer',
             'mark_id' => 'required|integer',
             'supplement' => 'nullable|string',
-            'repeatable' => 'required|boolean',
-            'repeat_frequency' => 'nullable|integer',
-            'repeat_type' => 'string|nullable'
-
+            'appointment_start' => 'nullable|string',
+            'appointment_end' => 'nullable|string',
+            'user_id' => 'nullable|integer'
         ]);
 
         if($validator->fails())
@@ -209,8 +207,8 @@ class DamageSuperAdmin
 
         if($this->request->appointment_start != null)
         {
-            $client = Client::where('id',$this->request->client_id)->first();
-            Eventt::create(["event_type" => "damage", "event_id" => $damage->id]);
+            // $client = Client::where('id',$this->request->client_id)->first();
+            // Eventt::create(["event_type" => "damage", "event_id" => $damage->id]);
         }
 
 
@@ -270,7 +268,7 @@ class DamageSuperAdmin
 
     public function createUpdateInput()
     {
-        if(($this->request->estimation_appointment == 1 && $this->request->cost_information == 1 && $this->request->supplement_available == 1 && $this->request->fixing_appointment == 1 && $this->request->damage_fixed == 1 && $this->request->damage_paid == 1) || $this->request->status == "Ολοκληρωμένη")
+        if(($this->request->appointment_pending == 0 && $this->request->technician_left == 1 && $this->request->technician_arrived == 1 && $this->request->appointment_completed == 1 && $this->request->appointment_needed == 0 && $this->request->damage_fixed == 1 && $this->request->supplement_pending == 0 && $this->request->completed_no_transaction == 0 && $this->request->damage_fixed == 1) || $this->request->status == "Ολοκληρωμένη")
         {
             $this->input = array();
             $this->input =
@@ -280,12 +278,14 @@ class DamageSuperAdmin
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
                 "status" => "Ολοκληρωμένη",
-                "estimation_appointment" => true,
-                "cost_information" => true,
-                "supplement_available" => true,
-                "fixing_appointment" => true,
+                "appointment_pending" => false,
+                "technician_left" => true,
+                "technician_arrived" => true,
+                "appointment_completed" => true,
+                "appointment_needed" => false,
+                "supplement_pending" => false,
+                "completed_no_transaction" => false,
                 "damage_fixed" => true,
-                "damage_paid" => true,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
@@ -294,10 +294,38 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "repeatable" => $this->request->repeatable,
-                "repeat_frequency" => $this->request->repeat_frequency,
-                "repeat_type" => $this->request->repeat_type
+                "user_id" => $this->request->user_id
             ];
+        }
+        elseif($this->request->completed_no_transaction == 0 || $this->request->status == "Ακυρώθηκε")
+        {
+            $this->input = array();
+            $this->input =
+            [
+                "damage_type" => $this->request->damage_type,
+                "damage_comments" => $this->request->damage_comments,
+                "cost" => $this->request->cost,
+                "guarantee" => $this->request->guarantee,
+                "status" => "Ακυρώθηκε",
+                "appointment_pending" => $this->request->appointment_pending,
+                "technician_left" => $this->request->technician_left,
+                "technician_arrived" => $this->request->technician_arrived,
+                "appointment_completed" => $this->appointment_completed,
+                "appointment_needed" => $this->appointment_needed,
+                "supplement_pending" => $this->supplement_pending,
+                "completed_no_transaction" => true,
+                "damage_fixed" => false,
+                "client_id" => $this->request->client_id,
+                "device_id" => $this->request->device_id,
+                "comments" => $this->request->comments,
+                "manufacturer_id" => $this->request->manufacturer_id,
+                "mark_id" => $this->request->mark_id,
+                "supplement" => $this->request->supplement,
+                "appointment_start" => $this->request->appointment_start,
+                "appointment_end" => $this->request->appointment_end,
+                "user_id" => $this->request->user_id
+            ];
+
         }
         else
         {
@@ -308,24 +336,25 @@ class DamageSuperAdmin
                 "damage_comments" => $this->request->damage_comments,
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
-                "status" => $this->request->status,
-                "estimation_appointment" => $this->request->estimation_appointment,
-                "cost_information" => $this->request->cost_information,
-                "supplement_available" => $this->request->supplement_available,
-                "fixing_appointment" => $this->request->fixing_appointment,
-                "damage_fixed" => $this->request->damage_fixed,
-                "damage_paid" => $this->request->damage_paid,
+                "status" => $this->status,
+                "appointment_pending" => $this->request->appointment_pending,
+                "technician_left" => $this->request->technician_left,
+                "technician_arrived" => $this->request->technician_arrived,
+                "appointment_completed" => $this->appointment_completed,
+                "appointment_needed" => $this->appointment_needed,
+                "supplement_pending" => $this->supplement_pending,
+                "completed_no_transaction" => $this->completed_no_transca,
+                "damage_fixed" => false,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
                 "manufacturer_id" => $this->request->manufacturer_id,
                 "mark_id" => $this->request->mark_id,
                 "supplement" => $this->request->supplement,
-                "repeatable" => $this->request->repeatable,
-                "repeat_frequency" => $this->request->repeat_frequency,
-                "repeat_type" => $this->request->repeat_type
+                "appointment_start" => $this->request->appointment_start,
+                "appointment_end" => $this->request->appointment_end,
+                "user_id" => $this->request->user_id
             ];
-
         }
     }
 

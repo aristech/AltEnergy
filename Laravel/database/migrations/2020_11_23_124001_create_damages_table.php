@@ -42,9 +42,6 @@ class CreateDamagesTable extends Migration
             $table->foreign('user_id')->references('id')->on('users')->onDelete('set null');
             $table->timestamp('appointment_start')->nullable();
             $table->timestamp('appointment_end')->nullable();
-            $table->boolean('repeatable')->default(false);
-            $table->integer('repeat_frequency')->nullable();
-            $table->string('repeat_type')->nullable();
             $table->timestamps();
         });
     }

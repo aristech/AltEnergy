@@ -12,7 +12,9 @@ class Damage extends Model
 {
     protected $table = 'damages';
 
-    protected $fillable = ['damage_type_id','damage_comments', 'cost', 'guarantee', 'status', 	'damage_estimation', 'cost_information', 'supplement_available' 	,'fixing_appointment', 	'damage_fixed', 'damage_paid', 'client_id', 'manufacturer_id', 'mark_id', 'device_id' ,'supplement', 'comments',  'appointment_start', 'appointment_end','repeatable','repeat_frequency', 'repeat_type'];
+    protected $fillable = ['damage_type_id','damage_comments', 'cost', 'guarantee', 'status', 'appointment_pending', 'technician_left','technician_arrived','appointment_completed','appointment_needed','supplement_pending','damage_fixed', 'completed_no_transaction', 'client_id', 'manufacturer_id', 'mark_id', 'device_id' ,'user_id','supplement', 'comments',  'appointment_start', 'appointment_end'];
+
+
 
     protected $hidden = ['created_at', 'updated_at'];
 
