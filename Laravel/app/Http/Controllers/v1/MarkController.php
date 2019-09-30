@@ -67,7 +67,7 @@ class MarkController extends Controller
             return response()->json(["message" => "Ο κατασκευαστής αυτος δεν βρέθηκε!"],404);
         }
 
-        $input = ["name" => $request->name, "manufacturer_id" => $manufacturer];
+        $input = array("name" => $request->name, "manufacturer_id" => $manufacturer->id);
 
         Mark::create($input);
         return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"],200);

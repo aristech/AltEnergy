@@ -68,7 +68,7 @@ class DeviceController extends Controller
             "name" => "required|string"
         ]);
 
-        $mark = Mark::where('id',$manufacturer)->whereHas("mark.manufacturer",function($query) use ($manufacturer)
+        $mark = Mark::whereHas("manufacturer",function($query) use ($manufacturer)
         {
             $query->where('id',$manufacturer);
         })
@@ -79,7 +79,7 @@ class DeviceController extends Controller
             return response()->json(["message" => "Δεν ύπαρχει το συγκεκριμένο μοντέλο"],200);
         }
 
-        $input = array(["name" => $request->name, "mark_id" => $mark]);
+        $input = array("name" => $request->name, "mark_id" => $mark->id);
 
         $device = Device::create($input);
 
