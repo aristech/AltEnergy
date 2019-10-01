@@ -24,7 +24,7 @@ class TechSearchResource extends JsonResource
             "role_title" => function()
             {
                 $role = Role::where('id',$this->role_id)->first();
-                return $role['title'];
+                return $role->title;
             }
         ];
     }
