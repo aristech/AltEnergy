@@ -21,7 +21,7 @@ class TechSearchResource extends JsonResource
             "lastname" => $this->lastname." ".$this->firstname,
             "email" => $this->email,
             "role_id"=> $this->role_id,
-            "role_title" => function(){ Role::where('id',$this->role_id)->pluck('title');}
+            "role_title" => function(){ $rol = Role::find($this->role_id); return $rol->title;}
         ];
     }
 }
