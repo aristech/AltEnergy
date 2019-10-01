@@ -12,7 +12,8 @@ use App\Mark;
 use App\Http\Resources\MarkResource;
 use App\Http\Resources\Device;
 use App\Http\Resources\DeviceResource;
-use App\User;
+use App\Http\Resources\TechSearchResource;
+use DB;
 
 use App\Http\Resources\UserResource;
 
@@ -40,9 +41,11 @@ class SearchController extends Controller
 
    public function searchTechs(Request $request)
    {
-        $techs = User::whereHas('role',function($query)
+        $techs = DB::table('users')
+        ->join('role_user', function ($join)
         {
-            $query->where('id',3);
+            $join->on('users.id', '=', 'role_user.user_id')
+                ->where('role_user.role_id', '=', 3);
         })
         ->where('lastname','like',$request->name.'%')
         ->orWhere('lastname','like','%'.$request->name.'%')
@@ -59,7 +62,7 @@ class SearchController extends Controller
             return response()->json(["message" => "Δεν βρέθηκαν αποτελέσματα"],404);
         }
 
-        return UserResource::collection($techs);
+        return TechSearchResource::collection($techs);
    }
 
    public function searchManufacturer(Request $request)
