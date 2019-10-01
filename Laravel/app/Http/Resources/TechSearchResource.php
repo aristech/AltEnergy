@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Role;
+use App\Role;
 
 class TechSearchResource extends JsonResource
 {
