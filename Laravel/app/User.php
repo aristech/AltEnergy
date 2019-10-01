@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\HasApiTokens;
 use App\Role;
 use App\Damage;
+use App\UsersRoles;
 
 class User extends Authenticatable
 {
@@ -49,4 +50,6 @@ class User extends Authenticatable
     {
         return $this->hasMany(Damage::class);
     }
+
+
 }

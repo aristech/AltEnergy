@@ -67,5 +67,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
         Route::put('/damages','DamageController@update');
         Route::delete('/damages','DamageController@destroy');
 
+        Route::post('/searchclients','SearchController@searchClients');
+        Route::post('/searchtechs','SearchController@searchTechs');
+
     });
 });
