@@ -18,9 +18,10 @@ class DatabaseSeeder extends Seeder
         // DB::table('roles')->insert(["title"=>"Υπάλληλος"]);
         // DB::table('roles')->insert(["title"=>"Admin"]);
         // DB::table('roles')->insert(["title"=>"Super Admin"]);
-        factory(App\Manufacturer::class,2)->create();
-        factory(App\Mark::class,2)->create();
-        factory(App\Device::class,10)->create();
-
+        // factory(App\Manufacturer::class,2)->create();
+        // factory(App\Mark::class,2)->create();
+        // factory(App\Device::class,10)->create();
+        factory(App\DamageType::class,5)->create();
+        factory(App\Damage::class,20)->create();
     }
 }

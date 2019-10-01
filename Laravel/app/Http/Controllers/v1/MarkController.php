@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Mark;
 use App\Manufacturer;
 use App\Http\Resources\MarkResource;
+use Validator;
 
 
 class MarkController extends Controller
@@ -59,6 +60,16 @@ class MarkController extends Controller
         if($role_id < 4 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        }
+
+        $validator = Validator::make($request->all(),
+        [
+            "name" => "required|string"
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json(["message" => $validator->errors()->first()],422);
         }
 
         $manufacturer = Manufacturer::find($manufacturer);
@@ -119,6 +130,16 @@ class MarkController extends Controller
         if($role_id < 4 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        }
+
+        $validator = Validator::make($request->all(),
+        [
+            "id" => "required"
+        ]);
+
+        if($validator->fails())
+        {
+            return response()->json(["message" => $validator->errors()->first()],422);
         }
 
         $mark = Mark::whereHas('manufacturer',function($query) use ($manufacturer)

@@ -31,6 +31,16 @@ class DamageSuperAdmin
         return $damages;
     }
 
+    private function checkDamageType()
+    {
+        $damageType = DamageType::where('id',$this->request->damage_type_id)->first();
+        if(!$damageType)
+        {
+            $this->hasError = true;
+            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος ζημιάς!"],404);
+        }
+    }
+
     protected function validatorCreate()
     {
         $validator = Validator::make($this->request->all(),
@@ -116,8 +126,7 @@ class DamageSuperAdmin
         if(!$device)
         {
             $this->hasErrors = true;
-            $this->error = response()->json(["message"=>"Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"],422);
-            return response()->json(["message"=>"Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"],422);
+            $this->error = response()->json(["message"=>"Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"],404);
         }
 
     }
@@ -173,13 +182,16 @@ class DamageSuperAdmin
     public function storeDamage()
     {
         $this->validatorCreate();
-
+        if($this->hasError == true)
+        {
+            return $this->error;
+        }
+        $this->checkDamageType();
         if($this->hasError == true)
         {
             return $this->error;
         }
         $this->checkDevice();
-
         if($this->hasError == true)
         {
             return $this->error;
@@ -232,6 +244,11 @@ class DamageSuperAdmin
     public function updateDamage()
     {
         $this->validatorUpdate();
+        if($this->hasError == true)
+        {
+            return $this->error;
+        }
+        $this->checkDamageType();
         if($this->hasError == true)
         {
             return $this->error;

@@ -68,6 +68,11 @@ class DeviceController extends Controller
             "name" => "required|string"
         ]);
 
+        if($validator->fails())
+        {
+            return response()->json(["message" => $validator->errors()->first()],422);
+        }
+
         $mark = Mark::whereHas("manufacturer",function($query) use ($manufacturer)
         {
             $query->where('id',$manufacturer);
@@ -139,6 +144,11 @@ class DeviceController extends Controller
             "id" => "required|integer"
         ]);
 
+        if($validator->fails())
+        {
+            return response()->json(["message" => $validator->errors()->first()],422);
+        }
+
         $device = Device::whereHas("mark",function($query) use ($mark)
         {
             $query->where('id',$mark);
@@ -148,6 +158,11 @@ class DeviceController extends Controller
             $query->where('id',$manufacturer);
         })
         ->find($request->id);
+
+        if(!$device)
+        {
+            return response()->json(["message" => "Η συγκεκριμένη συσκευή δεν υπάρχει στο σύστημα"],404);
+        }
 
         $device->delete();
 
