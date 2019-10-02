@@ -13,15 +13,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         //$this->call(UsersTableSeeder::class);
-        DB::table('roles')->insert(["title"=>"Πελάτης"]);
-        DB::table('roles')->insert(["title"=>"Διαχειριστής"]);
-        DB::table('roles')->insert(["title"=>"Υπάλληλος"]);
-        DB::table('roles')->insert(["title"=>"Admin"]);
-        DB::table('roles')->insert(["title"=>"Super Admin"]);
-        factory(App\Manufacturer::class,5)->create();
-        factory(App\Mark::class,5)->create();
-        factory(App\Device::class,10)->create();
+        // DB::table('roles')->insert(["title"=>"Πελάτης"]);
+        // DB::table('roles')->insert(["title"=>"Διαχειριστής"]);
+        // DB::table('roles')->insert(["title"=>"Υπάλληλος"]);
+        // DB::table('roles')->insert(["title"=>"Admin"]);
+        // DB::table('roles')->insert(["title"=>"Super Admin"]);
+        // factory(App\Manufacturer::class,5)->create();
+        // factory(App\Mark::class,5)->create();
+        // factory(App\Device::class,10)->create();
         factory(App\DamageType::class,5)->create();
-        factory(App\Damage::class,20)->create();
+        factory(App\Damage::class,25)->create();
     }
 }
