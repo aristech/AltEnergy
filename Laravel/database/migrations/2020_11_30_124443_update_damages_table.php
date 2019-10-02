@@ -15,12 +15,12 @@ class UpdateDamagesTable extends Migration
     {
         Schema::table('damages', function (Blueprint $table)
         {
-            $table->dropColumn('damage_estimation');
-            $table->dropColumn('cost_information');
-            $table->dropColumn('supplement_available');
-            $table->dropColumn('fixing_appointment');
-            $table->dropColumn('damage_fixed');
-            $table->dropColumn('damage_paid');
+            // $table->dropColumn('damage_fixed');
+            // $table->dropColumn('damage_estimation');
+            // $table->dropColumn('cost_information');
+            // $table->dropColumn('supplement_available');
+            // $table->dropColumn('fixing_appointment');
+            // $table->dropColumn('damage_paid');
             $table->boolean('appointment_pending')->default(false)->after('status');
             $table->boolean('technician_left')->default(false)->after('appointment_pending');
             $table->boolean('technician_arrived')->default(false)->after('technician_left');
@@ -49,12 +49,12 @@ class UpdateDamagesTable extends Migration
             $table->dropColumn('supplement_pending');
             $table->dropColumn('damage_fixed');
             $table->dropColumn('completed_no_transaction');
-            $table->boolean('damage_estimation')->default(false)->after('status');
-            $table->boolean('cost_information')->default(false)->after('damage_estimation');
-            $table->boolean('supplement_available')->default(false)->after('cost_information');
-            $table->boolean('fixing_appointment')->default(false)->after('supplement_available');
-            $table->boolean('damage_fixed')->default(false)->after('fixing_appointment');
-            $table->boolean('damage_paid')->default(false)->after('damage_fixed');
+            // $table->boolean('damage_estimation')->default(false)->after('status');
+            // $table->boolean('cost_information')->default(false)->after('damage_estimation');
+            // $table->boolean('supplement_available')->default(false)->after('cost_information');
+            // $table->boolean('fixing_appointment')->default(false)->after('supplement_available');
+            // $table->boolean('damage_fixed')->default(false)->after('fixing_appointment');
+            // $table->boolean('damage_paid')->default(false)->after('damage_fixed');
         });
 
 

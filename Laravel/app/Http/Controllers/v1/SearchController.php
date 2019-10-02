@@ -63,6 +63,7 @@ class SearchController extends Controller
         }
 
         return TechSearchResource::collection($techs);
+
    }
 
    public function searchManufacturer(Request $request)
