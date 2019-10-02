@@ -31,6 +31,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
         Route::post('/users','AuthController@createUser');
         Route::put('/users','AuthController@editUser');
         Route::get('/users','AuthController@allUsers');
+        Route::delete('/users','AuthController@deleteUser');
 
 
         //Role routes

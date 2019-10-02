@@ -254,7 +254,27 @@ class AuthController extends Controller
         UsersRoles::where('user_id',$request->id)->first()->update(["role_id" => $request->role_id]);
         $role_name = Role::where("id",$request->role_id)->first();
 
-        return response()->json(['message' => 'Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς με ρόλο ".$role_name->role_title."!Νέα στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password, UserResource::make($user)], 201);
+        return response()->json(['message' => 'Τα στοιχεία του χρήστη με κωδικό '.$request->id.' ενημερώθηκαν επιτυχώς. Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς με ρόλο ".$role_name->role_title."!Νέα στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password, UserResource::make($user)], 201);
         //return response()->json(["message" => "Τα στοιχεία του χρήστη άλλαξαν επιτυχώς!", UserResource::make($user)],200);
+    }
+
+    public function deleteUser(Request $request)
+    {
+        $user_role = $request->user()->role()->first()->id;
+        if($user_role < 5)
+        {
+            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->title." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"],401);
+        }
+        //
+
+        $user = User::find($request->id);
+        if(!$user)
+        {
+            return response()->json(["message" => "Δεν υπάρχει ο χρήστης για να αλλάξουν τα στοιχεία του"],404);
+        }
+
+        $user->delete();
+
+        return response()->json(["message" => "Ο χρήστης με κωδικό ".$request->id." ολοκληρώθηκε επιτυχώς"],200);
     }
 }
