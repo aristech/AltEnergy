@@ -60,11 +60,6 @@ class AuthController extends Controller
             return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->title." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"],401);
         }
         //
-        $role = Role::where('id',$request->role_id)->first();
-        if(!$role)
-        {
-            return response()->json(['message' => 'Ο ρόλος χρήστη δεν είναι διαθέσιμος'],404);
-        }
 
         $validator = Validator::make($request->all(),[
             'lastname' => 'required|string',
@@ -86,6 +81,12 @@ class AuthController extends Controller
             return response()->json(["message" => $failedRules],422);
         }
 
+        $role = Role::where('id',$request->role_id)->first();
+        if(!$role)
+        {
+            return response()->json(['message' => 'Ο ρόλος χρήστη δεν είναι διαθέσιμος'],404);
+        }
+
         if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
         {
             return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"],422);
@@ -96,7 +97,7 @@ class AuthController extends Controller
             'firstname' => $request->firstname,
             'email' => $request->email,
             'password' => bcrypt($request->password),
-            'active' => true,
+            'active' => $request->active,
             'telephone' => $request->telephone,
             'telephone2' => $request->telephone2,
             'mobile' => $request->mobile
@@ -195,11 +196,6 @@ class AuthController extends Controller
             return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->title." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"],401);
         }
         //
-        $role = Role::where('id',$request->role_id)->first();
-        if(!$role)
-        {
-            return response()->json(['message' => 'Ο ρόλος χρήστη δεν είναι διαθέσιμος'],404);
-        }
 
         $user = User::find($request->id);
         if(!$user)
@@ -212,7 +208,8 @@ class AuthController extends Controller
             'lastname' => 'required|string',
             'firstname' => 'required|string',
             'email' => 'required|string|email|',
-            'password' => 'required|string|confirmed',
+            'password' => 'nullable|string',
+            'password_confirmation' => 'nullable|string',
             'role_id' => 'required|integer',
             'active' => 'nullable|boolean',
             'manager_id' => 'nullable|integer',
@@ -228,12 +225,49 @@ class AuthController extends Controller
             return response()->json(["message" => $failedRules],422);
         }
 
+
         $mail_exists = User::where('email',$request->id)->where('id',"!=",$request->id)->first();
 
-        if($request->email != $user->email || $mail_exists)
+        if($mail_exists)
         {
             return response()->json(["message" => "To email ".$request->email." είναι σε χρήση από αλλόν χρήστη"],422);
         }
+
+        $role = Role::where('id',$request->role_id)->first();
+        if(!$role)
+        {
+            return response()->json(['message' => 'Ο ρόλος χρήστη δεν είναι διαθέσιμος'],404);
+        }
+
+        if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
+        {
+            return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"],422);
+        }
+
+        if(!$request->password && !$request->pasword_confirmation)
+        {
+            $user->update([
+                "lastname" => $request->lastname,
+                "firstname" => $request->firstname,
+                "email" => $request->email,
+                "active" => $request->active,
+                'telephone' => $request->telephone,
+                'telephone2' => $request->telephone2,
+                'mobile' => $request->mobile
+            ]);
+
+            UsersRoles::where('user_id',$request->id)->first()->update(["role_id" => $request->role_id]);
+            $role_name = Role::where("id",$request->role_id)->first();
+            return response()->json(["message" => "Τα στοιχεία του χρήστη με κωδικό ".$request->id." άλλαξαν επιτυχώς!", UserResource::make($user)],200);
+        }
+
+        if($request->password != $request->password_confirmation)
+        {
+            return response()->json(["message" => "Ο κωδικός και η επαλήθευση του δεν ταιριάζουν!"],200);
+        }
+
+        UsersRoles::where('user_id',$request->id)->first()->update(["role_id" => $request->role_id]);
+        $role_name = Role::where("id",$request->role_id)->first();
 
         $user->update([
             "lastname" => $request->lastname,
@@ -245,14 +279,6 @@ class AuthController extends Controller
             'telephone2' => $request->telephone2,
             'mobile' => $request->mobile
         ]);
-
-        if($request->telephone == null && $request->telephone2 == null && $request->mobile == null)
-        {
-            return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"],422);
-        }
-
-        UsersRoles::where('user_id',$request->id)->first()->update(["role_id" => $request->role_id]);
-        $role_name = Role::where("id",$request->role_id)->first();
 
         return response()->json(['message' => 'Τα στοιχεία του χρήστη με κωδικό '.$request->id.' ενημερώθηκαν επιτυχώς. Ο χρήστης '.$request->lastname." ".$request->firstname." καταχωρήθηκε επιτυχώς με ρόλο ".$role_name->role_title."!Νέα στοιχεία εισόδου χρήστη: Email: ".$user->email." Password: ".$request->password, UserResource::make($user)], 201);
         //return response()->json(["message" => "Τα στοιχεία του χρήστη άλλαξαν επιτυχώς!", UserResource::make($user)],200);
