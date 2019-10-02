@@ -10,9 +10,11 @@ use App\Manufacturer;
 use App\Http\Resources\ManufacturerResource;
 use App\Mark;
 use App\Http\Resources\MarkResource;
-use App\Http\Resources\Device;
+use App\Device;
 use App\Http\Resources\DeviceResource;
 use App\Http\Resources\TechSearchResource;
+use App\Manager;
+use App\Http\Resources\ManagerResource;
 use DB;
 
 use App\Http\Resources\UserResource;
@@ -37,6 +39,26 @@ class SearchController extends Controller
         }
 
         return ClientResource::collection($clients);
+   }
+
+   public function searchManagers(Request $request)
+   {
+        $managers = Manager::where('lastname','like',$request->name.'%')
+        ->orWhere('lastname','like','%'.$request->name.'%')
+        ->orWhere('lastname','like','%'.$request->name)
+        ->orWhere('firstname','like',$request->name.'%')
+        ->orWhere('firstname','like','%'.$request->name.'%')
+        ->orWhere('firstname','like','%'.$request->name.'%')
+        ->orWhere('firstname','like','%'.$request->name)
+        ->orderBy('lastname')
+        ->get();
+
+        if(!count($managers))
+        {
+            return response()->json(["message" => "Δεν βρέθηκαν αποτελέσματα"],404);
+        }
+
+        return ManagerResource::collection($managers);
    }
 
    public function searchTechs(Request $request)
@@ -66,7 +88,7 @@ class SearchController extends Controller
 
    }
 
-   public function searchManufacturer(Request $request)
+   public function searchManufacturers(Request $request)
    {
         $manufacturers = Manufacturer::where('name','like',$request->name.'%')
         ->orWhere('name','like','%'.$request->name.'%')
@@ -82,7 +104,7 @@ class SearchController extends Controller
         return ManufacturerResource::collection($manufacturers);
    }
 
-   public function searchMark(Request $request)
+   public function searchMarks(Request $request)
    {
         $marks = Mark::where('name','like',$request->name.'%')
         ->orWhere('name','like','%'.$request->name.'%')
@@ -98,7 +120,7 @@ class SearchController extends Controller
         return MarkResource::collection($marks);
    }
 
-   public function searchDevice(Request $request)
+   public function searchDevices(Request $request)
    {
         $devices = Device::where('name','like',$request->name.'%')
         ->orWhere('name','like','%'.$request->name.'%')

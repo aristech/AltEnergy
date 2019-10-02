@@ -69,6 +69,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
 
         Route::post('/searchclients','SearchController@searchClients');
         Route::post('/searchtechs','SearchController@searchTechs');
+        Route::post('/searchmanagers','SearchController@searchManagers');
+        Route::post('/searchmanu','SearchController@searchManufacturers');
+        Route::post('/searchmarks','SearchController@searchMarks');
+        Route::post('/searchdevices','SearchController@searchDevices');
 
     });
 });

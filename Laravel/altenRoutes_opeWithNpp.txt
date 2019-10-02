@@ -1,0 +1,228 @@
+Necessary steps: create 5 roles: id:5->title:Super Admin,id:4 -> Admin,id:3 Υπαλληλος, id:2 Διαχειριστης, id:1  Πελατης
+
+
+https://alten.aristech.gr/api/v1/signup -> temporary for creating super admin ->method Post
+https://alten.aristech.gr/api/v1/login -> method POST
+https://alten.aristech.gr/api/v1//logout -->get method
+https://alten.aristech.gr/api/v1/user -> get method
+-----------------------------------------------------------------------------------------------------------
+-USERS
+
+Create new user:
+
+url : https://alten.aristech.gr/api/v1/createUser
+method: POST
+send in body: 
+{ 
+
+	  "lastname":"required must be string",
+          "firstname":"required must be string",
+          "email":"required, must be string and unique among users",
+          "password":"required must be string",
+          "password_confirmation:"required must be string"
+          "role_id":"required must be integer, roles are 5 with highest 5(the super admin) and lowest the 1(client) ",
+          "active":"nullable must be boolean.If null the default value is active",
+          "manager_id" : "nullable, in case it is filled must be integer. If the created user is a manager, his id must also be matched here",
+          "client_id" : "nullable, in case it is filled must be integer. If the created user is a manager, his id must also be matched here",
+          "telephone" : "nullable must be string",
+          "telephone2' : "nullable must be string",
+          "mobile" : "nullable must be string"
+}
+
+note:if all 3 phone fields are empty the user wont be created and the system will display error message
+
+Get all users:
+
+https://alten.aristech.gr/api/v1/allusers
+method:GET
+send in body: NONE
+
+
+Edit existing user:
+
+https://alten.aristech.gr/api/v1/edituser
+method:PUT
+send in body: 
+{ 
+	  "id": "required must be integer"
+	  "lastname":"required must be string",
+          "firstname":"required must be string",
+          "email":"required, must be string and unique among users",
+          "password":"required must be string",
+          "password_confirmation:"required must be string"
+          "role_id":"required must be integer, roles are 5 with highest 5(the super admin) and lowest the 1(client) ",
+          "active":"nullable must be boolean.If null the default value is active",
+          "manager_id" : "nullable, in case it is filled must be integer. If the created user is a manager, his id must also be matched here",
+          "client_id" : "nullable, in case it is filled must be integer. If the created user is a manager, his id must also be matched here",
+          "telephone" : "nullable must be string",
+          "telephone2' : "nullable must be string",
+          "mobile" : "nullable must be string"
+}
+
+note:if all 3 phone fields are empty the user wont be created and the system will display error message
+
+--------------------------------------------------------------------------------------------------------------------------
+- Roles:
+
+https://alten.aristech.gr/api/v1/roles 
+method:GET
+body: NONE
+
+--------------------------------------------------------------------------------------------------
+- DamageTypes(Because they want to be able to not only insert new damages but also select from previous inserted):
+
+Insert new damage type:
+
+url : https://alten.aristech.gr/api/v1/damagetypes
+method:POST
+send in body: { "name":"it must be string"}
+
+Get all damage types:
+
+url : https://alten.aristech.gr/api/v1/damagetypes
+method:GET
+send in body: NO
+
+Delete damage type:
+url : https://alten.aristech.gr/api/v1/damagetypes
+method:DELETE
+send in body: { "id":"it must be integer"  }
+
+-------------------------------------------------------------------------------------------------------
+- Damages:
+
+Get all damages:
+
+url : https://alten.aristech.gr/api/v1/damages
+method:GET
+send in body:{ NONE  }
+
+Insert new damage:
+
+url: https://alten.aristech.gr/api/v1/damages
+method: POST
+send in body:
+{
+	    "damage_type_id" : "it must be an integer and it is mandatory",
+            "damage_comments": "not needed, can be null. If comments are needed they must be from 4 to 10000 characters",
+            "cost" : "it can be null but if you insert value it has to be float and between 0.00 and 999999.99",
+            "guarantee" : "it can be null but its value must be boolean',
+            "status" : "status is mandatory and must be string.The statuses that we need as strings are Ολοκλημερωμένη, Μη Ολοκληρωμένη, Ακυρώθηκε.",
+            "client_id" : "it is required and it must be integer.Must be part an id of the clients table",
+            "comments" : "it can be null but if filled it must be between 4 and 100000 characters",
+            "manufacturer_id":"it is required and it is id",
+            "mark_id": 'required and integer',
+	    "device_id" : "it is required and must be an integer",
+            "appointment_start":"nullable, it must be DateTime format",
+            "appointment_end":"nullable, it must be DateTime format",
+            "user_id": "nullable|integer"
+}
+
+Update damages:
+url: https://alten.aristech.gr/api/v1/damages
+method: PUT 
+send in body:
+
+{
+        "damage_type_id" : "it must be an integer and it is mandatory",
+        "damage_comments": "not needed, can be null. If comments are needed they must be from 4 to 10000 characters",
+        "cost" : "it can be null but if you insert value it has to be float and between 0.00 and 999999.99",
+        "guarantee" : "it can be null but its value must be boolean',
+        "status" : "status is mandatory and must be string.The statuses that we need as strings are Ολοκλημερωμένη, Μη Ολοκληρωμένη, Ακυρώθηκε.",
+	"appointment_pending":"required must be boolean",
+   	"technician_left":"required must be boolean",
+        "technician_arrived":"required must be boolean",
+        "appointment_completed":"required must be boolean",
+        "appointment_needed":"required must be boolean",
+        "supplement_pending": "required must be boolean",
+        "completed_no_transaction":"required must be boolean",
+        "damage_fixed":"required must be boolean",
+	"client_id" : "it is required and it must be integer.Must be part an id of the clients table",
+	"manufacturer_id":"it is required and it is id",
+        "mark_id": 'required and integer',
+	"device_id" : "it is required and must be an integer",
+	"comments" : "it can be null but if filled it must be between 4 and 100000 characters",
+	"appointment_start":"nullable, it must be DateTime format",
+	"appointment_end":"nullable, it must be DateTime format",
+	"user_id":"nullable|integer "
+		
+}
+
+Delete damages:
+url: https://alten.aristech.gr/api/v1/damages
+method:DELETE
+send in body
+{
+	"id":"integer|mandatory"
+
+}
+
+----------------------------------------------------------------------------------------------------------
+- Technicians
+
+Get Technicians:
+
+url: https://alten.aristech.gr/api/v1/tech
+method:GET
+body:NONE
+
+the results will be users with role_id = 3
+
+Create technicians : 
+The technician will be created by creating user with role_id = 3. 
+See create user on top of text
+-------------------------------------------------------------------------------------------------------------
+Search
+
+-Search clients
+url: https://alten.aristech.gr/api/v1/searchclients
+Method:POST
+send in body
+{
+	"name":"string,can be null"
+}
+
+-Search managers
+url: https://alten.aristech.gr/api/v1/searchmanagers
+Method:POST
+send in body
+{
+	"name":"string,can be null"
+}
+
+-Search technicians
+url: https://alten.aristech.gr/api/v1/searchtechs
+Method:POST
+send in body
+{
+	"name":"string,can be null"
+}
+
+-Search manufacturers
+url: https://alten.aristech.gr/api/v1/searchmanu
+Method:POST
+send in body
+{
+	"name":"string,can be null"
+}
+
+-Search marks
+url: https://alten.aristech.gr/api/v1/searchmarks
+Method:POST
+send in body
+{
+	"name":"string,can be null"
+}
+
+-Search devices
+url: https://alten.aristech.gr/api/v1/searchdevices
+Method:POST
+send in body
+{
+	"name":"string,can be null"
+}
+
+
+
+
+
