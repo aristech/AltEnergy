@@ -59,6 +59,11 @@ class ClientController extends Controller
             'arithmos_meletis' => 'nullable|string' ,
             'arithmos_hkasp' => 'nullable|string',
             'arithmos_aitisis' => 'nullable|string',
+            'plithos_diamerismaton' => 'nullable|string',
+            'dieuthinsi_paroxis' => 'nullable|string',
+            'kw_oikiako' => 'nullable|string',
+            'kw' => 'nullable|string',
+            'levitas' => 'nullable|string',
             'telephone' => 'nullable|string',
             'telephone2' => 'nullable|string',
             'mobile' => 'nullable|string',
@@ -169,6 +174,11 @@ class ClientController extends Controller
             'arithmos_meletis' => 'nullable|string' ,
             'arithmos_hkasp' => 'nullable|string',
             'arithmos_aitisis' => 'nullable|string',
+            'plithos_diamerismaton' => 'nullable|string',
+            'dieuthinsi_paroxis' => 'nullable|string',
+            'kw_oikiako' => 'nullable|string',
+            'kw' => 'nullable|string',
+            'levitas' => 'nullable|string',
             'telephone' => 'nullable|string',
             'telephone2' => 'nullable|string',
             'mobile' => 'nullable|string',
@@ -205,11 +215,14 @@ class ClientController extends Controller
             return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος πελάτης με κωδικό ".$request->id],404);
         }
 
-        $email = Client::where('email',$request->email)->where('id',"!=",$request->id)->first();
-
-        if($client->email != $request->email || $email)
+        if($request->email != null)
         {
-            return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο χρήστη"],422);
+            $email = Client::where('email',$request->email)->where('id',"!=",$request->id)->first();
+
+            if($email)
+            {
+                return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο χρήστη"],422);
+            }
         }
 
         $client->update($request->except(['id']));

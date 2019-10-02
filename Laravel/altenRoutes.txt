@@ -46,7 +46,7 @@ send in body:
 {
 	  "id": "required must be integer"
 	  "lastname":"required must be string",
-          "firstname":"required must be string",
+      "firstname":"required must be string",
           "email":"required, must be string and unique among users",
           "password":"required must be string",
           "password_confirmation:"required must be string"
@@ -61,6 +61,15 @@ send in body:
 
 note:if all 3 phone fields are empty the user wont be created and the system will display error message
 
+
+delete user :
+
+https://alten.aristech.gr/api/v1/users
+method:DELETE
+send in body:
+{
+    "id":"integer required"
+}
 --------------------------------------------------------------------------------------------------------------------------
 - Roles:
 
@@ -237,6 +246,11 @@ content on body
     "arithmos_meletis":"nullable|string" ,
     "arithmos_hkasp" "nullable|string",
     "arithmos_aitisis' => "nullable|string",
+    "plithos_diamerismaton" :"nullable|string",
+    "dieuthinsi_paroxis" :"nullable|string",
+    "kw_oikiako" : "nullable|string",
+    "kw":"nullable|string",
+    "levitas" : "nullable|string",
     "telephone":  "string nullable",
     "telephone2": "string nullable",
     "mobile":"string nullable",
@@ -249,6 +263,48 @@ content on body
 
 }
 
+- Update Client
+url : https://alten.aristech.gr/api/v1/clients
+method : PUT
+content on body
+{
+    "id": "required integer",
+    "lastname":"string required",
+    "firstname":"string required",
+    "afm":"string nullable",
+    "doy": "string nullable",
+    "arithmos_gnostopoihshs":"" ,
+    "arithmos_meletis":"nullable|string" ,
+    "arithmos_hkasp" "nullable|string",
+    "arithmos_aitisis' => "nullable|string",
+    "plithos_diamerismaton" :"nullable|string",
+    "dieuthinsi_paroxis" :"nullable|string",
+    "kw_oikiako" : "nullable|string",
+    "kw":"nullable|string",
+    "levitas" : "nullable|string",
+    "telephone":  "string nullable",
+    "telephone2": "string nullable",
+    "mobile":"string nullable",
+    "address": "string required",
+    "zipcode":"string required",
+    "location":"string required",
+    "email":"nullable string"
+    "level" : "nullable string"
+    "manager_id" : "nullable integer"
 
+}
+
+- Delete Client
+url : https://alten.aristech.gr/api/v1/clients
+method : DELETE
+content on body
+{
+    "id": "required integer"
+}
+
+-Get all clients
+url : https://alten.aristech.gr/api/v1/clients
+method : GET
+content on body : NONE
 
 

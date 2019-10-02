@@ -19,9 +19,6 @@ class EditClientsTable extends Migration
             $table->string('arithmos_meletis')->nullable()->after('arithmos_gnostopoihshs');
             $table->string('arithmos_hkasp')->nullable()->after('arithmos_meletis');
             $table->string('arithmos_aitisis')->nullable()->after('arithmos_hkasp');
-
-
-
         });
     }
 
@@ -34,10 +31,10 @@ class EditClientsTable extends Migration
     {
         Schema::table('clients',function(Blueprint $table)
         {
-            $table->string('arithmos_gnostopoihshs');
-            $table->string('arithmos_meletis');
-            $table->string('arithmos_hkasp');
-            $table->string('arithmos_aitisis');
+            $table->dropColumn('arithmos_gnostopoihshs');
+            $table->dropColumn('arithmos_meletis');
+            $table->dropColumn('arithmos_hkasp');
+            $table->dropColumn('arithmos_aitisis');
         });
     }
 }
