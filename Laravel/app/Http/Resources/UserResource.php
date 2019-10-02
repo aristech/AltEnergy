@@ -30,7 +30,6 @@ class UserResource extends JsonResource
             "role_title" => $this->role()->first()->title,
             "manager_id" => $this->manager_id,
             "client_id" => $this->client_id
-
         ];
     }
 }
