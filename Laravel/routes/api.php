@@ -26,9 +26,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
     {
         Route::get('/logout', 'AuthController@logout');
         Route::get('/user', 'AuthController@user');
-        Route::post('/createUser','AuthController@createUser');
-        Route::put('/edituser','AuthController@editUser');
-        Route::get('/allusers','AuthController@allUsers');
+
+
+        Route::post('/users','AuthController@createUser');
+        Route::put('/users','AuthController@editUser');
+        Route::get('/users','AuthController@allUsers');
+
+
         //Role routes
         Route::get('/roles','RoleController@index');
         //Location routes

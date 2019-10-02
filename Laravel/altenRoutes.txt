@@ -10,10 +10,10 @@ https://alten.aristech.gr/api/v1/user -> get method
 
 Create new user:
 
-url : https://alten.aristech.gr/api/v1/createUser
+url : https://alten.aristech.gr/api/v1/users
 method: POST
-send in body: 
-{ 
+send in body:
+{
 
 	  "lastname":"required must be string",
           "firstname":"required must be string",
@@ -33,17 +33,17 @@ note:if all 3 phone fields are empty the user wont be created and the system wil
 
 Get all users:
 
-https://alten.aristech.gr/api/v1/allusers
+https://alten.aristech.gr/api/v1/users
 method:GET
 send in body: NONE
 
 
 Edit existing user:
 
-https://alten.aristech.gr/api/v1/edituser
+https://alten.aristech.gr/api/v1/users
 method:PUT
-send in body: 
-{ 
+send in body:
+{
 	  "id": "required must be integer"
 	  "lastname":"required must be string",
           "firstname":"required must be string",
@@ -64,7 +64,7 @@ note:if all 3 phone fields are empty the user wont be created and the system wil
 --------------------------------------------------------------------------------------------------------------------------
 - Roles:
 
-https://alten.aristech.gr/api/v1/roles 
+https://alten.aristech.gr/api/v1/roles
 method:GET
 body: NONE
 
@@ -120,7 +120,7 @@ send in body:
 
 Update damages:
 url: https://alten.aristech.gr/api/v1/damages
-method: PUT 
+method: PUT
 send in body:
 
 {
@@ -145,7 +145,7 @@ send in body:
 	"appointment_start":"nullable, it must be DateTime format",
 	"appointment_end":"nullable, it must be DateTime format",
 	"user_id":"nullable|integer "
-		
+
 }
 
 Delete damages:
@@ -168,8 +168,8 @@ body:NONE
 
 the results will be users with role_id = 3
 
-Create technicians : 
-The technician will be created by creating user with role_id = 3. 
+Create technicians :
+The technician will be created by creating user with role_id = 3.
 See create user on top of text
 -------------------------------------------------------------------------------------------------------------
 Search
@@ -221,7 +221,33 @@ send in body
 {
 	"name":"string,can be null"
 }
+---------------------------------------------------------------------------------------
+Clients
 
+- Create Client
+url : https://alten.aristech.gr/api/v1/clients
+method : POST
+content on body
+{
+    "lastname":"string required",
+    "firstname":"string required",
+    "afm":"string nullable",
+    "doy": "string nullable",
+    "arithmos_gnostopoihshs":"" ,
+    "arithmos_meletis":"nullable|string" ,
+    "arithmos_hkasp" "nullable|string",
+    "arithmos_aitisis' => "nullable|string",
+    "telephone":  "string nullable",
+    "telephone2": "string nullable",
+    "mobile":"string nullable",
+    "address": "string required",
+    "zipcode":"string required",
+    "location":"string required",
+    "email":"nullable string"
+    "level" : "nullable string"
+    "manager_id" : "nullable integer"
+
+}
 
 
 
