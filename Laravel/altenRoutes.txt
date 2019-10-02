@@ -1,4 +1,4 @@
-Necessary steps: create 5 roles: id:5->title:Super Admin,id:4 -> Admin,id:3 Õğáëëçëïò, id:2 Äéá÷åéñéóôçò, id:1  Ğåëáôçò
+Necessary steps: create 5 roles: id:5->title:Super Admin,id:4 -> Admin,id:3 Î¥Ï€Î¬Î»Î»Î·Î»Î¿Ï‚, id:2 Î”Î¹Î±Ï‡ÎµÎ¹ÏÎ¹ÏƒÏ„Î®Ï‚, id:1  Î ÎµÎ»Î¬Ï„Î·Ï‚
 
 
 https://alten.aristech.gr/api/v1/signup -> temporary for creating super admin ->method Post
@@ -107,7 +107,7 @@ send in body:
             "damage_comments": "not needed, can be null. If comments are needed they must be from 4 to 10000 characters",
             "cost" : "it can be null but if you insert value it has to be float and between 0.00 and 999999.99",
             "guarantee" : "it can be null but its value must be boolean',
-            "status" : "status is mandatory and must be string.The statuses that we need as strings are Ïëïêëçìåñùìİíç, Ìç Ïëïêëçñùìİíç, Áêõñşèçêå.",
+            "status" : "status is mandatory and must be string.The statuses that we need as strings are ÎŸÎ»Î¿ÎºÎ»Î·ÏÏ‰Î¼Î­Î½Î·, ÎœÎ· ÎŸÎ»Î¿ÎºÎ»Î·ÏÏ‰Î¼Î­Î½Î·, Î‘ÎºÏ…ÏÏÎ¸Î·ÎºÎµ.",
             "client_id" : "it is required and it must be integer.Must be part an id of the clients table",
             "comments" : "it can be null but if filled it must be between 4 and 100000 characters",
             "manufacturer_id":"it is required and it is id",
@@ -128,7 +128,7 @@ send in body:
         "damage_comments": "not needed, can be null. If comments are needed they must be from 4 to 10000 characters",
         "cost" : "it can be null but if you insert value it has to be float and between 0.00 and 999999.99",
         "guarantee" : "it can be null but its value must be boolean',
-        "status" : "status is mandatory and must be string.The statuses that we need as strings are Ïëïêëçìåñùìİíç, Ìç Ïëïêëçñùìİíç, Áêõñşèçêå.",
+        "status" : "status is mandatory and must be string.The statuses that we need as strings are ÎŸÎ»Î¿ÎºÎ»Î·ÏÏ‰Î¼Î­Î½Î·, ÎœÎ· ÎŸÎ»Î¿ÎºÎ»Î·ÏÏ‰Î¼Î­Î½Î·, Î‘ÎºÏ…ÏÏÎ¸Î·ÎºÎµ.",
 	"appointment_pending":"required must be boolean",
    	"technician_left":"required must be boolean",
         "technician_arrived":"required must be boolean",

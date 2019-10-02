@@ -48,7 +48,7 @@ class DamageSuperAdmin
             'damage_type_id' => 'required|integer',
             'damage_comments' => 'nullable|min:4|max:10000',
             'cost' => 'nullable|numeric|between:0.00,999999.99',
-            'guarantee' => 'nullable|boolean',
+            'guarantee' => 'required|boolean',
             'status' => 'required|string',
             'client_id' => 'required|integer',
             'device_id' => 'required|integer',
@@ -156,11 +156,20 @@ class DamageSuperAdmin
 
         if($this->request->appointment_end != null)
         {
-            $string = $this->request->appointment_end;
-            if (\DateTime::createFromFormat('Y-m-d H:i:s', $string) == false)
+            $string2 = $this->request->appointment_end;
+            if (\DateTime::createFromFormat('Y-m-d H:i:s', $string2) == false)
             {
                 $this->hasError = 'true';
                 $this->error = response()->json(["message" => "Η ημερομηνία λήξης δεν είναι έγκυρη!"],422);
+            }
+        }
+
+        if($this->request->appointment_start != null && $this->request->appointment_end != null)
+        {
+            if($string2 < $string)
+            {
+                $this->hasError = 'true';
+                $this->error = response()->json(["message" => "Η ημερομηνία λήξης πρέπει να είναι μεγαλύτερη της ημερομηνίας έναρξης!"],422);
             }
         }
     }
@@ -213,6 +222,12 @@ class DamageSuperAdmin
         if($this->hasError == true)
         {
             return $this->error;
+        }
+
+        if($this->request->cost == null)
+        {
+
+            $this->request->merge(['cost' => 0.00]);
         }
 
         $damage = Damage::create($this->request->all());
@@ -279,6 +294,11 @@ class DamageSuperAdmin
         {
             return $this->error;
         }
+
+        if($this->input['cost'] == null)
+        {
+            $this->input['cost'] = 0.00;
+        }
         $this->damage->update($this->input);
         return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }
@@ -327,9 +347,9 @@ class DamageSuperAdmin
                 "appointment_pending" => $this->request->appointment_pending,
                 "technician_left" => $this->request->technician_left,
                 "technician_arrived" => $this->request->technician_arrived,
-                "appointment_completed" => $this->appointment_completed,
-                "appointment_needed" => $this->appointment_needed,
-                "supplement_pending" => $this->supplement_pending,
+                "appointment_completed" => $this->request->appointment_completed,
+                "appointment_needed" => $this->request->appointment_needed,
+                "supplement_pending" => $this->request->supplement_pending,
                 "completed_no_transaction" => true,
                 "damage_fixed" => false,
                 "client_id" => $this->request->client_id,
