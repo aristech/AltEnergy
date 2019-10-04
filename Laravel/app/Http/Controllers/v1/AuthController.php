@@ -134,10 +134,13 @@ class AuthController extends Controller
             return response()->json(["message" => $failedRules],422);
         }
 
+
         $credentials = request(['email', 'password']);
 
-        if(!Auth::attempt($credentials))
-        return response()->json(['message' => 'Unauthorized'], 401);
+        $user = User::where('email',$credentials['email'])->first();
+
+        if(!Auth::attempt($credentials) || $user->active == false)
+        return response()->json(['message' => 'Λάθος όνομα ή κωδικός!'], 401);
         $user = $request->user();
         $tokenResult = $user->createToken('Personal Access Token');
         $token = $tokenResult->token;

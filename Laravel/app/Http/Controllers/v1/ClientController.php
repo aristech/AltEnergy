@@ -8,6 +8,7 @@ use App\Client;
 use Validator;
 use App\Manager;
 use App\Http\Resources\ClientResource;
+use App\Http\CustomClasses\v1\Greeklish;
 
 
 class ClientController extends Controller
@@ -106,9 +107,18 @@ class ClientController extends Controller
             }
         }
 
-
         $client = Client::create($request->all());
-        mkdir(public_path()."/Clients/".$client->id);
+        //$folderName = $request->lastname." ".$request->firstname." ".$request->address;
+        //$greeklish = Greeklish::remove_accent($folderName);
+        mkdir(storage_path()."/Clients/".$client->id);
+        // if(!$folder_created)
+        // {
+        //     return response()->json(["message" => "Δεν μπόρεσε να δημιουργηθεί φάκελος για τον πελάτη ".$request->lastname." ".$request->firstname],500);
+        // }
+
+
+
+
 
 
         return response()->json(["message" => "Ο νέος χρήστης καταχωρήθηκε επιτυχώς!"],200);

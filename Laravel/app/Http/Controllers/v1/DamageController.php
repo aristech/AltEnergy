@@ -17,7 +17,7 @@ class DamageController extends Controller
     public function index(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 5)
+        if($role_id >= 4)
         {
             return DamageSuperAdmin::getDamages();
         }

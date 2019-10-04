@@ -9,9 +9,11 @@
     "license": "MIT",
     "require": {
         "php": "^7.2",
+        "ashtokalo/php-translit": "dev-master",
         "barryvdh/laravel-cors": "^0.11.4",
         "fideloper/proxy": "^4.0",
         "fzaninotto/faker": "^1.8",
+        "intervention/image": "^2.5",
         "jeroendesloovere/vcard": "^1.7",
         "laravel/framework": "^6.0",
         "laravel/passport": "^7.4",

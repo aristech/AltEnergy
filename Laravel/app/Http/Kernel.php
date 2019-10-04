@@ -46,6 +46,10 @@ class Kernel extends HttpKernel
         'cors' => [
             \Barryvdh\Cors\HandleCors::class,
             ],
+
+        'active' => [
+            \App\Http\Middleware\UserIsActive::class,
+        ],
     ];
 
     /**
