@@ -16,6 +16,8 @@ use App\Http\Resources\TechSearchResource;
 use App\Manager;
 use App\Http\Resources\ManagerResource;
 use DB;
+use App\DamageType;
+use App\Http\Resources\DamageTypeResource;
 
 use App\Http\Resources\UserResource;
 
@@ -134,5 +136,22 @@ class SearchController extends Controller
         }
 
         return DeviceResource::collection($devices);
+   }
+
+   public function searchDamageTypes(Request $request)
+   {
+       $types = DamageType::where('name','like',$request->name.'%')
+       ->orWhere('name','like','%'.$request->name.'%')
+       ->orWhere('name','like','%'.$request->name)
+       ->orderBy('name')
+       ->get();
+
+       if(!count($types))
+       {
+           return response()->json(["message" => "Δεν βρέθηκαν αποτελέσματα"],404);
+       }
+
+       return DamageTypeResource::collection($types);
+
    }
 }

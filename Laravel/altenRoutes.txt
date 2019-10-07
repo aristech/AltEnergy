@@ -230,6 +230,14 @@ send in body
 {
 	"name":"string,can be null"
 }
+
+-Search damagetypes
+url: https://alten.aristech.gr/api/v1/searchdamagetypes
+Method:POST
+send in body
+{
+	"name":"string,can be null"
+}
 ---------------------------------------------------------------------------------------
 Clients
 
