@@ -83,9 +83,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/searchmarks','SearchController@searchMarks');
             Route::post('/searchdevices','SearchController@searchDevices');
 
-            Route::post('/files/{id}','FileController@store');
             Route::get('/files/{id}','FileController@index');
-            Route::get('/files/{id}/{file}','FileController@index');
+            Route::post('/files/{id}','FileController@store');
+            Route::get('/files/{id}/{file}','FileController@show');
+            Route::delete('/files/{id}/{file}','FileController@destroy');
+
+
 
         });
     });

@@ -11,6 +11,8 @@
         "php": "^7.2",
         "ashtokalo/php-translit": "dev-master",
         "barryvdh/laravel-cors": "^0.11.4",
+        "barryvdh/laravel-dompdf": "^0.8.5",
+        "codedge/laravel-fpdf": "^1.5",
         "fideloper/proxy": "^4.0",
         "fzaninotto/faker": "^1.8",
         "intervention/image": "^2.5",
@@ -19,6 +21,7 @@
         "laravel/passport": "^7.4",
         "laravel/tinker": "^1.0",
         "phpmailer/phpmailer": "^6.0",
+        "setasign/fpdf": "1.8.1",
         "spatie/laravel-cors": "^1.6"
     },
     "require-dev": {

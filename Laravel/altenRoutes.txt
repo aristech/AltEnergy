@@ -306,5 +306,49 @@ content on body
 url : https://alten.aristech.gr/api/v1/clients
 method : GET
 content on body : NONE
+-------------------------------------------------------------------------------------------------------------------------------------------
+FILE MANAGEMENT
+
+-GET all files
+url: https://alten.aristech.gr/api/v1/files/{The id of the client}
+body: NONE
+method: GET
+returns an Array of objects:
+{
+    data:[
+        {
+            "url":"download link for pdf.works with Download pdf",
+            "filename":"the name of the file",
+            "thumb":"thumbnail sent as blob. Just place it in the src of the img tag"
+        },
+        {
+            .....
+        }
+    ]
+}
+
+- Insert new files
+url: https://alten.aristech.gr/api/v1/files/{The id of the client}
+method:POST
+body:
+[
+    {
+        "file":"<The blob from UI>",
+        "filename":"<The name of the file>"
+    },
+        "file":"..",
+        "filename":".."
+    },
+    .....
+]
+
+- Download pdf
+url: https://alten.aristech.gr/api/v1/files/{The Id of the client}/{filename}
+method:GET
+Downloads the pdf file
+
+
+
+
 
 
