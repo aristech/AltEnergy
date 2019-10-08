@@ -356,6 +356,10 @@ method:GET
 Downloads the pdf file
 
 
+- Upload Files
+url: https://alten.aristech.gr/api/v1/files/{ClientID}/upload
+method:POST
+
 
 
 

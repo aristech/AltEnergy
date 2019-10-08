@@ -260,14 +260,19 @@ class FileController extends Controller
      */
     public function upload(Request $request, $id)
     {
-        $input_data = $request->all();
-        if(count($input_data) == 0)
-        {
-            return response()->json(["message" => "Θα πρέπει να υπάρχει τουλάχιστον ένα αρχείο προς ανέβασμα! "],422);
-        }
+        //$input_data = $request->all();
+        // if(count($input_data) == 0)
+        // {
+        //     return response()->json(["message" => "Θα πρέπει να υπάρχει τουλάχιστον ένα αρχείο προς ανέβασμα! "],422);
+        // }
+            $file = $request->file;
 
-        foreach($request->file as $file)
-        {
+            if($request->file != null)
+            {
+                return response()->json(["message" => "Θα πρέπει να υπάρχει αρχείο προς ανέβασμα"],422);
+            }
+        // foreach($request->file as $file)
+        // {
             //return $file->getMimeType();
             if($file->getMimeType() != "image/jpeg" && $file->getMimeType() != "application/pdf" && $file->getMimeType() != "image/png" )
             {
@@ -286,9 +291,9 @@ class FileController extends Controller
            }
 
 
-        }
+        //}
 
-        return response()->json(["message" => "Τα αρχεία ανέβηκαν επιτυχώς!"],200);
+        return response()->json(["message" => "Το αρχείο ανέβηκαν επιτυχώς!"],200);
     }
 
     public function destroy(Request $request,$id,$filename)
