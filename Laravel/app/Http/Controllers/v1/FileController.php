@@ -260,14 +260,23 @@ class FileController extends Controller
      */
     public function upload(Request $request, $id)
     {
-        //$input_data = $request->all();
-        // if(count($input_data) == 0)
-        // {
-        //     return response()->json(["message" => "Θα πρέπει να υπάρχει τουλάχιστον ένα αρχείο προς ανέβασμα! "],422);
-        // }
-            $file = $request->file;
 
-            if($request->file != null)
+       // return $request;
+            $role_id = $request->user()->role()->first()->id;
+            if($role_id < 4)
+            {
+                return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση σ αυτά τα στοιχεία"],401);
+            }
+
+            $client = Client::where('id',$id)->first();
+            if(!$client)
+            {
+                return response()->json(["message" => "Δεν βρέθηκε ο χρήστης"],404);
+            }
+
+            $file = $request->File;
+
+            if($request->File == null)
             {
                 return response()->json(["message" => "Θα πρέπει να υπάρχει αρχείο προς ανέβασμα"],422);
             }
@@ -293,7 +302,7 @@ class FileController extends Controller
 
         //}
 
-        return response()->json(["message" => "Το αρχείο ανέβηκαν επιτυχώς!"],200);
+        return response()->json(["message" => "Το αρχείο ανέβηκε επιτυχώς!"],200);
     }
 
     public function destroy(Request $request,$id,$filename)
