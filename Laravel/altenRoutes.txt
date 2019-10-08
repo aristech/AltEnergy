@@ -325,9 +325,9 @@ returns an Array of objects:
 {
     data:[
         {
-            "url":"download link for pdf.works with Download pdf",
-            "filename":"the name of the file",
-            "thumb":"thumbnail sent as blob. Just place it in the src of the img tag"
+            "file":"download link for pdf.works with Download pdf. In case of image is a blob",
+            "filename":"the name of the file(with its extension)",
+            "type":"the type of file.Values are jpeg, png, pdf"
         },
         {
             .....
@@ -335,7 +335,7 @@ returns an Array of objects:
     ]
 }
 
-- Insert new files
+- Insert new files via Scan
 url: https://alten.aristech.gr/api/v1/files/{The id of the client}
 method:POST
 body:
@@ -359,6 +359,7 @@ Downloads the pdf file
 - Upload Files
 url: https://alten.aristech.gr/api/v1/files/{ClientID}/upload
 method:POST
+Form data with key name File and value the file to be uploaded
 
 
 

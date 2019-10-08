@@ -294,7 +294,7 @@ class FileController extends Controller
             }
 
             //$file->move()
-           if(!move_uploaded_file($file, storage_path("/Clients/".$id."/".$file->getClientOriginalName())))
+           if(!move_uploaded_file($file, storage_path("Clients/".$id."/".$file->getClientOriginalName())))
            {
                return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName()]);
            }
