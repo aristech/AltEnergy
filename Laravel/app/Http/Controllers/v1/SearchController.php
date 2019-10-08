@@ -71,6 +71,7 @@ class SearchController extends Controller
             $join->on('users.id', '=', 'role_user.user_id')
                 ->where('role_user.role_id', '=', 3);
         })
+        ->where('active',true)
         ->where('lastname','like',$request->name.'%')
         ->orWhere('lastname','like','%'.$request->name.'%')
         ->orWhere('lastname','like','%'.$request->name)
