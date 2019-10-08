@@ -146,6 +146,11 @@ class DamageSuperAdmin
     {
         if($this->request->appointment_start != null)
         {
+            $string = strtotime($this->request->appointment_start);
+            $date = date('d/M/Y h:i:s', $string);
+
+            return $date;
+
             $string = $this->request->appointment_start;
             if (\DateTime::createFromFormat('Y-m-d H:i:s', $string) == false)
             {

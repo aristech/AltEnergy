@@ -8,6 +8,7 @@ use Fpdf;
 use App\Http\CustomClasses\v1\Resizer;
 use App\Client;
 use Response;
+use Validator;
 
 class FileController extends Controller
 {
@@ -18,6 +19,8 @@ class FileController extends Controller
      */
     public function index(Request $request,$id)
     {
+        ini_set('memory_limit','256M');
+
         //Check if logged in user is authorized
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4)
@@ -36,44 +39,94 @@ class FileController extends Controller
         $mypath = storage_path().'/Clients/'.$id;
 
         //get images and store them as ready blobs
-        $imagefiles = array();
-
-        $countJPG = count(glob($mypath."/*.jpg"));
-        $countPDF = count(glob($mypath."/*.pdf"));
-
-        if($countJPG == 0 || $countPDF == 0 || $countJPG != $countPDF)
-        {
-            return response()->json(["message" => "Δεν βρέθηκαν αρχεία για τον πελάτη!"],404);
-        }
-
-        foreach (glob($mypath."/*.jpg") as $file)
-        {
-            $contents = file_get_contents($file);
-
-            array_push($imagefiles,"data:image/jpeg;base64,".base64_encode($contents));
-        }
-
-        $pdfFiles = array();
-        $filenames = array();
-        foreach (glob($mypath."/*.pdf") as $file)
-        {
-            $filePath = explode("/",$file);
-            $filename = (count($filePath) - 1);
-            $route = url("/api/files/".$id."/".$filePath[$filename]);
-            array_push($pdfFiles,$route);
-            array_push($filenames,$filePath[$filename]);
-        }
-
         $responseArray = array();
-        for($i = 0; $i < count($pdfFiles); $i++)
-        {
-            $response = new \stdClass();
-            $response->thumbnail = $imagefiles[$i];
-            $response->url = $pdfFiles[$i];
-            $response->name = $filenames[$i];
 
-            array_push($responseArray,$response);
+        $files = glob($mypath."/*");
+        // $countJPG = count(glob($mypath."/*.jpg"));
+        // $countPDF = count(glob($mypath."/*.pdf"));
+
+        foreach($files as $file)
+        {
+            $class = new \stdClass();
+            $info = pathinfo($file);
+
+            if($info["extension"] == "jpg" || $info["extension"] == "jpeg")
+            {
+                $filename = explode('/',$file);
+                $n = count($filename);
+                $name = $filename[$n-1];
+
+                $contents = file_get_contents($file);
+                $contents = "data:image/jpeg;base64,".base64_encode($contents);
+                $class->file = $contents;
+                $class->type = "jpeg";
+                $class->filename = $name;
+            }
+
+            if($info["extension"] == "pdf")
+            {
+                $filename = explode('/',$file);
+                $n = count($filename);
+                $name = $filename[$n-1];
+
+                $contents = url("/api/files/".$id."/".$name);
+                $class->file = $contents;
+                $class->type = "pdf";
+                $class->filename = $name;
+            }
+
+            if($info["extension"] == "png")
+            {
+                $filename = explode('/',$file);
+                $n = count($filename);
+                $name = $filename[$n-1];
+
+                $contents = file_get_contents($file);
+                $contents = "data:image/png;base64,".base64_encode($contents);
+                $class->file = $contents;
+                $class->type = "png";
+                $class->filename = $name;
+            }
+
+            array_push($responseArray,$class);
         }
+
+
+
+
+        // if($countJPG == 0 || $countPDF == 0 || $countJPG != $countPDF)
+        // {
+        //     return response()->json(["message" => "Δεν βρέθηκαν αρχεία για τον πελάτη!"],404);
+        // }
+
+        // foreach (glob($mypath."/*.jpg") as $file)
+        // {
+        //     $contents = file_get_contents($file);
+
+        //     array_push($imagefiles,"data:image/jpeg;base64,".base64_encode($contents));
+        // }
+
+        // $pdfFiles = array();
+        // $filenames = array();
+        // foreach (glob($mypath."/*.pdf") as $file)
+        // {
+        //     $filePath = explode("/",$file);
+        //     $filename = (count($filePath) - 1);
+        //     $route = url("/api/files/".$id."/".$filePath[$filename]);
+        //     array_push($pdfFiles,$route);
+        //     array_push($filenames,$filePath[$filename]);
+        // }
+
+        // $responseArray = array();
+        // for($i = 0; $i < count($pdfFiles); $i++)
+        // {
+        //     $response = new \stdClass();
+        //     $response->thumbnail = $imagefiles[$i];
+        //     $response->url = $pdfFiles[$i];
+        //     $response->name = $filenames[$i];
+
+        //     array_push($responseArray,$response);
+        // }
 
         return response()->json(["data" => $responseArray]);
 
@@ -130,12 +183,13 @@ class FileController extends Controller
             Fpdf::Image($jpegPath,20,40,170);
             Fpdf::Output('F',$destinationPath.$pdfName);
 
+            /*
             unlink($image_path);//delete the bmp file
 
             $resizedImage = Resizer::resize_image($jpegPath,200,200);
             unlink($jpegPath);
             imagejpeg($resizedImage,$destinationPath.$filename.".jpg");
-
+            */
             ++$count;
         }
         return response()->json(["message" => "Τα αρχεία ανέβηκαν με επιτυχία!"],200);
@@ -204,6 +258,39 @@ class FileController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    public function upload(Request $request, $id)
+    {
+        $input_data = $request->all();
+        if(count($input_data) == 0)
+        {
+            return response()->json(["message" => "Θα πρέπει να υπάρχει τουλάχιστον ένα αρχείο προς ανέβασμα! "],422);
+        }
+
+        foreach($request->file as $file)
+        {
+            //return $file->getMimeType();
+            if($file->getMimeType() != "image/jpeg" && $file->getMimeType() != "application/pdf" && $file->getMimeType() != "image/png" )
+            {
+                return response()->json(["message" => "Μονο αρχεια τυπου jpeg, png και pdf επιτρέπονται!"],422);
+            }
+
+            if($file->getSize() > 5000000)
+            {
+                return response()->json(["message" => "Το αρχείο ".$file->getClientOriginalName()." είναι μεγαλύτερου του επιτρεπτού μεγέθους!"],422);
+            }
+
+            //$file->move()
+           if(!move_uploaded_file($file, storage_path("/Clients/".$id."/".$file->getClientOriginalName())))
+           {
+               return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName()]);
+           }
+
+
+        }
+
+        return response()->json(["message" => "Τα αρχεία ανέβηκαν επιτυχώς!"],200);
+    }
+
     public function destroy(Request $request,$id,$filename)
     {
         //Check if logged in user is authorized

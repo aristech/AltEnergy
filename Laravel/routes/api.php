@@ -17,12 +17,14 @@ use Illuminate\Http\Request;
 //     return $request->user();
 // });
 
+
 Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], function ()
 {
     Route::post('/login', 'AuthController@login');
     Route::post('/signup', 'AuthController@signup');
 
-    Route::post('/upload','FileController@store');
+
+
 
     Route::group(['middleware' => 'auth:api'], function()
     {
@@ -88,6 +90,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/files/{id}','FileController@store');
             Route::get('/files/{id}/{file}','FileController@show');
             Route::delete('/files/{id}/{file}','FileController@destroy');
+
+            Route::post('/files/{id}/upload','FileController@upload');
 
 
 

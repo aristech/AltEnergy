@@ -17,7 +17,7 @@ class TechSearchResource extends JsonResource
     {
         return
         [
-            "id" => $this->id,
+            "id" => $this->user_id,
             "lastname" => $this->lastname,
             "firstname" => $this->firstname,
             "email" => $this->email,
