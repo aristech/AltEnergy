@@ -92,6 +92,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::delete('/files/{id}/{file}','FileController@destroy');
             Route::post('/files/{id}/upload','FileController@upload');
 
+            Route::get('/calendar','CalendarController@index');
+
 
 
         });

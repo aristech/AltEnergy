@@ -69,7 +69,7 @@ class FileController extends Controller
                 $n = count($filename);
                 $name = $filename[$n-1];
 
-                $contents = url("/api/files/".$id."/".$name);
+                $contents = url("/api/files/v1/".$id."/".$name);
                 $class->file = $contents;
                 $class->type = "pdf";
                 $class->filename = $name;
@@ -327,20 +327,18 @@ class FileController extends Controller
         }
 
         //Url for stored files
-        $searchPath = explode('.',$filename);
-        $mypath = storage_path().'/Clients/'.$id."/".$searchPath[0];
+        //$searchPath = explode('.',$filename);
+        $mypath = storage_path().'/Clients/'.$id."/".$filename;
 
-        $files = glob($mypath."*");
+        $file = glob($mypath);
 
-        if(count($files) == 0 && count($files)%2 == 0)
+        if(!$file)
         {
             return response()->json(["message" => "Το συγκεκριμένο αρχείο δεν ύπαρχει στο σύστημα"],404);
         }
 
-        foreach($files as $file)
-        {
-            unlink($file);
-        }
+        unlink($file);
+
         return response()->json(["message" => "Το αρχείο διαγράφτηκε επιτυχώς!"],200);
     }
 }
