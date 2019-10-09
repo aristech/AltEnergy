@@ -90,7 +90,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/files/{id}','FileController@store');
             Route::get('/files/{id}/{file}','FileController@show');
             Route::delete('/files/{id}/{file}','FileController@destroy');
-
             Route::post('/files/{id}/upload','FileController@upload');
 
 

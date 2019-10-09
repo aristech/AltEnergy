@@ -154,9 +154,14 @@ class FileController extends Controller
         ini_set('memory_limit','256M');
 
         $count = 1;
+        if(empty($request->all()))
+        {
+            return response()->json(["message" => "Δεν υπάρχουν σκαναρισμένα αρχεία για ανέβασμα"],404);
+        }
+
         foreach($request->all() as $file)
         {
-            $filename = $file['filename'];
+            $filename = $file['preview'];
             $filee = $file['file'];
 
             if(!$filename || !$filee)
@@ -183,13 +188,13 @@ class FileController extends Controller
             Fpdf::Image($jpegPath,20,40,170);
             Fpdf::Output('F',$destinationPath.$pdfName);
 
-            /*
+
             unlink($image_path);//delete the bmp file
 
-            $resizedImage = Resizer::resize_image($jpegPath,200,200);
+            //$resizedImage = Resizer::resize_image($jpegPath,200,200);
             unlink($jpegPath);
-            imagejpeg($resizedImage,$destinationPath.$filename.".jpg");
-            */
+           // imagejpeg($resizedImage,$destinationPath.$filename.".jpg");
+
             ++$count;
         }
         return response()->json(["message" => "Τα αρχεία ανέβηκαν με επιτυχία!"],200);
