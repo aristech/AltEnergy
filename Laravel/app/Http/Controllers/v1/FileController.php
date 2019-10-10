@@ -161,8 +161,8 @@ class FileController extends Controller
 
         foreach($request->all() as $file)
         {
-            $filename = $file['preview'];
-            $filee = $file['file'];
+            $filename = $file['filename'];
+            $filee = $file['preview'];
 
             if(!$filename || !$filee)
             {
@@ -189,7 +189,7 @@ class FileController extends Controller
             Fpdf::Output('F',$destinationPath.$pdfName);
 
 
-            unlink($image_path);//delete the bmp file
+            //unlink($image_path);//delete the bmp file
 
             //$resizedImage = Resizer::resize_image($jpegPath,200,200);
             unlink($jpegPath);
@@ -197,6 +197,7 @@ class FileController extends Controller
 
             ++$count;
         }
+        array_map('unlink', glob( storage_path()."/Clients/".$id."/*.bmp"));
         return response()->json(["message" => "Τα αρχεία ανέβηκαν με επιτυχία!"],200);
     }
 
@@ -337,7 +338,7 @@ class FileController extends Controller
             return response()->json(["message" => "Το συγκεκριμένο αρχείο δεν ύπαρχει στο σύστημα"],404);
         }
 
-        unlink($file);
+        unlink($mypath);
 
         return response()->json(["message" => "Το αρχείο διαγράφτηκε επιτυχώς!"],200);
     }

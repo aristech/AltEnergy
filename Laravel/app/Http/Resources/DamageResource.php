@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Client;
 
 class DamageResource extends JsonResource
 {
@@ -32,6 +33,12 @@ class DamageResource extends JsonResource
             "client_id" => $this->client_id,
             "client_lastname" => $this->client['lastname'],
             "client_firstname" => $this->client['firstname'],
+            "client_address" => $this->client['address'],
+            "client_phone" =>  $this->when(true, function () {
+                if($this->client['telephone'] != null) return $this->client['telephone'];
+                if($this->client['telephone2'] != null) return $this->client['telephone2'];
+                if($this->client['mobile'] != null) return $this->client['mobile'];
+            }),
             "manufacturer_id" => $this->manufacturer_id,
             "manufacturer" => $this->device['mark']['manufacturer']['name'],
             "mark_id" => $this->mark_id,

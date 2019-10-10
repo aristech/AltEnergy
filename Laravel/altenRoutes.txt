@@ -100,9 +100,15 @@ send in body: { "id":"it must be integer"  }
 -------------------------------------------------------------------------------------------------------
 - Damages:
 
-Get all damages:
+Get all (not completed)damages:
 
 url : https://alten.aristech.gr/api/v1/damages
+method:GET
+send in body:{ NONE  }
+
+Get all  completed & cancelled damages:
+
+url : https://alten.aristech.gr/api/v1/damagehistory
 method:GET
 send in body:{ NONE  }
 
@@ -165,6 +171,8 @@ send in body
 	"id":"integer|mandatory"
 
 }
+
+
 
 ----------------------------------------------------------------------------------------------------------
 - Technicians

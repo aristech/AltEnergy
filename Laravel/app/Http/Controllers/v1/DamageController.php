@@ -23,6 +23,15 @@ class DamageController extends Controller
         }
     }
 
+    public function history(Request $request)
+    {
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id >= 4)
+        {
+            return DamageSuperAdmin::getDamagesHistory();
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      *

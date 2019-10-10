@@ -74,6 +74,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::delete('/damagetypes','DamageTypeController@destroy');
 
             Route::get('/damages','DamageController@index');
+            Route::get('/damagehistory','DamageController@history');
             Route::post('/damages','DamageController@store');
             Route::put('/damages','DamageController@update');
             Route::delete('/damages','DamageController@destroy');
