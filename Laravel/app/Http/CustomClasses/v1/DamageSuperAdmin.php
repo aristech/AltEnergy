@@ -27,7 +27,7 @@ class DamageSuperAdmin
 
     public static function getDamages()
     {
-        $damages = DamageResource::collection(Damage::where('status','Μη Ολοκληρωμένη')->orderBy('created_at','DESC')->get());
+        $damages = DamageResource::collection(Damage::where('status','Μη Ολοκληρωμένη')->get());
         return $damages;
     }
 
