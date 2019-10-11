@@ -46,10 +46,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class);
     }
 
-    public function damages()
-    {
-        return $this->hasMany(Damage::class);
-    }
+    // public function damages()
+    // {
+    //     return $this->hasMany(Damage::class);
+    // }
 
 
 }

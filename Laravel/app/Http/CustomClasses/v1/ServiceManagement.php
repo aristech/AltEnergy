@@ -37,6 +37,26 @@ class ServiceManagement
         return $services;
     }
 
+    public function insertTechs()
+    {
+        if(count($this->request->techs) != 0)
+        {
+            $tech_array = array();
+            foreach($this->request->techs as $technician)
+            {
+                array_push($tech_array,$technician['tech_id']);
+            }
+            $techs = implode(',',$tech_array);
+
+            return $techs;
+        }
+        else
+        {
+            return null;
+        }
+
+    }
+
     private function checkServiceType()
     {
         $serviceType = ServiceType::where('id',$this->request->service_type_id)->first();
@@ -198,14 +218,18 @@ class ServiceManagement
 
     public function checkTechnician()
     {
-        if($this->request->user_id != null)
+        if(count($this->request->techs) == 0)
         {
-            $tech_id = $this->request->user_id;
-            $tech = UsersRoles::where('user_id',$tech_id)->where('role_id','3')->first();
-            if(!$tech)
+            foreach($this->request->techs as $tech)
             {
-                $this->hasError = true;
-                $this->error = response()->json(["message" => "Το συγκεκριμένο πρόσωπο δεν είναι τεχνικός!"],405);
+                $tech_id = $tech->tech_id;
+                $tech = UsersRoles::where('user_id',$tech_id)->where('role_id','3')->first();
+                if(!$tech)
+                {
+                    $this->hasError = true;
+                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό".$tech_id."δεν είναι τεχνικός!"],405);
+                    break;
+                }
             }
         }
     }
@@ -259,9 +283,13 @@ class ServiceManagement
 
             $this->request->merge(['cost' => 0.00]);
         }
+
+        $techs = $this->insertTechs();
+        $this->request->merge(['techs'=>$techs]);
+
         $service = Service::create($this->request->all());
 
-        $calendar = Calendar::create(['name'=>'service',"type"=>"services" ,"service_id" => $service->id]);
+        if($service->repeatable == true)Calendar::create(["name"=>"service","type"=>"services" ,"service_id" => $service->id]);
 
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"],200);
     }
@@ -348,9 +376,9 @@ class ServiceManagement
         //Calendar Events
         $calendar = Calendar::where('service_id',$this->service->id)->first();
 
-        if($this->service->status != "Μη Ολοκληρωμένο" && $calendar)$calendar->delete();
+        if($this->service->status != "Μη Ολοκληρωμένο" && $calendar && $this->service->repeatable == false)$calendar->delete();
         //if($this->service->status != "Ολοκληρωμένο" && $this->repeatable->status == false && $calendar)$calendar->delete();
-        if($this->service->status == "Μη Ολοκληρωμένο" && !$calendar)Calendar::create(['name'=>'service','type'=>'services','service_id' => $this->service->id]);
+        if($this->service->status == "Μη Ολοκληρωμένο" && !$calendar &&$this->repeatable == true)Calendar::create(['name' => 'service', 'type' => 'services','service_id' => $this->service->id]);
 
         return response()->json(["message" => "Τα στοίχεια του service με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }
@@ -383,7 +411,8 @@ class ServiceManagement
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id,
+                // "user_id" => $this->request->user_id,
+                "techs" => $this->insertTechs(),
                 "repeatable" => $this->request->repeatable,
                 "frequency" => $this->request->frequency
             ];
@@ -414,7 +443,8 @@ class ServiceManagement
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id,
+                // "user_id" => $this->request->user_id,
+                "techs" => $this->insertTechs(),
                 "repeatable" => $this->request->repeatable,
                 "frequency" => $this->request->frequency
             ];

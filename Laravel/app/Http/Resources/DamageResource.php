@@ -3,7 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use App\Client;
+use App\User;
 
 class DamageResource extends JsonResource
 {
@@ -49,8 +49,29 @@ class DamageResource extends JsonResource
             "comments" => $this->comments,
             "appointment_start" => $this->appointment_start,
             "appointment_end" => $this->appointment_end,
-            "user_id" => $this->user_id,
-            "user" => $this->user['lastname']
+            "techs" => $this->when(true,function()
+            {
+                $technicians = array();
+                if($this->techs == null)
+                {
+                    return $technicians;
+                }
+
+                $techs = explode(',',$this->techs);
+                foreach($techs as $tech)
+                {
+                    $techn = User::where('id',$tech)->first();
+                    $technician = new \stdClass();
+                    $technician->tech_id = $tech;
+                    $technician->tech_fullname = $techn->lastname." ".$techn->firstname;
+                    array_push($technicians, $technician);
+
+                }
+
+                return $technicians;
+
+            })
+            //"user" => $this->user['lastname']
         ];
     }
 }

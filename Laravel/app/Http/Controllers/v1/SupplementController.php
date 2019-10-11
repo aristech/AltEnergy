@@ -57,9 +57,6 @@ class SupplementController extends Controller
                 array_push($supplements,$supplement);
             }
         }
-
-
-
         return response()->json(["data"=>$supplements],200);
     }
 

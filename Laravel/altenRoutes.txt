@@ -130,7 +130,11 @@ send in body:
 	        "device_id" : "it is required and must be an integer",
             "appointment_start":"nullable, it must be DateTime format",
             "appointment_end":"nullable, it must be DateTime format",
-            "user_id": "nullable|integer"
+           "techs(The array can be null)":[
+                {"tech_id:"to id"},
+                {.....}
+
+            ],
 }
 
 Update damages:
@@ -159,7 +163,11 @@ send in body:
 	"comments" : "it can be null but if filled it must be between 4 and 100000 characters",
 	"appointment_start":"nullable, it must be DateTime format",
 	"appointment_end":"nullable, it must be DateTime format",
-	"user_id":"nullable|integer "
+	"techs(The array can be null)":[
+                {"tech_id:"to id"},
+                {.....}
+
+            ],
 
 }
 
@@ -401,7 +409,11 @@ send in body:
 	        "device_id" : "it is required and must be an integer",
             "appointment_start":"nullable, it must be DateTime format",
             "appointment_end":"nullable, it must be DateTime format",
-            "user_id": "nullable|integer",
+            "techs(The array can be null)":[
+                {"tech_id:"to id"},
+                {.....}
+
+            ],
             "repeatable" :"required must be boolean",
             "frequency": "nullable but if frequency is true is required"
 }
@@ -433,7 +445,11 @@ send in body:
 	    "comments" : "it can be null but if filled it must be between 4 and 100000 characters",
 	    "appointment_start":"nullable, it must be DateTime format",
 	    "appointment_end":"nullable, it must be DateTime format",
-	    "user_id":"nullable|integer ",
+	    "techs(The array can be null)":[
+                {"tech_id:"to id"},
+                {.....}
+
+            ],
         "repeatable" :"required must be boolean",
         "frequency": "nullable but if frequency is true is required"
 
@@ -474,7 +490,7 @@ send in body:
             'comments' => 'nullable|min:4|max:10000'
 }
 
-Update services:
+Update events:
 url: https://alten.aristech.gr/api/v1/events
 method: PUT
 send in body:

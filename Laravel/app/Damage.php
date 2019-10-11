@@ -12,7 +12,7 @@ class Damage extends Model
 {
     protected $table = 'damages';
 
-    protected $fillable = ['damage_type_id','damage_comments', 'cost', 'guarantee', 'status', 'appointment_pending', 'technician_left','technician_arrived','appointment_completed','appointment_needed','supplement_pending','damage_fixed', 'completed_no_transaction', 'client_id', 'manufacturer_id', 'mark_id', 'device_id' ,'user_id','supplement', 'comments',  'appointment_start', 'appointment_end'];
+    protected $fillable = ['damage_type_id','damage_comments', 'cost', 'guarantee', 'status', 'appointment_pending', 'technician_left','technician_arrived','appointment_completed','appointment_needed','supplement_pending','damage_fixed', 'completed_no_transaction', 'client_id', 'manufacturer_id', 'mark_id', 'device_id' ,'user_id','techs','supplement', 'comments',  'appointment_start', 'appointment_end'];
 
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -21,10 +21,10 @@ class Damage extends Model
         return $this->belongsTo(Client::class, 'client_id');
     }
 
-    public function user()
-    {
-        return $this->belongsTo(User::class,'user_id');
-    }
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class,'user_id');
+    // }
 
     public function device()
     {

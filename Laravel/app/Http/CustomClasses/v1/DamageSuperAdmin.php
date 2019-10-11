@@ -20,6 +20,7 @@ class DamageSuperAdmin
     protected $message;
     protected $damage;
     protected $damageInput;
+    protected $techs;
 
     public function __construct(Request $request)
     {
@@ -30,6 +31,26 @@ class DamageSuperAdmin
     {
         $damages = DamageResource::collection(Damage::where('status','Μη Ολοκληρωμένη')->get());
         return $damages;
+    }
+
+    public function insertTechs()
+    {
+        if(count($this->request->techs) != 0)
+        {
+            $tech_array = array();
+            foreach($this->request->techs as $technician)
+            {
+                array_push($tech_array,$technician['tech_id']);
+            }
+            $techs = implode(',',$tech_array);
+
+            return $techs;
+        }
+        else
+        {
+            return null;
+        }
+
     }
 
     public static function getDamagesHistory()
@@ -63,8 +84,8 @@ class DamageSuperAdmin
             'manufacturer_id' => 'required|integer',
             'mark_id' => 'required|integer',
             'appointment_start' => 'nullable|string',
-            'appointment_end' => 'nullable|string',
-            'user_id' => 'nullable|integer'
+            'appointment_end' => 'nullable|string'
+            // 'user_id' => 'nullable|integer'
 
         ]);
 
@@ -103,7 +124,7 @@ class DamageSuperAdmin
             'supplement' => 'nullable|string',
             'appointment_start' => 'nullable|string',
             'appointment_end' => 'nullable|string',
-            'user_id' => 'nullable|integer'
+            // 'user_id' => 'nullable|integer'
         ]);
 
         if($validator->fails())
@@ -188,20 +209,25 @@ class DamageSuperAdmin
 
     public function checkTechnician()
     {
-        if($this->request->user_id != null)
+        if(count($this->request->techs) == 0)
         {
-            $tech_id = $this->request->user_id;
-            $tech = UsersRoles::where('user_id',$tech_id)->where('role_id','3')->first();
-            if(!$tech)
+            foreach($this->request->techs as $tech)
             {
-                $this->hasError = true;
-                $this->error = response()->json(["message" => "Το συγκεκριμένο πρόσωπο δεν είναι τεχνικός!"],405);
+                $tech_id = $tech->tech_id;
+                $tech = UsersRoles::where('user_id',$tech_id)->where('role_id','3')->first();
+                if(!$tech)
+                {
+                    $this->hasError = true;
+                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό".$tech_id."δεν είναι τεχνικός!"],405);
+                    break;
+                }
             }
         }
     }
 
     public function storeDamage()
     {
+        //return $this->insertTechs();
         $this->validatorCreate();
         if($this->hasError == true)
         {
@@ -241,6 +267,9 @@ class DamageSuperAdmin
 
             $this->request->merge(['cost' => 0.00]);
         }
+
+        $techs = $this->insertTechs();
+        $this->request->merge(['techs'=>$techs]);
 
         $damage = Damage::create($this->request->all());
         //Calendar Management
@@ -328,6 +357,8 @@ class DamageSuperAdmin
     {
         if(($this->request->appointment_pending == 0 && $this->request->technician_left == 1 && $this->request->technician_arrived == 1 && $this->request->appointment_completed == 1 && $this->request->appointment_needed == 0 && $this->request->damage_fixed == 1 && $this->request->supplement_pending == 0 && $this->request->completed_no_transaction == 0 && $this->request->damage_fixed == 1) || $this->request->status == "Ολοκληρωμένη")
         {
+
+
             $this->input = array();
             $this->input =
             [
@@ -352,7 +383,8 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id
+                //"user_id" => $this->request->user_id,
+                "techs" => $this->insertTechs()
             ];
         }
         elseif($this->request->completed_no_transaction == 0 || $this->request->status == "Ακυρώθηκε")
@@ -381,7 +413,8 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id
+                //"user_id" => $this->request->user_id
+                "techs" => $this->insertTechs()
             ];
 
         }
