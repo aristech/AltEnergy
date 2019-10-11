@@ -149,42 +149,42 @@ class DamageSuperAdmin
         }
     }
 
-    public function checkDate()
-    {
-        if($this->request->appointment_start != null)
-        {
-            $string = strtotime($this->request->appointment_start);
-            $date = date('d/M/Y h:i:s', $string);
+    // public function checkDate()
+    // {
+    //     if($this->request->appointment_start != null)
+    //     {
+    //         $string = strtotime($this->request->appointment_start);
+    //         $date = date('d/M/Y h:i:s', $string);
 
-            return $date;
+    //         return $date;
 
-            $string = $this->request->appointment_start;
-            if (\DateTime::createFromFormat('Y-m-d H:i:s', $string) == false)
-            {
-                $this->hasError = true;
-                $this->error = response()->json(["message" => "Η ημερομηνία έναρξης δεν είναι έγκυρη!"],422);
-            }
-        }
+    //         $string = $this->request->appointment_start;
+    //         if (\DateTime::createFromFormat('Y-m-d H:i:s', $string) == false)
+    //         {
+    //             $this->hasError = true;
+    //             $this->error = response()->json(["message" => "Η ημερομηνία έναρξης δεν είναι έγκυρη!"],422);
+    //         }
+    //     }
 
-        if($this->request->appointment_end != null)
-        {
-            $string2 = $this->request->appointment_end;
-            if (\DateTime::createFromFormat('Y-m-d H:i:s', $string2) == false)
-            {
-                $this->hasError = 'true';
-                $this->error = response()->json(["message" => "Η ημερομηνία λήξης δεν είναι έγκυρη!"],422);
-            }
-        }
+    //     if($this->request->appointment_end != null)
+    //     {
+    //         $string2 = $this->request->appointment_end;
+    //         if (\DateTime::createFromFormat('Y-m-d H:i:s', $string2) == false)
+    //         {
+    //             $this->hasError = 'true';
+    //             $this->error = response()->json(["message" => "Η ημερομηνία λήξης δεν είναι έγκυρη!"],422);
+    //         }
+    //     }
 
-        if($this->request->appointment_start != null && $this->request->appointment_end != null)
-        {
-            if($string2 < $string)
-            {
-                $this->hasError = 'true';
-                $this->error = response()->json(["message" => "Η ημερομηνία λήξης πρέπει να είναι μεγαλύτερη της ημερομηνίας έναρξης!"],422);
-            }
-        }
-    }
+    //     if($this->request->appointment_start != null && $this->request->appointment_end != null)
+    //     {
+    //         if($string2 < $string)
+    //         {
+    //             $this->hasError = 'true';
+    //             $this->error = response()->json(["message" => "Η ημερομηνία λήξης πρέπει να είναι μεγαλύτερη της ημερομηνίας έναρξης!"],422);
+    //         }
+    //     }
+    // }
 
     public function checkTechnician()
     {
@@ -223,12 +223,12 @@ class DamageSuperAdmin
         {
             return $this->error;
         }
-        $this->checkDate();
+        // $this->checkDate();
 
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
+        // if($this->hasError == true)
+        // {
+        //     return $this->error;
+        // }
 
         $this->checkTechnician();
         if($this->hasError == true)

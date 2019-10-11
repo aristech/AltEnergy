@@ -29,12 +29,12 @@ class SupplementController extends Controller
         {
             $supplement = new \stdClass();
             $supplement->supplement = $damage->supplement;
-            $supplement->date = $damage->appointment_start;
+            //$supplement->date = $damage->appointment_start;
 
             array_push($supplements,$supplement);
         }
 
-        return response()->json(["data"=>$supplements]);
+        return response()->json(["data"=>$supplements],200);
     }
 
     /**

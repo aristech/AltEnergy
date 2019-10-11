@@ -106,6 +106,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::put('/services','ServiceController@update');
             Route::delete('/services','ServiceController@destroy');
 
+            Route::get('/dashboard','DashboardController@index');
+
             Route::get('/calendar','CalendarController@index');
 
             Route::get('/supplements','SupplementController@index');
