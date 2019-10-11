@@ -10,7 +10,7 @@ use App\Client;
 use App\DamageType;
 use App\Eventt;
 use App\UsersRoles;
-use app\Calendar;
+use App\Calendar;
 
 class DamageSuperAdmin
 {
@@ -244,7 +244,7 @@ class DamageSuperAdmin
 
         $damage = Damage::create($this->request->all());
         //Calendar Management
-        if($damage->status == "Μη Ολοκληρωμένη")Calendar::create(['type'=>'βλάβη',"damage_id"=>$damage->id]);
+        if($damage->status == "Μη Ολοκληρωμένη")Calendar::create(['name'=>'βλάβη','type'=>'damages','damage_id'=>$damage->id]);
         //End Calendar management
 
         // if($this->request->appointment_start != null)
@@ -319,7 +319,7 @@ class DamageSuperAdmin
         $calendar = Calendar::where('damage_id',$this->damage->id)->first();
 
         if($this->damage->status != "Μη Ολοκληρωμένη")Calendar::where('damage_id',$this->damage->id)->first()->delete();
-        if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)Calendar::create(['type'=>'βλάβη','damage_id'=>$this->damage->id]);
+        if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)Calendar::create(['type'=>'damages','name'=>'βλάβη','damage_id'=>$this->damage->id]);
         //End Calendar update process
         return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }

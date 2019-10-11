@@ -68,37 +68,37 @@ class EventMod
         }
     }
 
-    public function checkDate()
-    {
-        if($this->request->event_start != null)
-        {
-            $string = $this->request->event_start;
-            if (\DateTime::createFromFormat('Y-m-d H:i:s', $string) == false)
-            {
-                $this->hasError = true;
-                $this->error = response()->json(["message" => "Η ημερομηνία έναρξης δεν είναι έγκυρη!"],422);
-            }
-        }
+    // public function checkDate()
+    // {
+    //     if($this->request->event_start != null)
+    //     {
+    //         $string = $this->request->event_start;
+    //         if (\DateTime::createFromFormat('Y-m-d H:i:s', $string) == false)
+    //         {
+    //             $this->hasError = true;
+    //             $this->error = response()->json(["message" => "Η ημερομηνία έναρξης δεν είναι έγκυρη!"],422);
+    //         }
+    //     }
 
-        if($this->request->event_end != null)
-        {
-            $string2 = $this->request->event_end;
-            if (\DateTime::createFromFormat('Y-m-d H:i:s', $string2) == false)
-            {
-                $this->hasError = 'true';
-                $this->error = response()->json(["message" => "Η ημερομηνία λήξης δεν είναι έγκυρη!"],422);
-            }
-        }
+    //     if($this->request->event_end != null)
+    //     {
+    //         $string2 = $this->request->event_end;
+    //         if (\DateTime::createFromFormat('Y-m-d H:i:s', $string2) == false)
+    //         {
+    //             $this->hasError = 'true';
+    //             $this->error = response()->json(["message" => "Η ημερομηνία λήξης δεν είναι έγκυρη!"],422);
+    //         }
+    //     }
 
-        if($this->request->event_start != null && $this->request->event_end != null)
-        {
-            if($string2 < $string)
-            {
-                $this->hasError = 'true';
-                $this->error = response()->json(["message" => "Η ημερομηνία λήξης πρέπει να είναι μεγαλύτερη της ημερομηνίας έναρξης!"],422);
-            }
-        }
-    }
+    //     if($this->request->event_start != null && $this->request->event_end != null)
+    //     {
+    //         if($string2 < $string)
+    //         {
+    //             $this->hasError = 'true';
+    //             $this->error = response()->json(["message" => "Η ημερομηνία λήξης πρέπει να είναι μεγαλύτερη της ημερομηνίας έναρξης!"],422);
+    //         }
+    //     }
+    // }
 
     public function checkStatus()
     {
@@ -116,18 +116,18 @@ class EventMod
         {
             return $this->error;
         }
-        $this->checkDate();
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
+        // $this->checkDate();
+        // if($this->hasError == true)
+        // {
+        //     return $this->error;
+        // }
         $this->checkStatus();
         if($this->hasError == true)
         {
             return $this->error;
         }
         $event = Eventt::create($this->request->all());
-        Calendar::create(["type"=>"event" ,"event_id" => $event->id]);
+        Calendar::create(["name"=>"event","type"=>"events" ,"event_id" => $event->id]);
 
         return response()->json(["message" => "Το event καταχωρήθηκε επιτυχώς!"],200);
     }
@@ -139,11 +139,11 @@ class EventMod
         {
             return $this->error;
         }
-        $this->checkDate();
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
+        // $this->checkDate();
+        // if($this->hasError == true)
+        // {
+        //     return $this->error;
+        // }
         $this->checkEvent();
         if($this->hasError == true)
         {
@@ -161,7 +161,7 @@ class EventMod
         $calendar = Calendar::where('event_id',$event->id)->first();
 
         if($event->status != "Μη Ολοκληρωμένο" && $calendar)$calendar->delete();
-        if($event->status == "Μη Ολοκληρωμένο" && !$calendar)Calendar::create(['type'=>'event','event_id' => $event->id]);
+        if($event->status == "Μη Ολοκληρωμένο" && !$calendar)Calendar::create(['name'=>'event','type'=>'events','event_id' => $event->id]);
         //End Calendar Events
         return response()->json(["message" => "Το event ενημερώθηκε επιτυχώς"],200);
 

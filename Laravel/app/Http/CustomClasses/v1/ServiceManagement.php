@@ -262,7 +262,7 @@ class ServiceManagement
         }
         $service = Service::create($this->request->all());
 
-        $calendar = Calendar::create(["type"=>"service" ,"service_id" => $service->id]);
+        $calendar = Calendar::create(['name'=>'service',"type"=>"services" ,"service_id" => $service->id]);
 
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"],200);
     }
@@ -351,7 +351,7 @@ class ServiceManagement
 
         if($this->service->status != "Μη Ολοκληρωμένο" && $calendar)$calendar->delete();
         //if($this->service->status != "Ολοκληρωμένο" && $this->repeatable->status == false && $calendar)$calendar->delete();
-        if($this->service->status == "Μη Ολοκληρωμένο" && !$calendar)Calendar::create(['type'=>'service','service_id' => $this->service->id]);
+        if($this->service->status == "Μη Ολοκληρωμένο" && !$calendar)Calendar::create(['name'=>'service','type'=>'services','service_id' => $this->service->id]);
 
         return response()->json(["message" => "Τα στοίχεια του service με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }
