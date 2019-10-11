@@ -8,7 +8,6 @@ use App\Http\Resources\ServiceResource;
 use Illuminate\Http\Request;
 use App\Client;
 use App\ServiceType;
-use App\Eventt;
 use App\UsersRoles;
 use App\Calendar;
 

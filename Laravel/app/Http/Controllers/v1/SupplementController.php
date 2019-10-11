@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Damage;
 use Carbon\Carbon;
-use App\Http\Resources\SupplementResource;
+use App\Service;
 
 class SupplementController extends Controller
 {
@@ -25,18 +25,40 @@ class SupplementController extends Controller
 
         $supplements = array();
         $damages = Damage::where('status','Μη Ολοκληρωμένη')->where('supplement','!=',null)->get();
+
         $now = Carbon::now();
-        $startweek = strtotime($now->startOfWeek()->format('Y-m-d H:i'));
-        $endweek = strtotime($now->endOfWeek()->format('Y-m-d H:i'));
+        $startweek = strtotime($now->startOfWeek());
+        $endweek = strtotime($now->endOfWeek());
         foreach($damages as $damage)
         {
-            if($damage->appointment_start != null && strtotime($damage->appointment_start))
-            $supplement = new \stdClass();
-            $supplement->supplement = $damage->supplement;
-            //$supplement->date = $damage->appointment_start;
+            $apointment = explode(" ",$damage->appointment_start);
+            $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
+            if($damage->appointment_start != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek)
+            {
+                $supplement = new \stdClass();
+                $supplement->supplement = $damage->supplement;
+                $supplement->date = $damage->appointment_start;
 
-            array_push($supplements,$supplement);
+                array_push($supplements,$supplement);
+            }
         }
+
+        $services = Service::where('status','Μη Ολοκληρωμένο')->where('supplements','!=',null)->get();
+        foreach($services as $service)
+        {
+            $apointment = explode(" ",$damage->appointment_start);
+            $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
+            if($service->appointment_start != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek)
+            {
+                $supplement = new \stdClass();
+                $supplement->supplement = $service->supplement;
+                $supplement->date = $service->appointment_start;
+
+                array_push($supplements,$supplement);
+            }
+        }
+
+
 
         return response()->json(["data"=>$supplements],200);
     }

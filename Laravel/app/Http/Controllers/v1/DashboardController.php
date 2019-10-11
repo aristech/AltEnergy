@@ -53,19 +53,19 @@ class DashboardController extends Controller
 
         $dashboard->registered_clients = $clients;
 
-        // $supplements = array();
-        // $supplementController =  app('App\Http\Controllers\v1\SupplementController')->index($request)->getContent();
-        // $supplementController = json_decode($supplementController);
-        // foreach($supplementController->data as $supplement)
-        // {
-        //     $supplementObj = new \stdClass();
-        //     $supplementObj->supplement = $supplement->supplement;
-        //     $supplementObj->date = $supplement->date;
+        $supplements = array();
+        $supplementController =  app('App\Http\Controllers\v1\SupplementController')->index($request)->getContent();
+        $supplementController = json_decode($supplementController);
+        foreach($supplementController->data as $supplement)
+        {
+            $supplementObj = new \stdClass();
+            $supplementObj->supplement = $supplement->supplement;
+            $supplementObj->date = $supplement->date;
 
-        //     array_push($supplements,$supplement);
-        // }
+            array_push($supplements,$supplement);
+        }
 
-        // $dashboard->supplements = $supplements;
+        $dashboard->supplements = $supplements;
         return response()->json(["data" => $dashboard]);
     }
 
