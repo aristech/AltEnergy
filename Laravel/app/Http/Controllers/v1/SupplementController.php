@@ -24,9 +24,13 @@ class SupplementController extends Controller
         }
 
         $supplements = array();
-        $damages = Damage::where('status','Μη Ολοκληρωμένη')->where('supplement','!=',null)->whereBetween('appointment_start', [Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek()])->get();
+        $damages = Damage::where('status','Μη Ολοκληρωμένη')->where('supplement','!=',null)->get();
+        $now = Carbon::now();
+        $startweek = strtotime($now->startOfWeek()->format('Y-m-d H:i'));
+        $endweek = strtotime($now->endOfWeek()->format('Y-m-d H:i'));
         foreach($damages as $damage)
         {
+            if($damage->appointment_start != null && strtotime($damage->appointment_start))
             $supplement = new \stdClass();
             $supplement->supplement = $damage->supplement;
             //$supplement->date = $damage->appointment_start;

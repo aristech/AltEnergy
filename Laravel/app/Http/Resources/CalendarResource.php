@@ -28,7 +28,6 @@ class CalendarResource extends JsonResource
         [
             "id" => $this->id,
             "type" => $this->type,
-            "allDay" => false,
             "event_id" => $this->when($this->damage_id != null || $this->service_id != null, function()
             {
                 if($this->damage_id != null)
@@ -101,26 +100,7 @@ class CalendarResource extends JsonResource
             {
                 $service = Service::where('repeatable',true)->get()->first();
                 return $service['frequency'];
-            }),
-
-            "color" => $this->when($this->service_id != null || $this->damage_id != null ||$this->event_id != null, function()
-            {
-                if($this->damage_id != null)
-                {
-                    return "red";
-                }
-
-                if($this->service_id != null)
-                {
-                    return "default";
-                }
-
-                if($this->event_id != null)
-                {
-                    return "green";
-                }
-
-            }),
+            })
         ];
     }
 }
