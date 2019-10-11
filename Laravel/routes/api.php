@@ -23,9 +23,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
     Route::post('/login', 'AuthController@login');
     Route::post('/signup', 'AuthController@signup');
 
-
-
-
     Route::group(['middleware' => 'auth:api'], function()
     {
         Route::group(['middleware' => 'active'],function()
@@ -33,12 +30,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::get('/logout', 'AuthController@logout');
             Route::get('/user', 'AuthController@user');
 
-
             Route::post('/users','AuthController@createUser');
             Route::put('/users','AuthController@editUser');
             Route::get('/users','AuthController@allUsers');
             Route::delete('/users','AuthController@deleteUser');
-
 
             //Role routes
             Route::get('/roles','RoleController@index');
@@ -74,6 +69,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::delete('/damagetypes','DamageTypeController@destroy');
 
             Route::get('/damages','DamageController@index');
+            Route::get('/damages/{damage}','DamageController@show');
             Route::get('/damagehistory','DamageController@history');
             Route::post('/damages','DamageController@store');
             Route::put('/damages','DamageController@update');
@@ -87,16 +83,32 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/searchdevices','SearchController@searchDevices');
             Route::post('/searchdamagetypes','SearchController@searchDamageTypes');
 
+            Route::get('/events','EventController@index');
+            Route::get('/eventhistory','EventController@history');
+            Route::post('/events','EventController@store');
+            Route::put('/events','EventController@update');
+            Route::delete('/events','EventController@destroy');
+
             Route::get('/files/{id}','FileController@index');
             Route::post('/files/{id}','FileController@store');
             Route::get('/files/{id}/{file}','FileController@show');
             Route::delete('/files/{id}/{file}','FileController@destroy');
             Route::post('/files/{id}/upload','FileController@upload');
 
+            Route::get('/servicetypes','ServiceTypeController@index');
+            Route::post('/servicetypes','ServiceTypeController@store');
+            Route::delete('/servicetypes','ServiceTypeController@destroy');
+
+            Route::get('/services','ServiceController@index');
+            //Route::get('/damages/{damage}','DamageController@show');
+            Route::get('/servicehistory','ServiceController@history');
+            Route::post('/services','ServiceController@store');
+            Route::put('/services','ServiceController@update');
+            Route::delete('/services','ServiceController@destroy');
+
             Route::get('/calendar','CalendarController@index');
 
-
-
+            Route::get('/supplements','SupplementController@index');
         });
     });
 });

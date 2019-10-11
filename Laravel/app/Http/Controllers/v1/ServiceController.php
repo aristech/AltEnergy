@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\v1;
 
-use App\Damage;
-use App\Http\Resources\DamageResource;
+use App\Service;
+use App\Http\Resources\ServiceResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\CustomClasses\v1\DamageSuperAdmin;
-use app\Calendar;
+use App\Http\CustomClasses\v1\ServiceManagement;
+use App\Calendar;
 
-class DamageController extends Controller
+class ServiceController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -21,16 +21,16 @@ class DamageController extends Controller
         $role_id = $request->user()->role()->first()->id;
         if($role_id >= 4)
         {
-            return DamageSuperAdmin::getDamages();
+            return ServiceManagement::getServices();
         }
     }
 
     public function history(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 4)
+        if($role_id >= 3)
         {
-            return DamageSuperAdmin::getDamagesHistory();
+            return ServiceManagement::getServicesHistory();
         }
     }
 
@@ -54,14 +54,14 @@ class DamageController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 4)
+        if($role_id >= 3)
         {
-            $damage = new DamageSuperAdmin($request);
-            return $damage->storeDamage();
+            $service = new ServiceManagement($request);
+            return $service->storeService();
         }
         else
         {
-            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να εισάγει βλάβες στο σύστημα!"],401);
+            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να εισάγει services στο σύστημα!"],401);
         }
 
     }
@@ -72,7 +72,7 @@ class DamageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Damage $damage, Request $request)
+    public function show(Service $service, Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 3)
@@ -80,7 +80,7 @@ class DamageController extends Controller
             return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
         }
 
-        return DamageResource::make($damage);
+        return ServiceResource::make($service);
     }
 
     /**
@@ -108,8 +108,8 @@ class DamageController extends Controller
         {
             return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
         }
-        $damage = new DamageSuperAdmin($request);
-        return $damage->updateDamage();
+        $service = new ServiceManagement($request);
+        return $service->updateService();
     }
 
     /**
@@ -121,24 +121,22 @@ class DamageController extends Controller
     public function destroy(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4)
+        if($role_id < 3)
         {
             return response()->json(["message" => "Χρήστες με δικαίωμα ".$request->user()->role()->first()->name." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"],401);
         }
 
-        $damage = Damage::where('id',$request->id)->first();
-        if(!$damage)
+        $service = Service::where('id',$request->id)->first();
+        if(!$service)
         {
-            return response()->json(["message" => "Η ζημιά με κωδικό ".$request->id." δεν είναι καταχωρημένη!"],404);
+            return response()->json(["message" => "Το service με κωδικό ".$request->id." δεν είναι καταχωρημένo!"],404);
         }
-
-        $damage->delete();
-        //delete stored entry in calendar
-        $calendar = Calendar::where('damage_id',$request->id)->first();
-        $calendar->delete();
-        //end delete calendar entry
+        $service->delete();
 
 
-        return response()->json(["message" => "Η βλάβη με κωδικό ".$request->id." διαγραφηκε επιτυχώς!"],200);
+        $calendar = Calendar::where('service_id',$request->id)->first();
+        if(!$calendar)$calendar->delete();
+
+        return response()->json(["message" => "Το service με κωδικό ".$request->id." διαγραφηκε επιτυχώς!"],200);
     }
 }

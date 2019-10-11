@@ -368,7 +368,148 @@ Downloads the pdf file
 url: https://alten.aristech.gr/api/v1/files/{ClientID}/upload
 method:POST
 Form data with key name File and value the file to be uploaded
+------------------------------------------------------------------------------------------------------------------------
+- Services:
 
+Get all (not completed)services:
+
+url : https://alten.aristech.gr/api/v1/services
+method:GET
+send in body:{ NONE  }
+
+Get all  completed & cancelled services:
+
+url : https://alten.aristech.gr/api/v1/servicehistory
+method:GET
+send in body:{ NONE  }
+
+Insert new service:
+
+url: https://alten.aristech.gr/api/v1/services
+method: POST
+send in body:
+{
+	        "service_type_id" : "it must be an integer and it is mandatory",
+            "damage_comments": "not needed, can be null. If comments are needed they must be from 4 to 10000 characters",
+            "cost" : "it can be null but if you insert value it has to be float and between 0.00 and 999999.99",
+            "guarantee" : "it can be null but its value must be boolean',
+            "status" : "status is mandatory and must be string.The statuses that we need as strings are Ολοκληρωμένο,Μη Ολοκληρωμένο,Ακυρώθηκε",
+            "client_id" : "it is required and it must be integer.Must be part an id of the clients table",
+            "comments" : "it can be null but if filled it must be between 4 and 100000 characters",
+            "manufacturer_id":"it is required and it is id",
+            "mark_id": 'required and integer',
+	        "device_id" : "it is required and must be an integer",
+            "appointment_start":"nullable, it must be DateTime format",
+            "appointment_end":"nullable, it must be DateTime format",
+            "user_id": "nullable|integer",
+            "repeatable" :"required must be boolean",
+            "frequency": "nullable but if frequency is true is required"
+}
+
+Update services:
+url: https://alten.aristech.gr/api/v1/services
+method: PUT
+send in body:
+
+{
+        "id":"integer required"
+        "service_type_id" : "it must be an integer and it is mandatory",
+        "service_comments": "not needed, can be null. If comments are needed they must be from 4 to 10000 characters",
+        "cost" : "it can be null but if you insert value it has to be float and between 0.00 and 999999.99",
+        "guarantee" : "it can be null but its value must be boolean',
+        "status" : "status is mandatory and must be string.The statuses that we need as strings are Ολοκληρωμένο,Μη Ολοκληρωμένο,Ακυρώθηκε",
+	    "appointment_pending":"required must be boolean",
+   	    "technician_left":"required must be boolean",
+        "technician_arrived":"required must be boolean",
+        "appointment_completed":"required must be boolean",
+        "appointment_needed":"required must be boolean",
+        "supplement_pending": "required must be boolean",
+        "completed_no_transaction":"required must be boolean",
+        "service_done":"required must be boolean",
+	    "client_id" : "it is required and it must be integer.Must be part an id of the clients table",
+	    "manufacturer_id":"it is required and it is id",
+        "mark_id": 'required and integer',
+	    "device_id" : "it is required and must be an integer",
+	    "comments" : "it can be null but if filled it must be between 4 and 100000 characters",
+	    "appointment_start":"nullable, it must be DateTime format",
+	    "appointment_end":"nullable, it must be DateTime format",
+	    "user_id":"nullable|integer ",
+        "repeatable" :"required must be boolean",
+        "frequency": "nullable but if frequency is true is required"
+
+}
+
+Delete services:
+url: https://alten.aristech.gr/api/v1/services
+method:DELETE
+send in body
+{
+	"id":"integer|mandatory"
+
+}
+------------------------------------------------------------------------------------------------------------------------
+- Events:
+
+Get all (not completed)Events:
+
+url : https://alten.aristech.gr/api/v1/events
+method:GET
+send in body:{ NONE  }
+
+Get all  completed & cancelled events:
+
+url : https://alten.aristech.gr/api/v1/eventhistory
+method:GET
+send in body:{ NONE  }
+
+Insert new event:
+
+url: https://alten.aristech.gr/api/v1/events
+method: POST
+send in body:
+{
+	        'title' => 'required must be string',
+            'status' => 'requiredbut be string. Acceptable Values Ολοκληρωμένο,Μη Ολοκληρωμένο,Ακυρώθηκε',
+            'description' => 'nullable|min:4|max:10000',
+            'comments' => 'nullable|min:4|max:10000'
+}
+
+Update services:
+url: https://alten.aristech.gr/api/v1/events
+method: PUT
+send in body:
+
+{
+        "id":"the event id",
+        'title' => 'required must be string',
+        'status' => 'requiredbut be string. Acceptable Values Ολοκληρωμένο,Μη Ολοκληρωμένο,Ακυρώθηκε',
+        'description' => 'nullable|min:4|max:10000',
+        'comments' => 'nullable|min:4|max:10000'
+
+}
+
+Delete events:
+url: https://alten.aristech.gr/api/v1/events
+method:DELETE
+send in body
+{
+	"id":"integer|mandatory"
+
+}
+-------------------------------------------------------------------------------------------
+Calendar
+Post:
+"Calendar is set automatically according to the statuses of damages, services and events
+GET:
+https://alten.aristech.gr/api/v1/calendar
+-----------------------------------------------------------------------------------------------
+Supplements
+
+GET
+https://alten.aristech.gr/api/v1/supplements
+
+returns supplements for appointments occuring in current week
+------------------------------------------------------------------------------------------------
 
 
 

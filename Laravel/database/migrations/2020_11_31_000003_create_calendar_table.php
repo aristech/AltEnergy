@@ -19,6 +19,7 @@ class CreateCalendarTable extends Migration
             $table->integer('damage_id')->nullable();
             $table->integer('service_id')->nullable();
             $table->integer('offer_id')->nullable();
+            $table->integer('event_id')->nullable();
             $table->timestamps();
         });
     }

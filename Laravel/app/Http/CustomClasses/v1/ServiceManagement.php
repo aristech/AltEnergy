@@ -1,50 +1,59 @@
 <?php
 
 namespace App\Http\CustomClasses\v1;
-use App\Damage;
+use App\Service;
 use Validator;
 use App\Device;
-use App\Http\Resources\DamageResource;
+use App\Http\Resources\ServiceResource;
 use Illuminate\Http\Request;
 use App\Client;
-use App\DamageType;
+use App\ServiceType;
 use App\Eventt;
 use App\UsersRoles;
-use app\Calendar;
+use App\Calendar;
 
-class DamageSuperAdmin
+class ServiceManagement
 {
     protected $request;
     protected $hasError = false;
     protected $error;
     protected $message;
-    protected $damage;
-    protected $damageInput;
+    protected $service;
+    protected $serviceInput;
 
     public function __construct(Request $request)
     {
         $this->request = $request;
     }
 
-    public static function getDamages()
+    public static function getServices()
     {
-        $damages = DamageResource::collection(Damage::where('status','Μη Ολοκληρωμένη')->get());
-        return $damages;
+        $services = ServiceResource::collection(Service::where('status','Μη Ολοκληρωμένο')->get());
+        return $services;
     }
 
-    public static function getDamagesHistory()
+    public static function getServicesHistory()
     {
-        $damages = DamageResource::collection(Damage::where('status','Ολοκληρωμένη')->orWhere('status','Ακυρώθηκε')->orderBy('created_at','DESC')->get());
-        return $damages;
+        $services = ServiceResource::collection(Service::where('status','!=','Μη Ολοκληρωμένο')->orderBy('created_at','DESC')->get());
+        return $services;
     }
 
-    private function checkDamageType()
+    private function checkServiceType()
     {
-        $damageType = DamageType::where('id',$this->request->damage_type_id)->first();
-        if(!$damageType)
+        $serviceType = ServiceType::where('id',$this->request->service_type_id)->first();
+        if(!$serviceType)
         {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος ζημιάς!"],404);
+            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος service!"],404);
+        }
+    }
+
+    public function checkFrequency()
+    {
+        if($this->request->repeatable == false && $this->request->frequency == null)
+        {
+            $this->hasError = true;
+            $this->error = response()->json(["message" => "Η συχνότητα δεν πρέπει να είναι κενή"],422);
         }
     }
 
@@ -52,8 +61,8 @@ class DamageSuperAdmin
     {
         $validator = Validator::make($this->request->all(),
         [
-            'damage_type_id' => 'required|integer',
-            'damage_comments' => 'nullable|min:4|max:10000',
+            'service_type_id' => 'required|integer',
+            'service_comments' => 'nullable|min:4|max:10000',
             'cost' => 'nullable|numeric|between:0.00,999999.99',
             'guarantee' => 'required|boolean',
             'status' => 'required|string',
@@ -64,8 +73,9 @@ class DamageSuperAdmin
             'mark_id' => 'required|integer',
             'appointment_start' => 'nullable|string',
             'appointment_end' => 'nullable|string',
-            'user_id' => 'nullable|integer'
-
+            'user_id' => 'nullable|integer',
+            'repeatable' => 'required|boolean',
+            'frequency' => 'nullable|string'
         ]);
 
         if($validator->fails())
@@ -82,8 +92,8 @@ class DamageSuperAdmin
         $validator = Validator::make($this->request->all(),
         [
             'id' => 'required|integer',
-            'damage_type_id' => 'required|integer',
-            'damage_comments' => 'nullable|min:4|max:10000',
+            'service_type_id' => 'required|integer',
+            'service_comments' => 'nullable|min:4|max:10000',
             'cost' => 'nullable|numeric|between:0.00,999999.99',
             'guarantee' => 'required|boolean',
             'status' => 'required|string',
@@ -93,7 +103,7 @@ class DamageSuperAdmin
             'appointment_completed' => 'required|boolean',
             'appointment_needed' => 'required|boolean',
             'supplement_pending' => 'required|boolean',
-            'damage_fixed' => 'required|boolean',
+            'service_done' => 'required|boolean',
             'completed_no_transaction' => 'required|boolean',
             'client_id' => 'required|integer',
             'device_id' => 'required|integer',
@@ -103,7 +113,9 @@ class DamageSuperAdmin
             'supplement' => 'nullable|string',
             'appointment_start' => 'nullable|string',
             'appointment_end' => 'nullable|string',
-            'user_id' => 'nullable|integer'
+            'user_id' => 'nullable|integer',
+            'repeatable' => 'required|boolean',
+            'frequency' => 'nullable|string'
         ]);
 
         if($validator->fails())
@@ -122,7 +134,6 @@ class DamageSuperAdmin
         $device = Device::whereHas('mark', function($query) use($mark_id)
         {
             $query->where('id',$mark_id);
-
         })
         ->whereHas('mark.manufacturer', function($query) use ($manufacturer_id)
         {
@@ -200,14 +211,19 @@ class DamageSuperAdmin
         }
     }
 
-    public function storeDamage()
+    public function storeService()
     {
         $this->validatorCreate();
         if($this->hasError == true)
         {
             return $this->error;
         }
-        $this->checkDamageType();
+        $this->checkStatus();
+        if($this->hasError == true)
+        {
+            return $this->error;
+        }
+        $this->checkServiceType();
         if($this->hasError == true)
         {
             return $this->error;
@@ -229,56 +245,64 @@ class DamageSuperAdmin
         {
             return $this->error;
         }
-
         $this->checkTechnician();
         if($this->hasError == true)
         {
             return $this->error;
         }
-
+        $this->checkFrequency();
+        if($this->hasError == true)
+        {
+            return $this->error;
+        }
         if($this->request->cost == null)
         {
 
             $this->request->merge(['cost' => 0.00]);
         }
+        $service = Service::create($this->request->all());
 
-        $damage = Damage::create($this->request->all());
-        //Calendar Management
-        if($damage->status == "Μη Ολοκληρωμένη")Calendar::create(['type'=>'βλάβη',"damage_id"=>$damage->id]);
-        //End Calendar management
+        $calendar = Calendar::create(["type"=>"service" ,"service_id" => $service->id]);
 
-        // if($this->request->appointment_start != null)
-        // {
-        //     // $client = Client::where('id',$this->request->client_id)->first();
-        //     // Eventt::create(["event_type" => "damage", "event_id" => $damage->id]);
-        // }
-
-
-        return response()->json(["message" => "Η ζημιά του πελάτη καταχωρήθηκε επιτυχως!"],200);
+        return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"],200);
     }
 
-    public function checkDamage()
+    public function checkService()
     {
-        $damage = Damage::where('id',$this->request->id)->first();
-        if(!$damage)
+        $service = Service::where('id',$this->request->id)->first();
+        if(!$service)
         {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "Η βλάβη αυτή δεν είναι περασμένη στο σύστημα!"],404);
+            $this->error = response()->json(["message" => "To service αυτο δεν είναι περασμένη στο σύστημα!"],404);
         }
         else
         {
-            $this->damage = $damage;
+            $this->service = $service;
         }
     }
 
-    public function updateDamage()
+    public function checkStatus()
+    {
+        if($this->request->status != "Ολοκληρωμένο" && $this->request->status != "Μη Ολοκληρωμένο" && $this->request->status != "Ακυρώθηκε")
+        {
+            $this->hasError = true;
+            $this->error = response()->json(["message" => "Η κατάσταση του service δεν επιτρέπεται!"],422);
+        }
+    }
+
+    public function updateService()
     {
         $this->validatorUpdate();
         if($this->hasError == true)
         {
             return $this->error;
         }
-        $this->checkDamageType();
+        $this->checkStatus();
+        if($this->hasError == true)
+        {
+            return $this->error;
+        }
+        $this->checkServiceType();
         if($this->hasError == true)
         {
             return $this->error;
@@ -293,13 +317,18 @@ class DamageSuperAdmin
         {
             return $this->error;
         }
-        $this->checkDamage();
+        $this->checkService();
 
         if($this->hasError == true)
         {
             return $this->error;
         }
         $this->checkTechnician();
+        if($this->hasError == true)
+        {
+            return $this->error;
+        }
+        $this->checkFrequency();
         if($this->hasError == true)
         {
             return $this->error;
@@ -314,25 +343,28 @@ class DamageSuperAdmin
         {
             $this->input['cost'] = 0.00;
         }
-        $this->damage->update($this->input);
-        //Calendar for update
-        $calendar = Calendar::where('damage_id',$this->damage->id)->first();
+        $this->service->update($this->input);
 
-        if($this->damage->status != "Μη Ολοκληρωμένη")Calendar::where('damage_id',$this->damage->id)->first()->delete();
-        if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)Calendar::create(['type'=>'βλάβη','damage_id'=>$this->damage->id]);
-        //End Calendar update process
-        return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
+
+        //Calendar Events
+        $calendar = Calendar::where('service_id',$this->service->id)->first();
+
+        if($this->service->status != "Μη Ολοκληρωμένο" && $calendar)$calendar->delete();
+        //if($this->service->status != "Ολοκληρωμένο" && $this->repeatable->status == false && $calendar)$calendar->delete();
+        if($this->service->status == "Μη Ολοκληρωμένο" && !$calendar)Calendar::create(['type'=>'service','service_id' => $this->service->id]);
+
+        return response()->json(["message" => "Τα στοίχεια του service με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }
 
     public function createUpdateInput()
     {
-        if(($this->request->appointment_pending == 0 && $this->request->technician_left == 1 && $this->request->technician_arrived == 1 && $this->request->appointment_completed == 1 && $this->request->appointment_needed == 0 && $this->request->damage_fixed == 1 && $this->request->supplement_pending == 0 && $this->request->completed_no_transaction == 0 && $this->request->damage_fixed == 1) || $this->request->status == "Ολοκληρωμένη")
+        if(($this->request->appointment_pending == 0 && $this->request->technician_left == 1 && $this->request->technician_arrived == 1 && $this->request->appointment_completed == 1 && $this->request->appointment_needed == 0 && $this->request->service_done == 1 && $this->request->supplement_pending == 0 && $this->request->completed_no_transaction == 0) || $this->request->status == "Ολοκληρωμένo")
         {
             $this->input = array();
             $this->input =
             [
-                "damage_type" => $this->request->damage_type,
-                "damage_comments" => $this->request->damage_comments,
+                "service_type" => $this->request->service_type,
+                "service_comments" => $this->request->service_comments,
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
                 "status" => "Ολοκληρωμένη",
@@ -343,7 +375,7 @@ class DamageSuperAdmin
                 "appointment_needed" => false,
                 "supplement_pending" => false,
                 "completed_no_transaction" => false,
-                "damage_fixed" => true,
+                "service_done" => true,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
@@ -352,7 +384,9 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id
+                "user_id" => $this->request->user_id,
+                "repeatable" => $this->request->repeatable,
+                "frequency" => $this->request->frequency
             ];
         }
         elseif($this->request->completed_no_transaction == 0 || $this->request->status == "Ακυρώθηκε")
@@ -360,8 +394,8 @@ class DamageSuperAdmin
             $this->input = array();
             $this->input =
             [
-                "damage_type" => $this->request->damage_type,
-                "damage_comments" => $this->request->damage_comments,
+                "service_type" => $this->request->service_type,
+                "service_comments" => $this->request->service_comments,
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
                 "status" => "Ακυρώθηκε",
@@ -372,7 +406,7 @@ class DamageSuperAdmin
                 "appointment_needed" => $this->request->appointment_needed,
                 "supplement_pending" => $this->request->supplement_pending,
                 "completed_no_transaction" => true,
-                "damage_fixed" => false,
+                "service_done" => false,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
@@ -381,11 +415,13 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id
+                "user_id" => $this->request->user_id,
+                "repeatable" => $this->request->repeatable,
+                "frequency" => $this->request->frequency
             ];
 
         }
-        elseif($this->request->completed_no_transaction == true && $this->request->damage_fixed == true)
+        elseif($this->request->completed_no_transaction == true && $this->request->service_done == true)
         {
             $this->hasError = true;
             $this->error = request()->json(["message" => "Η συναλλαγή δεν μπορεί να έιναι ακυρωμένη και επιδιορθωμένη!"],200);
@@ -395,8 +431,8 @@ class DamageSuperAdmin
             $this->input = array();
             $this->input =
             [
-                "damage_type" => $this->request->damage_type,
-                "damage_comments" => $this->request->damage_comments,
+                "service_type" => $this->request->service_type,
+                "service_comments" => $this->request->service_comments,
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
                 "status" => $this->status,
@@ -407,7 +443,7 @@ class DamageSuperAdmin
                 "appointment_needed" => $this->appointment_needed,
                 "supplement_pending" => $this->supplement_pending,
                 "completed_no_transaction" => $this->completed_no_transca,
-                "damage_fixed" => false,
+                "service_done" => false,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
@@ -416,7 +452,9 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id
+                "user_id" => $this->request->user_id,
+                "repeatable" => $this->repeatable,
+                "frequency" => $this->frequency
             ];
         }
     }

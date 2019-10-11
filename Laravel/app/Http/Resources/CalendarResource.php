@@ -4,6 +4,8 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Damage;
+use App\Eventt;
+use App\Service;
 use App\Http\CustomClasses\v1\CalendarClass;
 
 class CalendarResource extends JsonResource
@@ -26,13 +28,99 @@ class CalendarResource extends JsonResource
         [
             "id" => $this->id,
             "type" => $this->type,
-            "title" =>$this->when($this->service_id != null, function(){ return Damage::where('id',$this->damage_id)->first()->type->name;}),
-            "title" =>$this->when($this->offer_id != null, function(){ return Damage::where('id',$this->damage_id)->first()->type->name;}),
-            "title" =>$this->when($this->damage_id != null, function(){ return Damage::where('id',$this->damage_id)->first()->type->name;}),
-            "date" =>$this->when($this->service_id != null, function(){ return Damage::where('id',$this->damage_id)->first()->appointment_start;}),
-            "date" =>$this->when($this->offer_id != null, function(){ return Damage::where('id',$this->damage_id)->first()->appointment_start;}),
-            "date" =>$this->when($this->damage_id != null, function(){ return Damage::where('id',$this->damage_id)->first()->appointment_start;})
+            "allDay" => false,
+            "event_id" => $this->when($this->damage_id != null || $this->service_id != null, function()
+            {
+                if($this->damage_id != null)
+                {
+                    return $this->damage_id;
+                }
 
+                if($this->event_id)
+                {
+                    return $this->event_id;
+                }
+
+                if($this->service_id != null)
+                {
+                    return $this->service_id;
+                }
+            }),
+            "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null , function()
+            {
+                if($this->damage_id != null)
+                {
+                    return Damage::where('id',$this->damage_id)->first()->type->name;
+                }
+
+                if($this->event_id != null)
+                {
+                    return Eventt::where('id',$this->event_id)->first()->title;
+                }
+
+                if($this->service_id != null)
+                {
+                    return Service::where('id',$this->service_id)->first()->type->name;
+                }
+            }),
+            "start" => $this->when($this->damage_id != null || $this->event_id != null , function()
+            {
+                if($this->damage_id != null)
+                {
+                    return Damage::where('id',$this->damage_id)->first()['appointment_start'];
+                }
+
+                if($this->event_id != null)
+                {
+                    return Eventt::where('id',$this->event_id)->first()["event_start"];
+                }
+
+            }),
+            "end" => $this->when($this->damage_id != null || $this->event_id != null, function()
+            {
+                if($this->damage_id != null)
+                {
+                   return Damage::where('id',$this->damage_id)->first()['appointment_end'];
+                }
+
+                if($this->event_id != null)
+                {
+                   return Eventt::where('id',$this->event_id)->first()["event_end"];
+                }
+
+            }),
+            "startRecur" => $this->when($this->service_id != null, function()
+            {
+                return Service::where('id',$this->service_id)->first()['appointment_start'];
+            }),
+            "endRecur" => $this->when($this->service_id != null, function()
+            {
+                return Service::where('id',$this->service_id)->first()['appointment_end'];
+            }),
+            "frequency" => $this->when($this->service_id != null , function()
+            {
+                $service = Service::where('repeatable',true)->get()->first();
+                return $service['frequency'];
+            }),
+
+            "color" => $this->when($this->service_id != null || $this->damage_id != null ||$this->event_id != null, function()
+            {
+                if($this->damage_id != null)
+                {
+                    return "red";
+                }
+
+                if($this->service_id != null)
+                {
+                    return "default";
+                }
+
+                if($this->event_id != null)
+                {
+                    return "green";
+                }
+
+            }),
         ];
     }
 }
