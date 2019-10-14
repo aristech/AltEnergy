@@ -65,7 +65,7 @@ class ServiceResource extends JsonResource
                     $techn = User::where('id',$tech)->first();
                     $technician = new \stdClass();
                     $technician->tech_id = $tech;
-                    $technician->tech_fullname = $techn->lastname." ".$techn->firstname;
+                    $technician->tech_fullname = $techn['lastname']." ".$techn['firstname'];
                     array_push($technicians, $technician);
 
                 }
