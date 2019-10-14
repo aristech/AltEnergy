@@ -7,7 +7,7 @@ use App\Http\Resources\DamageResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\CustomClasses\v1\DamageSuperAdmin;
-use app\Calendar;
+use App\Calendar;
 
 class DamageController extends Controller
 {
