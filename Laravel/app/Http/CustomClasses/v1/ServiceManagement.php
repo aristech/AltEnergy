@@ -218,7 +218,7 @@ class ServiceManagement
 
     public function checkTechnician()
     {
-        if(count($this->request->techs) == 0)
+        if(count($this->request->techs) != 0)
         {
             foreach($this->request->techs as $tech)
             {

@@ -129,7 +129,7 @@ class DamageController extends Controller
         $damage = Damage::where('id',$request->id)->first();
         if(!$damage)
         {
-            return response()->json(["message" => "Η ζημιά με κωδικό ".$request->id." δεν είναι καταχωρημένη!"],404);
+            return response()->json(["message" => "Η βλάβη με κωδικό ".$request->id." δεν είναι καταχωρημένη!"],404);
         }
 
         $damage->delete();

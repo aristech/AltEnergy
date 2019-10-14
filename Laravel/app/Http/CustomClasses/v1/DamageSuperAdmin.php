@@ -65,7 +65,7 @@ class DamageSuperAdmin
         if(!$damageType)
         {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος ζημιάς!"],404);
+            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος βλάβης!"],404);
         }
     }
 
@@ -209,16 +209,16 @@ class DamageSuperAdmin
 
     public function checkTechnician()
     {
-        if(count($this->request->techs) == 0)
+        if(count($this->request->techs) != 0)
         {
             foreach($this->request->techs as $tech)
             {
-                $tech_id = $tech->tech_id;
+                $tech_id = $tech['tech_id'];
                 $tech = UsersRoles::where('user_id',$tech_id)->where('role_id','3')->first();
                 if(!$tech)
                 {
                     $this->hasError = true;
-                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό".$tech_id."δεν είναι τεχνικός!"],405);
+                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό ".$tech_id." δεν είναι τεχνικός!"],405);
                     break;
                 }
             }
@@ -283,7 +283,7 @@ class DamageSuperAdmin
         // }
 
 
-        return response()->json(["message" => "Η ζημιά του πελάτη καταχωρήθηκε επιτυχως!"],200);
+        return response()->json(["message" => "Η βλάβη του πελάτη καταχωρήθηκε επιτυχως!"],200);
     }
 
     public function checkDamage()
