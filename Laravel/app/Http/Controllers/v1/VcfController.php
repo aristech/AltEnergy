@@ -112,14 +112,14 @@ class VcfController extends Controller
 
         if($request->task == "users")
         {
-            $users = UserResource::collection(User::all());
+            $users = User::all();
             foreach($users as $user)
             {
                 $vcard = new VCard();
 
                 $vcard->addName($user->lastname, $user->firstname);
                 $vcard->addEmail($user->email);
-                $vcard->addRole('ATL/'.$user->role_title);
+                $vcard->addRole('ATL/'.$user->role()->first()->title);
                 $vcard->addPhoneNumber($user->telephone, 'TELEPHONE');
                 $vcard->addPhoneNumber($user->telephone2, 'TELEPHONE2');
                 $vcard->addPhoneNumber($user->mobile, 'MOBILE');
