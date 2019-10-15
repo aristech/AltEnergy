@@ -54,8 +54,8 @@ class ClientController extends Controller
         [
             'lastname' => 'required|string',
             'firstname' => 'required|string',
-            'afm' => 'required|string',
-            'doy' => 'required|string',
+            'afm' => 'nullable|string',
+            'doy' => 'nullable|string',
             'arithmos_gnostopoihshs' => 'nullable|string' ,
             'arithmos_meletis' => 'nullable|string' ,
             'arithmos_hkasp' => 'nullable|string',
@@ -107,19 +107,21 @@ class ClientController extends Controller
             }
         }
 
+
+        $lastClient = Client::latest()->first();
+
+        $foldername = $request->lastname."_".$request->firstname."_".($lastClient->id + 1);
+        $foldername = Greeklish::remove_accent($foldername);//conversion to greeklish
+        $request->request->add(["foldername" => $foldername]);
+
         $client = Client::create($request->all());
-        //$folderName = $request->lastname." ".$request->firstname." ".$request->address;
-        //$greeklish = Greeklish::remove_accent($folderName);
-        mkdir(storage_path()."/Clients/".$client->id);
-        // if(!$folder_created)
-        // {
-        //     return response()->json(["message" => "Δεν μπόρεσε να δημιουργηθεί φάκελος για τον πελάτη ".$request->lastname." ".$request->firstname],500);
-        // }
 
 
-
-
-
+        //mkdir(storage_path()."/Clients/".$client->foldername);
+        if(!$folder_created = mkdir(storage_path()."/Clients/".$client->foldername))
+        {
+             return response()->json(["message" => "Δεν μπόρεσε να δημιουργηθεί φάκελος για τον πελάτη ".$request->lastname." ".$request->firstname],500);
+        }
 
         return response()->json(["message" => "Ο νέος χρήστης καταχωρήθηκε επιτυχώς!"],200);
     }
@@ -178,8 +180,8 @@ class ClientController extends Controller
             'id' => 'required|integer',
             'lastname' => 'required|string',
             'firstname' => 'required|string',
-            'afm' => 'required|string',
-            'doy' => 'required|string',
+            'afm' => 'nullable|string',
+            'doy' => 'nullable|string',
             'arithmos_gnostopoihshs' => 'nullable|string' ,
             'arithmos_meletis' => 'nullable|string' ,
             'arithmos_hkasp' => 'nullable|string',
@@ -273,7 +275,7 @@ class ClientController extends Controller
 
        $client->delete();
 
-       $folder = storage_path('/Clients/'.$request->id);
+       $folder = storage_path('/Clients/'.$client->foldername);
 
         //Get a list of all of the file names in the folder.
         $files = glob($folder . '/*');

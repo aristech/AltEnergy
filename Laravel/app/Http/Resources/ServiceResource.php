@@ -71,7 +71,6 @@ class ServiceResource extends JsonResource
                 }
 
                 return $technicians;
-
             }),
             "repeatable" => $this->repeatable,
             "frequency" => $this->frequency

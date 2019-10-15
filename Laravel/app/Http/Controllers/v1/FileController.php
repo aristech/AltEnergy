@@ -36,7 +36,7 @@ class FileController extends Controller
         }
 
         //Url for stored files
-        $mypath = storage_path().'/Clients/'.$id;
+        $mypath = storage_path().'/Clients/'.$client->foldername;
 
         //get images and store them as ready blobs
         $responseArray = array();
@@ -153,6 +153,12 @@ class FileController extends Controller
     {
         ini_set('memory_limit','256M');
 
+        $client = Client::find($id);
+        if(!$client)
+        {
+            return response()->json(["message" => "Δεν βρέθηκε ο χρήστης με κωδικό ".$id],404);
+        }
+
         $count = 1;
         if(empty($request->all()))
         {
@@ -171,7 +177,7 @@ class FileController extends Controller
 
             $data = explode( ',', $filee );
             $toStorage = storage_path();
-            $destinationPath = $toStorage."/Clients/".$id."/";
+            $destinationPath = $toStorage."/Clients/".$client->foldername."/";
             $image_path = $destinationPath.$filename.".bmp";
             file_put_contents($image_path, base64_decode($data[1]));
             //return mime_content_type($image_path);
@@ -197,7 +203,7 @@ class FileController extends Controller
 
             ++$count;
         }
-        array_map('unlink', glob( storage_path()."/Clients/".$id."/*.bmp"));
+        array_map('unlink', glob( storage_path()."/Clients/".$client->foldername."/*.bmp"));
         return response()->json(["message" => "Τα αρχεία ανέβηκαν με επιτυχία!"],200);
     }
 
@@ -221,7 +227,7 @@ class FileController extends Controller
             return response()->json(["message" => "Δεν βρέθηκε ο χρήστης"],404);
         }
 
-        $file= storage_path()."/Clients/".$id."/".$filename;
+        $file= storage_path()."/Clients/".$client->foldername."/".$filename;
 
         if(!file_exists($file))
         {
@@ -300,7 +306,7 @@ class FileController extends Controller
             }
 
             //$file->move()
-           if(!move_uploaded_file($file, storage_path("Clients/".$id."/".$file->getClientOriginalName())))
+           if(!move_uploaded_file($file, storage_path("Clients/".$client->foldername."/".$file->getClientOriginalName())))
            {
                return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName()]);
            }
@@ -329,7 +335,7 @@ class FileController extends Controller
 
         //Url for stored files
         //$searchPath = explode('.',$filename);
-        $mypath = storage_path().'/Clients/'.$id."/".$filename;
+        $mypath = storage_path().'/Clients/'.$client->foldername."/".$filename;
 
         $file = glob($mypath);
 

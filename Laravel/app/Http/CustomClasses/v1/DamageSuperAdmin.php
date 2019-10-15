@@ -40,7 +40,7 @@ class DamageSuperAdmin
             $tech_array = array();
             foreach($this->request->techs as $technician)
             {
-                array_push($tech_array,$technician['tech_id']);
+                array_push($tech_array,$technician);//if all goes south $technician['tech_id]
             }
             $techs = implode(',',$tech_array);
 
@@ -213,12 +213,11 @@ class DamageSuperAdmin
         {
             foreach($this->request->techs as $tech)
             {
-                $tech_id = $tech['tech_id'];
-                $tech = UsersRoles::where('user_id',$tech_id)->where('role_id','3')->first();
+                $tech = UsersRoles::where('user_id',$tech)->where('role_id','3')->first();
                 if(!$tech)
                 {
                     $this->hasError = true;
-                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό ".$tech_id." δεν είναι τεχνικός!"],405);
+                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό ".$tech." δεν είναι τεχνικός!"],405);
                     break;
                 }
             }
