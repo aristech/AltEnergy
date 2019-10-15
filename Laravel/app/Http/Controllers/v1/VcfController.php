@@ -12,6 +12,8 @@ use App\Http\Resources\ManagerResource;
 use App\Http\Resources\ClientResource;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use App\User;
+use App\Http\Resources\UserResource;
 
 class VcfController extends Controller
 {
@@ -117,7 +119,7 @@ class VcfController extends Controller
 
                 $vcard->addName($user->lastname, $user->firstname);
                 $vcard->addEmail($user->email);
-                $vcard->addRole('ATL/'.$user->role()->first()->title);
+                $vcard->addRole('ATL/'.$user->role_title);
                 $vcard->addPhoneNumber($user->telephone, 'TELEPHONE');
                 $vcard->addPhoneNumber($user->telephone2, 'TELEPHONE2');
                 $vcard->addPhoneNumber($user->mobile, 'MOBILE');
