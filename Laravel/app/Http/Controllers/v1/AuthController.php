@@ -12,6 +12,7 @@ use App\UsersRoles;
 use Validator;
 use App\Http\Resources\UserResource;
 
+
 class AuthController extends Controller
 {
      /**

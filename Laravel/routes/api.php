@@ -114,6 +114,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::get('/calendar','CalendarController@index');
 
             Route::get('/supplements','SupplementController@index');
+
+            Route::get('/indications','IndicatorsController@index');
         });
     });
 });
