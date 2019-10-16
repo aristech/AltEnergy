@@ -72,13 +72,16 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Service $service, Request $request)
+    public function show($service, Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 3)
         {
             return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
         }
+
+        $service = Service::find($service);
+        if(!$service)return response()->json(["message" => "Δεν βρέθηκε το service στο σύστημα"],404);
 
         return ServiceResource::make($service);
     }

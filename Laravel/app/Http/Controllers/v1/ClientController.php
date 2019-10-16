@@ -132,7 +132,7 @@ class ClientController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request)
+    public function show(Request $request, $client)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4 || $request->user()->active == false)
@@ -140,13 +140,14 @@ class ClientController extends Controller
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
 
-        $client = Client::where('id',$request->id)->first();
+        $client = Client::find($client);
+
         if(!$client)
         {
-            return response()->json(["message" => "Δεν υπάρχει ο χρήστης που αναζητείτε!"],404);
+            return response()->json(["message" => "Δεν υπάρχει ο πελάτης που αναζητείτε!"],404);
         }
 
-        return $client;
+        return ClientResource::make($client);
     }
 
     /**

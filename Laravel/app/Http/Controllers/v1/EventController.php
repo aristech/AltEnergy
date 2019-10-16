@@ -76,9 +76,17 @@ class EventController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request, $event)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 3)
+        {
+            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
+        }
+
+        $event = Eventt::find($event);
+        if(!$event)return response()->json(["message" => "Δεν βρέθηκε η συγκεκριμένη εγγραφή στο σύστημα"],404);
+        return EventResource::make($event);
     }
 
     /**

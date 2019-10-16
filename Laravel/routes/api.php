@@ -39,11 +39,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::get('/roles','RoleController@index');
             //Location routes
             Route::get('/clients','ClientController@index');
+            Route::get('/clients/{client}','ClientController@show');
             Route::post('/clients','ClientController@store');
             Route::put('/clients','ClientController@update');
             Route::delete('/clients','ClientController@destroy');
 
             Route::get('/managers','ManagerController@index');
+            Route::get('/managers/{manager}','ManagerController@show');
             Route::post('/managers','ManagerController@store');
             Route::put('/managers','ManagerController@update');
             Route::delete('/managers','ManagerController@destroy');
@@ -85,6 +87,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
 
             Route::get('/events','EventController@index');
             Route::get('/eventhistory','EventController@history');
+            Route::get('/events/{event}','EventController@show');
             Route::post('/events','EventController@store');
             Route::put('/events','EventController@update');
             Route::delete('/events','EventController@destroy');
@@ -100,7 +103,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::delete('/servicetypes','ServiceTypeController@destroy');
 
             Route::get('/services','ServiceController@index');
-            //Route::get('/damages/{damage}','DamageController@show');
+            Route::get('/services/{service}','ServiceController@show');
             Route::get('/servicehistory','ServiceController@history');
             Route::post('/services','ServiceController@store');
             Route::put('/services','ServiceController@update');

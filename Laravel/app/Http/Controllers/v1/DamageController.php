@@ -72,7 +72,7 @@ class DamageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Damage $damage, Request $request)
+    public function show(Request $request, $damage)
     {
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 3)
@@ -80,7 +80,12 @@ class DamageController extends Controller
             return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
         }
 
-        return DamageResource::make($damage);
+        $damage = Damage::find($damage);
+
+        (!$damage)?$response = response()->json(["message"=>"Δεν υπάρχει η συγκέκριμένη βλάβη στο σύστημα"],404):$response = DamageResource::make($damage);
+
+
+        return $response;
     }
 
     /**

@@ -526,6 +526,25 @@ https://alten.aristech.gr/api/v1/supplements
 
 returns supplements for appointments occuring in current week
 ------------------------------------------------------------------------------------------------
+Display by url(All types of display use GET method)
+
+Display specific Client:
+https://alten.aristech.gr/api/v1/clients/{client-id}
+
+Display specific Manager:
+https://alten.aristech.gr/api/v1/managers/{manager-id}
+
+Display specific Damage:
+https://alten.aristech.gr/api/v1/damages/{damage-id}
+
+Display specific Event:
+https://alten.aristech.gr/api/v1/events/{event-id}
+
+Display specific Service:
+https://alten.aristech.gr/api/v1/services/{service_id}
+
+
+
 
 
 

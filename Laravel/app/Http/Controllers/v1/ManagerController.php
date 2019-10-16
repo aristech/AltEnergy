@@ -91,9 +91,21 @@ class ManagerController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Request $request,$manager)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 4)
+        {
+            return reponse()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"],401);
+        }
+
+        $manager = Manager::find($manager);
+
+        if(!$manager)
+        {
+            return response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος διαχειριστής!"],404);
+        }
+        return ManagerResource::make($manager);
     }
 
     /**
