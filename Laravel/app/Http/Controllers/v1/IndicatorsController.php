@@ -33,8 +33,6 @@ class IndicatorsController extends Controller
         }
 
         return response()->json(["data"=>$indications->indications],200);
-
-
     }
 
     /**
