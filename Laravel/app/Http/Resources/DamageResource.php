@@ -128,9 +128,9 @@ class DamageResource extends JsonResource
             "supplement" => ["field" => "supplement" , "value" => $this->supplement],
             "comments" =>  ["field" => "comments" , "value" => $this->comments],
             //"appointment_start" => $this->appointment_start,
-            "appointment_start" => ["field => appointment_start", "type" =>"datetime", "value" => $this->appointment_start],
-            "appointment_end" => $this->appointment_end,
-            "appointment_end" => ["field => appointment_end", "type" =>"datetime", "value" => $this->appointment_end],
+            "appointment_start" => ["field" => "appointment_start", "type" =>"datetime", "value" => $this->appointment_start],
+            //"appointment_end" => $this->appointment_end,
+            "appointment_end" => ["field" => "appointment_end", "type" =>"datetime", "value" => $this->appointment_end],
             "techs" => $this->when(true,function()
             {
                 $technicians = array();

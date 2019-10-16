@@ -8,6 +8,7 @@ use App\Damage;
 use App\Service;
 use App\Eventt;
 use App\Client;
+use App\Http\CustomClasses\v1\IndicatorManagement;
 
 class DashboardController extends Controller
 {
@@ -66,6 +67,18 @@ class DashboardController extends Controller
         }
 
         $dashboard->supplements = $supplements;
+
+
+        $indications = new IndicatorManagement();
+        $indications->getDamageIndicators();
+        $indications->getEventIndicators();
+        if(count($indications->indications) == 0)
+        {
+            return response()->json(["message" => "Δεν υπάρχει κάποια καθυστερημένη υποχρέωση"],404);
+        }
+
+        $dashboard->uncheckedEvents= $indications->indications;
+
         return response()->json(["data" => $dashboard]);
     }
 
