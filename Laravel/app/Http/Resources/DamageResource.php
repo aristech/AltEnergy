@@ -69,8 +69,8 @@ class DamageResource extends JsonResource
                     }
                     return $technicians;
                 }),
-                //"user" => $this->user['lastname']
-            "editable" => [
+
+            "editable" => array([
             "resource" => "Βλάβη",
             "id" => $this->id,
             "info" =>[
@@ -84,7 +84,6 @@ class DamageResource extends JsonResource
             })],
             "damage" => ["field"=>"damage_type_id", "value" => $this->damage_type_id, "type" => "search", "title" => "Τύπος βλάβης" , "page"=>"damagetypes", "holder"=>$this->type['name']],
             "comments" => ["field"=>"damage_comments","value" => $this->damage_comments, "type" => "string", "title" => "Σχόλια Βλάβης"],
-            //"damage_comments" => $this->damage_comments,
             "cost" => ["field"=>"cost","value" => $this->cost, "type" => "float", "title" => "Τιμή"],
             //"cost" => $this->cost,
             "guarantee" => ["field"=>"guarantee","value" => $this->guarantee, "type" => "boolean", "title" => "Εγγύηση", "radioItems"=> [[ "id" => "0", "title" => "Με εγγύηση" ], [ "id" => 1, "title" => "Χωρίς εγγύηση"]]],
@@ -153,6 +152,6 @@ class DamageResource extends JsonResource
 
             })
             //"user" => $this->user['lastname']
-                ]];
+                ])];
     }
 }
