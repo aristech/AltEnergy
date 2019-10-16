@@ -18,7 +18,6 @@ class DamageResource extends JsonResource
 
             return
             [
-                "datatable" => [
                 "id" => $this->id,
                 "damage_type" => $this->type['name'],
                 "damage_comments" => $this->damage_comments,
@@ -69,11 +68,9 @@ class DamageResource extends JsonResource
                         array_push($technicians, $technician);
                     }
                     return $technicians;
-                })
+                }),
                 //"user" => $this->user['lastname']
-            ],
-
-            "edit_table" => [
+            "editable" => [
             "resource" => "Βλάβη",
             "id" => $this->id,
             "info" =>[
@@ -156,6 +153,6 @@ class DamageResource extends JsonResource
 
             })
             //"user" => $this->user['lastname']
-            ]];
+                ]];
     }
 }
