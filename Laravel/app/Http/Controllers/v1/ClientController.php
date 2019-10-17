@@ -9,6 +9,7 @@ use Validator;
 use App\Manager;
 use App\Http\Resources\ClientResource;
 use App\Http\CustomClasses\v1\Greeklish;
+use App\Http\CustomClasses\v1\SendMail;
 
 
 class ClientController extends Controller
@@ -20,6 +21,13 @@ class ClientController extends Controller
      */
     public function index()
     {
+        $mail = new SendMail();
+        $mail->getDamages();
+        $mail->getEvents();
+        $mail->createMessage();
+        $mail->sendMail();
+
+        return $mail->message;
         return ClientResource::collection(Client::all());
     }
 
