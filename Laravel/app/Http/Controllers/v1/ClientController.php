@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Client;
+use App\Damage;
 use Validator;
 use App\Manager;
 use App\Http\Resources\ClientResource;
@@ -22,12 +23,14 @@ class ClientController extends Controller
     public function index()
     {
         $mail = new SendMail();
+        //return $mail->checktime('2019-10-17T18:39:00.000Z');
         $mail->getDamages();
         $mail->getEvents();
         $mail->createMessage();
-        //$mail->sendMail();
+        $mail->sendMail();
 
-        return $mail->message;
+       //return $mail->message;
+
         return ClientResource::collection(Client::all());
     }
 

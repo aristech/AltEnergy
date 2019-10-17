@@ -4,49 +4,22 @@ namespace App\Http\CustomClasses\v1;
 use App\Eventt;
 use App\Damage;
 
+
 //#TODO : Insert herefor services as well
 class SendMail
 {
     private $reminderDmg=array();
     private $reminderEvt=array();
-    private $time;
+    public $time;
 
     public $message;
 
 
     public function checktime($diff)
     {
-        $years = floor($diff / (365*60*60*24));
-
-
-        // To get the month, subtract it with years and
-        // divide the resultant date into
-        // total seconds in a month (30*60*60*24)
-        $months = floor(($diff - $years * 365*60*60*24)
-                                    / (30*60*60*24));
-
-
-        // To get the day, subtract it with years and
-        // months and divide the resultant date into
-        // total seconds in a days (60*60*24)
-        $days = floor(($diff - $years * 365*60*60*24 -
-                    $months*30*60*60*24)/ (60*60*24));
-
-
-        // To get the hour, subtract it with years,
-        // months & seconds and divide the resultant
-        // date into total seconds in a hours (60*60)
-        $hours = floor(($diff - $years * 365*60*60*24
-            - $months*30*60*60*24 - $days*60*60*24)
-                                        / (60*60));
-
-
-        // To get the minutes, subtract it with years,
-        // months, seconds and hours and divide the
-        // resultant date into total seconds i.e. 60
-        $minutes = floor(($diff - $years * 365*60*60*24
-                - $months*30*60*60*24 - $days*60*60*24
-                                - $hours*60*60)/ 60);
+        $time = strtotime($diff);
+        $now = time() + 10800;
+        $minutes = ($time - $now)/3600;
 
         return $minutes;
     }
@@ -76,9 +49,9 @@ class SendMail
         {
             foreach($damages as $damage)
             {
-                $diff = strtotime($damage["appointment_start"]) - strtotime('now');
+                $diff = $damage["appointment_start"];
 
-                if($this->checktime($diff) <=30 && $this->checktime($diff) > 0)
+                if($this->checktime($diff) <= 30 && $this->checktime($diff) > 0)
                 {
                     $obj = new \stdClass();
                     $obj->type = $damage["type"]["name"];
@@ -119,7 +92,7 @@ class SendMail
             {
                 foreach($events as $event)
                 {
-                   $diff = strtotime($event["event_start"]) - strtotime('now');
+                   $diff = $event["event_start"];
                     if( $this->checktime($diff) <= 30 && $this->checktime($diff) > 0)
                     {
                         $obj = new \stdClass();
