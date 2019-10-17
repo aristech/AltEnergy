@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Http\CustomClasses\v1\SendMail;
 
 class SendEmail extends Command
 {
@@ -11,14 +12,14 @@ class SendEmail extends Command
      *
      * @var string
      */
-    protected $signature = 'command:name';
+    protected $signature = 'send:email';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Command description';
+    protected $description = 'Send email with task that should be executed within half hour';
 
     /**
      * Create a new command instance.
@@ -37,6 +38,11 @@ class SendEmail extends Command
      */
     public function handle()
     {
-        //
+        $mail = new SendMail();
+        //return $mail->checktime('2019-10-17T18:39:00.000Z');
+        $mail->getDamages();
+        $mail->getEvents();
+        $mail->createMessage();
+        $mail->sendMail();
     }
 }

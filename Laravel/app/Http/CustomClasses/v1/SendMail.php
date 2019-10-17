@@ -10,16 +10,15 @@ class SendMail
 {
     private $reminderDmg=array();
     private $reminderEvt=array();
-    public $time;
 
     public $message;
 
 
     public function checktime($diff)
     {
-        $time = strtotime($diff);
-        $now = time() + 10800;
-        $minutes = ($time - $now)/3600;
+        $time = strtotime($diff) - 10800;//prod server time
+        $now = time();
+        $minutes = ($time - $now)/60;
 
         return $minutes;
     }
