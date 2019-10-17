@@ -44,5 +44,7 @@ class SendEmail extends Command
         $mail->getEvents();
         $mail->createMessage();
         $mail->sendMail();
+
+        $this->info('Το μήνυμα εστάλη επιτυχώς!');
     }
 }

@@ -86,7 +86,7 @@ class DamageResource extends JsonResource
             "comments" => ["field"=>"damage_comments","value" => $this->damage_comments, "type" => "string", "title" => "Σχόλια Βλάβης"],
             "cost" => ["field"=>"cost","value" => $this->cost, "type" => "float", "title" => "Τιμή"],
             //"cost" => $this->cost,
-            "guarantee" => ["field"=>"guarantee","value" => $this->guarantee, "type" => "boolean", "title" => "Εγγύηση", "radioItems"=> [[ "id" => "0", "title" => "Με εγγύηση" ], [ "id" => 1, "title" => "Χωρίς εγγύηση"]]],
+            "guarantee" => ["field"=>"guarantee","value" => $this->guarantee, "type" => "boolean", "title" => "Εγγύηση", "radioItems"=> [[ "id" => "1", "title" => "Με εγγύηση" ], [ "id" => 0, "title" => "Χωρίς εγγύηση"]]],
             //"guarantee" => $this->guarantee,
             //"status" => $this->status,
             "status" => ["field" => "status", "value" => $this->status, "type" => "string", "title" => "Κατάσταση"],
