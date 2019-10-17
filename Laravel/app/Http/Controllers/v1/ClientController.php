@@ -25,7 +25,7 @@ class ClientController extends Controller
         $mail->getDamages();
         $mail->getEvents();
         $mail->createMessage();
-        $mail->sendMail();
+        //$mail->sendMail();
 
         return $mail->message;
         return ClientResource::collection(Client::all());

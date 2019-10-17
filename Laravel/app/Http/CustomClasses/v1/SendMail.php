@@ -9,8 +9,47 @@ class SendMail
 {
     private $reminderDmg=array();
     private $reminderEvt=array();
+    private $time;
 
     public $message;
+
+
+    public function checktime($diff)
+    {
+        $years = floor($diff / (365*60*60*24));
+
+
+        // To get the month, subtract it with years and
+        // divide the resultant date into
+        // total seconds in a month (30*60*60*24)
+        $months = floor(($diff - $years * 365*60*60*24)
+                                    / (30*60*60*24));
+
+
+        // To get the day, subtract it with years and
+        // months and divide the resultant date into
+        // total seconds in a days (60*60*24)
+        $days = floor(($diff - $years * 365*60*60*24 -
+                    $months*30*60*60*24)/ (60*60*24));
+
+
+        // To get the hour, subtract it with years,
+        // months & seconds and divide the resultant
+        // date into total seconds in a hours (60*60)
+        $hours = floor(($diff - $years * 365*60*60*24
+            - $months*30*60*60*24 - $days*60*60*24)
+                                        / (60*60));
+
+
+        // To get the minutes, subtract it with years,
+        // months, seconds and hours and divide the
+        // resultant date into total seconds i.e. 60
+        $minutes = floor(($diff - $years * 365*60*60*24
+                - $months*30*60*60*24 - $days*60*60*24
+                                - $hours*60*60)/ 60);
+
+        return $minutes;
+    }
 
     public function sendMail()
     {
@@ -37,7 +76,9 @@ class SendMail
         {
             foreach($damages as $damage)
             {
-                if((strtotime($damage["appointment_start"]) - strtotime('now')) >= 1800)
+                $diff = strtotime($damage["appointment_start"]) - strtotime('now');
+
+                if($this->checktime($diff) <=30 && $this->checktime($diff) > 0)
                 {
                     $obj = new \stdClass();
                     $obj->type = $damage["type"]["name"];
@@ -46,15 +87,15 @@ class SendMail
 
                     if($damage['client']['telephone'] != null)
                     {
-                        $obj->tel = "<a href='".$damage['client']['telephone']."'>".$damage['client']['telephone']."</a>";
+                        $obj->tel = "<a href='tel:".$damage['client']['telephone']."'>".$damage['client']['telephone']."</a>";
                     }
                     elseif($damage['client']['telephone2'] != null)
                     {
-                        $obj->tel = "<a href='".$damage['client']['telephone2']."'>".$damage['client']['telephone2']."</a>";
+                        $obj->tel = "<a href='tel:".$damage['client']['telephone2']."'>".$damage['client']['telephone2']."</a>";
                     }
                     elseif($damage['client']['mobile'] != null)
                     {
-                        $obj->tel = "<a href='".$damage['client']['mobile']."'>".$damage['client']['mobile']."</a>";
+                        $obj->tel = "<a href='tel:".$damage['client']['mobile']."'>".$damage['client']['mobile']."</a>";
                     }
                     else
                     {
@@ -78,7 +119,8 @@ class SendMail
             {
                 foreach($events as $event)
                 {
-                    if(strtotime($event["event_start"]) - strtotime('now') >= 1800)
+                   $diff = strtotime($event["event_start"]) - strtotime('now');
+                    if( $this->checktime($diff) <= 30 && $this->checktime($diff) > 0)
                     {
                         $obj = new \stdClass();
                         $obj->type = $event["title"];
@@ -103,7 +145,7 @@ class SendMail
                 if(count($this->reminderDmg) != 0)
                 {
                     $this->message .= "<h4>Ραντεβού για βλάβες</h4>";
-                    $this->message .= "<table>";
+                    $this->message .= "<table border='2'>";
                     $this->message .= "<tr><th>Τυπος Βλάβης</th><th>Όνομα Πελάτη</th><th>Διεύθυνση</th><th>Τηλέφωνο Επικοινωνίας</th><th>Ωρα Ραντεβού</th></tr>";
 
                     foreach($this->reminderDmg as $dmg)
@@ -117,7 +159,7 @@ class SendMail
                 if(count($this->reminderEvt) != 0)
                 {
                     $this->message .= "<h4>Λοιπές Δραστηριότητες</h4>";
-                    $this->message .= "<table>";
+                    $this->message .= "<table border='2' >";
                     $this->message .= "<tr><th>Δραστηριότητα</th><th>Ωρα Ραντεβού</th></tr>";
 
                     foreach($this->reminderEvt as $evt)
