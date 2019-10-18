@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         //$this->call(UsersTableSeeder::class);
         // DB::table('roles')->insert(["title"=>"Πελάτης"]);
         // DB::table('roles')->insert(["title"=>"Διαχειριστής"]);
-        // DB::table('roles')->insert(["title"=>"Υπάλληλος"]);
+        // DB::table('roles')->insert(["title"=>"Τεχνικός"]);
         // DB::table('roles')->insert(["title"=>"Admin"]);
         // DB::table('roles')->insert(["title"=>"Super Admin"]);
         factory(App\Manufacturer::class,5)->create();

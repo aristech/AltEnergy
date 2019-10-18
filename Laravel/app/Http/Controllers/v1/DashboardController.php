@@ -29,9 +29,9 @@ class DashboardController extends Controller
         $cancelledServices = Service::where('status','Ακυρώθηκε')->get()->count();
         $totalServices = $openServices + $completedServices + $cancelledServices;
 
-        $openEvents = Service::where('status','Μη Ολοκληρωμένο')->get()->count();
-        $completedEvents = Service::where('status','Ολοκληρωμένο')->get()->count();
-        $cancelledEvents = Service::where('status','Ακυρώθηκε')->get()->count();
+        $openEvents = Eventt::where('status','Μη Ολοκληρωμένο')->get()->count();
+        $completedEvents = Eventt::where('status','Ολοκληρωμένο')->get()->count();
+        $cancelledEvents = Eventt::where('status','Ακυρώθηκε')->get()->count();
         $totalEvents = $openEvents + $completedEvents + $cancelledEvents;
 
         $clients = Client::all()->count();
@@ -71,13 +71,19 @@ class DashboardController extends Controller
 
         $indications = new IndicatorManagement();
         $indications->getDamageIndicators();
+        $indications->getServiceIndicators();
         $indications->getEventIndicators();
+
         if(count($indications->indications) == 0)
         {
-            return response()->json(["message" => "Δεν υπάρχει κάποια καθυστερημένη υποχρέωση"],404);
+            //$dashboard->uncheckedEvents = "Δεν υπάρχει κάποια καθυστερημένη υποχρέωση";
+        }
+        else
+        {
+            $dashboard->uncheckedEvents= $indications->indications;
         }
 
-        $dashboard->uncheckedEvents= $indications->indications;
+        //$dashboard->uncheckedEvents= $indications->indications;
 
         return response()->json(["data" => $dashboard]);
     }

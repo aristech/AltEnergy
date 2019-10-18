@@ -82,32 +82,32 @@ class DamageResource extends JsonResource
                 if($this->client['telephone2'] != null) return $this->client['telephone2'];
                 if($this->client['mobile'] != null) return $this->client['mobile'];
             })],
-            "damage" => ["field"=>"damage_type_id", "value" => $this->damage_type_id, "type" => "search", "title" => "Τύπος βλάβης" , "page"=>"damagetypes", "holder"=>$this->type['name']],
-            "comments" => ["field"=>"damage_comments","value" => $this->damage_comments, "type" => "string", "title" => "Σχόλια Βλάβης"],
-            "cost" => ["field"=>"cost","value" => $this->cost, "type" => "float", "title" => "Τιμή"],
+            "damage" => ["field"=>"damage_type_id", "value" => $this->damage_type_id, "type" => "search", "title" => "Τύπος βλάβης" , "page"=>"damagetypes", "holder"=>$this->type['name'], "required" => true],
+            "damage_comments" => ["field"=>"damage_comments","value" => $this->damage_comments, "type" => "text", "title" => "Σχόλια Βλάβης", "required" => false],
+            "cost" => ["field"=>"cost","value" => $this->cost, "type" => "float", "title" => "Τιμή", "required" => false],
             //"cost" => $this->cost,
-            "guarantee" => ["field"=>"guarantee","value" => $this->guarantee, "type" => "boolean", "title" => "Εγγύηση", "radioItems"=> [[ "id" => "1", "title" => "Με εγγύηση" ], [ "id" => 0, "title" => "Χωρίς εγγύηση"]]],
+            "guarantee" => ["field"=>"guarantee","value" => $this->guarantee, "type" => "boolean", "title" => "Εγγύηση", "radioItems"=> [[ "id" => "1", "title" => "Με εγγύηση" ], [ "id" => 0, "title" => "Χωρίς εγγύηση"]],"required" => true],
             //"guarantee" => $this->guarantee,
             //"status" => $this->status,
-            "status" => ["field" => "status", "value" => $this->status, "type" => "string", "title" => "Κατάσταση"],
+            "status" => ["field" => "status", "value" => $this->status, "type" => "boolean", "title" => "Κατάσταση", "required" => true],
             //"appointment_pending" => $this->appointment_pending,
-            "appointment_pending" => ["field"=>"appointment_pending","value" => $this->appointment_pending, "type" => "boolean", "title" => "Αναμονή ραντεβού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "appointment_pending" => ["required" => true, "field"=>"appointment_pending","value" => $this->appointment_pending, "type" => "boolean", "title" => "Αναμονή ραντεβού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"technician_left" => $this->technician_left,
-            "technician_left" => ["field"=>"technician_left","value" => $this->technician_left, "type" => "boolean", "title" => "Αποχώρηση Τεχνικού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "technician_left" => ["required" => true, "field"=>"technician_left","value" => $this->technician_left, "type" => "boolean", "title" => "Αποχώρηση Τεχνικού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"technician_arrived" => $this->technician_arrived,
-            "technician_arrived" => ["field"=>"technician_arrived","value" => $this->technician_arrived, "type" => "boolean", "title" => "Άφηξη Τεχνικού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "technician_arrived" => ["required" => true, "field"=>"technician_arrived","value" => $this->technician_arrived, "type" => "boolean", "title" => "Άφηξη Τεχνικού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"appointment_completed" => $this->appointment_completed,
-            "appointment_completed" => ["field"=>"appointment_completed","value" => $this->appointment_completed, "type" => "boolean", "title" => "Ολοκλήρωση Ραντεβού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "appointment_completed" => ["required" => true, "field"=>"appointment_completed","value" => $this->appointment_completed, "type" => "boolean", "title" => "Ολοκλήρωση Ραντεβού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"appointment_needed" => $this->appointment_needed,
-            "appointment_needed" => ["field"=>"appointment_needed","value" => $this->appointment_needed, "type" => "boolean", "title" => "Ανάγκη για Νέο Ραντεβού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "appointment_needed" => ["required" => true, "field"=>"appointment_needed","value" => $this->appointment_needed, "type" => "boolean", "title" => "Ανάγκη για Νέο Ραντεβού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"supplement_pending" => $this->supplement_pending,
-            "supplement_pending" => ["field"=>"supplement_pending","value" => $this->supplement_pending, "type" => "boolean", "title" => "Αναμονή Ανταλλακτικού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "supplement_pending" => ["required" => true, "field"=>"supplement_pending","value" => $this->supplement_pending, "type" => "boolean", "title" => "Αναμονή Ανταλλακτικού", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"damage_fixed" => $this->damage_fixed,
-            "damage_fixed" => ["field"=>"damage_fixed","value" => $this->damage_fixed, "type" => "boolean", "title" => "Βλάβη Επιδιορθώθηκε", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "damage_fixed" => ["required" => true, "field"=>"damage_fixed","value" => $this->damage_fixed, "type" => "boolean", "title" => "Βλάβη Επιδιορθώθηκε", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"completed_no_transaction" => $this->completed_no_transaction,
-            "completed_no_transaction" => ["field"=>"completed_no_transaction", "value" => $this->completed_no_transaction, "type" => "boolean", "title" => "Ολοκλήρωση χωρίς συναλλαγή", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
+            "completed_no_transaction" => ["required" => true, "field"=>"completed_no_transaction", "value" => $this->completed_no_transaction, "type" => "boolean", "title" => "Ολοκλήρωση χωρίς συναλλαγή", "radioItems"=> [[ "id" => "0", "title" => "Οχι" ], [ "id" => 1, "title" => "Ναι"]]],
             //"client_id" => $this->client_id,
-            "client" => ["field"=>"client_id", "value" => $this->client_id, "type" => "search", "title" => "Πελάτης", "page"=>"clients", "holder"=>$this->client['firstname']." ".$this->client['lastname']." | ". $this->client['address']],
+            "client" => ["required" => true, "field"=>"client_id", "value" => $this->client_id, "type" => "search", "title" => "Πελάτης", "page"=>"clients", "holder"=>$this->client['firstname']." ".$this->client['lastname']." | ". $this->client['address']],
             // "client_lastname" => $this->client['lastname'],
             // "client_firstname" => $this->client['firstname'],
             //"client_address" => $this->client['address'],
@@ -117,19 +117,19 @@ class DamageResource extends JsonResource
             //     if($this->client['mobile'] != null) return $this->client['mobile'];
             // }),
             // "manufacturer_id" => $this->manufacturer_id,
-            "manufacturer" => ["field"=>"manufacturer_id", "value" => $this->manufacturer_id],
+            "manufacturer" => ["required" => true, "field"=>"manufacturer_id", "value" => $this->manufacturer_id],
             // "manufacturer" => $this->device['mark']['manufacturer']['name'],
             //"mark_id" => $this->mark_id,
-            "mark" => ["field"=>"mark_id", "value" => $this->mark_id],
+            "mark" => ["required" => true, "field"=>"mark_id", "value" => $this->mark_id],
             //"device_id" => $this->device_id,
             //"device" => $this->device['name'],
-            "devices" => ["field"=>"device_id", "value" => $this->device_id, "type" => "searchdevices", "title" => "Συσκευή", "page"=>"devices", "holder"=> $this->device['mark']['manufacturer']['name']." / ".$this->device['mark']['name']." / ".$this->device['name']],
-            "supplement" => ["field" => "supplement" , "value" => $this->supplement],
-            "comments" =>  ["field" => "comments" , "value" => $this->comments],
+            "devices" => ["required" => true, "field"=>"device_id", "value" => $this->device_id, "type" => "searchdevices", "title" => "Συσκευή", "page"=>"devices", "holder"=> $this->device['mark']['manufacturer']['name']." / ".$this->device['mark']['name']." / ".$this->device['name']],
+            "supplement" => ["required" => false, "field" => "supplement" , "title" => "Ανταλλακτικά", "type" => "text", "value" => $this->supplement],
+            "comments" =>  ["required" => false, "field" => "comments", "type" => "text", "title" => "Γενικά Σχόλια", "value" => $this->comments],
             //"appointment_start" => $this->appointment_start,
-            "appointment_start" => ["field" => "appointment_start", "type" =>"datetime", "value" => $this->appointment_start],
+            "appointment_start" => ["required" => false, "field" => "appointment_start", "title" => "Έναρξη Ραντεβού" , "type" =>"datetime", "value" => $this->appointment_start],
             //"appointment_end" => $this->appointment_end,
-            "appointment_end" => ["field" => "appointment_end", "type" =>"datetime", "value" => $this->appointment_end],
+            "appointment_end" => ["required" => false, "field" => "appointment_end", "title" => "Λήξη Ραντεβού" ,"type" =>"datetime", "value" => $this->appointment_end],
             "techs" => $this->when(true,function()
             {
                 $technicians = array();
@@ -144,7 +144,7 @@ class DamageResource extends JsonResource
                         array_push($technician_ids, $tech);
                     }
 
-                    $technicians = ["field" => "techs" , "type" => "searchtechs", "page" => "tech", "value" => $technician_ids, "holder" => $technicians];
+                    $technicians = ["required" => false, "title" => "Τεχνικοί", "field" => "techs" , "type" => "searchtechs", "page" => "tech", "value" => $technician_ids, "holder" => $technicians];
 
                 }
 

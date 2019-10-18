@@ -31,13 +31,18 @@ class SupplementController extends Controller
         $endweek = strtotime($now->endOfWeek());
         foreach($damages as $damage)
         {
-            $apointment = explode(" ",$damage->appointment_start);
-            $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
+            $appointment = $damage->appointment_start;
+            // $appointment_temp = str_replace("T"," ",$appointment);
+            // $split_appointment = explode(".",$appointment_temp);
+            // $appointmentDisplay = $split_appointment[0];
+            $appointmentDisplay = date("F j, Y, g:i a",strtotime($appointment));
+            // $apointment = explode(" ",$damage->appointment_start);
+            // $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
             if($damage->appointment_start != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek)
             {
                 $supplement = new \stdClass();
                 $supplement->supplement = $damage->supplement;
-                $supplement->date = $damage->appointment_start;
+                $supplement->date = $appointmentDisplay;//if all goes wrong display $damage->appointment_start
 
                 array_push($supplements,$supplement);
             }
@@ -46,13 +51,15 @@ class SupplementController extends Controller
         $services = Service::where('status','Μη Ολοκληρωμένο')->where('supplements','!=',null)->get();
         foreach($services as $service)
         {
-            $apointment = explode(" ",$damage->appointment_start);
-            $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
+            $appointment = $damage->appointment_start;
+            $appointmentDisplay = date("F j, Y, g:i a",strtotime($appointment));
+            // $apointment = explode(" ",$service->appointment_start);
+            // $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
             if($service->appointment_start != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek)
             {
                 $supplement = new \stdClass();
                 $supplement->supplement = $service->supplement;
-                $supplement->date = $service->appointment_start;
+                $supplement->date = $appointmentDisplay; //if all goes south replace with $service->appointment_start
 
                 array_push($supplements,$supplement);
             }

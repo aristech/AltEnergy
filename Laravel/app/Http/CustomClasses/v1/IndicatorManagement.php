@@ -19,10 +19,15 @@ class IndicatorManagement
             $appointment_start_timestamp = strtotime($appointment_start);
             $appointment_start_now = strtotime("now");
 
+            $appointment_transformation = str_replace('T',' ',$appointment_start);
+            $appointment_trans_2 = explode('.',$appointment_transformation);
+            $app = strtotime($appointment_trans_2[0]);
+
+
             $client = Client::where('id',$damage['client_id'])->first();
             $client_fullname = $client['firstname']." ".$client["lastname"];
 
-            if($appointment_start_now - $appointment_start_timestamp > 0)
+            if($appointment_start_now - $app > 0)
             {
                 $obj = new \stdClass();
                 $obj->type = "damages";
@@ -31,7 +36,39 @@ class IndicatorManagement
                 $obj->id = $damage['id'];
                 $obj->client = $client_fullname;
                 $obj->address = $client['address'];
-                $obj->delayed_date = $damage['appointment_start'];
+                $obj->delayed_date = date("F j, Y, g:i a",$app);
+
+                array_push($this->indications, $obj);
+            }
+        }
+    }
+
+    public function getServiceIndicators()
+    {
+        $services = Service::where('status','Μη ολοκληρωμένο')->where('appointment_start','!=',null)->get();
+        foreach($services as $service)
+        {
+            $service_start = $service["appointment_start"];
+            $event_start_timestamp = strtotime($service_start);
+            $service_start_now = strtotime("now");
+
+            $service_transformation = str_replace('T',' ',$service_start);
+            $service_trans = explode('.',$service_transformation);
+            $service_time = strtotime($service_trans[0]);
+
+            $client = Client::where('id',$service['client_id'])->first();
+            $client_fullname = $client['firstname']." ".$client["lastname"];
+
+            if($service_start_now - $service_time > 0)
+            {
+                $obj = new \stdClass();
+                $obj->type = "services";
+                $obj->id = $service['id'];
+                $obj->title = $service['type']['name'];
+                $obj->displaytype = "σερβις";
+                $obj->client = $client_fullname;
+                $obj->address = $client['address'];
+                $obj->delayed_date = date("F j, Y, g:i a",$service_time);
 
                 array_push($this->indications, $obj);
             }
@@ -47,15 +84,18 @@ class IndicatorManagement
             $event_start_timestamp = strtotime($event_start);
             $event_start_now = strtotime("now");
 
-            if($event_start_now - $event_start_timestamp > 0)
+            $event_transformation = str_replace('T',' ',$event_start);
+            $event_trans = explode('.',$event_transformation);
+            $event_time = strtotime($event_trans[0]);
+
+            if($event_start_now - $event > 0)
             {
                 $obj = new \stdClass();
                 $obj->type = "events";
                 $obj->title = $event['title'];
                 $obj->displaytype = "task/λοιπα";
                 $obj->id = $event['id'];
-                $obj->name = $event['type']['name'];
-                $obj->delayed_date = $event_start;
+                $obj->delayed_date = date("F j, Y, g:i a",$event_time);
 
                 array_push($this->indications, $obj);
             }
