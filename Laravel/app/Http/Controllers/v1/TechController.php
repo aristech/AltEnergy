@@ -17,7 +17,7 @@ class TechController extends Controller
         }
 
         return TechResource::collection(User::whereHas('role' , function($q){
-            $q->where('title', 'Υπάλληλος');
+            $q->where('title', 'Τεχνικός');
         })->where('active',true)->get());
     }
 }

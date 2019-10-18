@@ -80,7 +80,7 @@ class DamageResource extends JsonResource
                             if ($this->client['mobile'] != null) return $this->client['mobile'];
                         })
                     ],
-                    "damage" => ["field" => "damage_type_id", "value" => $this->damage_type_id, "type" => "search", "title" => "Τύπος βλάβης", "page" => "damagetypes", "holder" => $this->type['name']],
+                    "damage" => ["field" => "damage_type_id", "value" => $this->damage_type_id, "type" => "search", "title" => "Τύπος βλάβης", "page" => "damagetypes", "holder" => $this->type['name'], "required" => false],
                     "client" => ["field" => "client_id", "value" => $this->client_id, "type" => "search", "title" => "Πελάτης", "page" => "clients", "holder" => $this->client['firstname'] . " " . $this->client['lastname'] . " | " . $this->client['address'], "required" => true],
                     "techs" => $this->when(true, function () {
                         $technicians = array();

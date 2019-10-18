@@ -292,8 +292,8 @@ class FileController extends Controller
             {
                 return response()->json(["message" => "Θα πρέπει να υπάρχει αρχείο προς ανέβασμα"],422);
             }
-        // foreach($request->file as $file)
-        // {
+        foreach($request->file as $file)
+        {
             //return $file->getMimeType();
             if($file->getMimeType() != "image/jpeg" && $file->getMimeType() != "application/pdf" && $file->getMimeType() != "image/png" )
             {
@@ -305,14 +305,14 @@ class FileController extends Controller
                 return response()->json(["message" => "Το αρχείο ".$file->getClientOriginalName()." είναι μεγαλύτερου του επιτρεπτού μεγέθους!"],422);
             }
 
-            //$file->move()
+           //$file->move()
            if(!move_uploaded_file($file, storage_path("Clients/".$client->foldername."/".$file->getClientOriginalName())))
            {
                return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName()]);
            }
 
 
-        //}
+        }
 
         return response()->json(["message" => "Το αρχείο ανέβηκε επιτυχώς!"],200);
     }
