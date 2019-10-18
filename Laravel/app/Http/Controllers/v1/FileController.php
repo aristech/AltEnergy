@@ -49,8 +49,6 @@ class FileController extends Controller
         {
             $class = new \stdClass();
             $info = pathinfo($file);
-
-            if($info["extension"] == "jpg" || $info["extension"] == "jpeg")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
@@ -314,7 +312,7 @@ class FileController extends Controller
 
         }
 
-        return response()->json(["message" => "Το αρχείο ανέβηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Τα αρχεία ανέβηκε επιτυχώς!"],200);
     }
 
     public function destroy(Request $request,$id,$filename)
