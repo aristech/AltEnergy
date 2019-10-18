@@ -49,6 +49,8 @@ class FileController extends Controller
         {
             $class = new \stdClass();
             $info = pathinfo($file);
+
+            if($info["extension"] == "jpg" || $info["extension"] == "jpeg")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
