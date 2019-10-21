@@ -310,10 +310,17 @@ class FileController extends Controller
                 return response()->json(["message" => "Το αρχείο ".$file->getClientOriginalName()." είναι μεγαλύτερου του επιτρεπτού μεγέθους!"],422);
             }
 
-           //$file->move()
-           if(!move_uploaded_file($file, storage_path("Clients/".$client->foldername."/".mb_strtolower($file->getClientOriginalName(),"UTF-8"))))
+           $filename_array = explode(".",$file->getClientOriginalName());
+           $n = count($filename_array);
+           $filename_array[$n - 1] = strtolower($filename_array[$n - 1]);
+
+           $filename =  implode('.',$filename_array);
+
+
+
+           if(!move_uploaded_file($file, storage_path("Clients/".$client->foldername."/".$filename)))
            {
-               return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName(), 'UTF-8']);
+               return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName()]);
            }
 
 
