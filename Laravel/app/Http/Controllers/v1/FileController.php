@@ -48,10 +48,10 @@ class FileController extends Controller
         foreach($files as $file)
         {
             $class = new \stdClass();
-            $info = pathinfo($file);
+            $info = pathinfo($file);//extension checked for jpeg and jpg differences
 			$type = mime_content_type($file);
 
-            if($type == "image/jpeg")
+            if($info['extension'] == "jpeg")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
@@ -64,7 +64,7 @@ class FileController extends Controller
                 $class->filename = $name;
             }
 
-            if($type == "image/jpg")
+            if($info['extension'] == "jpg")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
