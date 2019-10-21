@@ -51,7 +51,7 @@ class FileController extends Controller
             $info = pathinfo($file);
 			$type = mime_content_type($file);
 
-            if($type == "image/jpg")
+            if($type == "image/jpeg")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
@@ -61,6 +61,19 @@ class FileController extends Controller
                 $contents = "data:image/jpeg;base64,".base64_encode($contents);
                 $class->file = $contents;
                 $class->type = "jpeg";
+                $class->filename = $name;
+            }
+
+            if($type == "image/jpg")
+            {
+                $filename = explode('/',$file);
+                $n = count($filename);
+                $name = $filename[$n-1];
+
+                $contents = file_get_contents($file);
+                $contents = "data:image/jpg;base64,".base64_encode($contents);
+                $class->file = $contents;
+                $class->type = "jpg";
                 $class->filename = $name;
             }
 
