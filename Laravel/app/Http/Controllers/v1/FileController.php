@@ -243,16 +243,44 @@ class FileController extends Controller
             return response()->json(["message" => "Δεν βρέθηκε ο χρήστης"],404);
         }
 
-        $file= storage_path()."/Clients/".$client->foldername."/".$filename;
+        $file = storage_path()."/Clients/".$client->foldername."/".$filename;
 
         if(!file_exists($file))
         {
-            return response()->json(["message" => " Δεν υπάρχει το αρχείο που αναζητείτε!"],404);
+            return response()->json(["message" => "Δεν υπάρχει το αρχείο που αναζητείτε!"],404);
         }
 
-        $headers = array(
-                  'Content-Type: application/pdf',
-                );
+        $fileExtension = explode('.' ,$filename);
+        $n = count($fileExtension);
+        $extension = $fileExtension[$n];
+
+        if($extension == "pdf")
+        {
+            $headers = array(
+                'Content-Type: application/pdf',
+              );
+        }
+
+        if($extension == "jpeg")
+        {
+            $headers = array(
+                'Content-Type: image/jpeg',
+              );
+        }
+
+        if($extension == "jpg")
+        {
+            $headers = array(
+                'Content-Type: image/jpg',
+              );
+        }
+
+        if($extension == "png")
+        {
+            $headers = array(
+                'Content-Type: image/png',
+              );
+        }
 
         return Response::download($file, $filename, $headers);
     }
@@ -289,6 +317,8 @@ class FileController extends Controller
     public function upload(Request $request, $id)
     {
 
+       $file = $request->file;
+       return $file->getMimeType();
        // return $request;
             $role_id = $request->user()->role()->first()->id;
             if($role_id < 4)
