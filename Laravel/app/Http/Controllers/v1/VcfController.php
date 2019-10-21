@@ -58,13 +58,13 @@ class VcfController extends Controller
 			$email->Body      = 'Αποστολή Λίστας Διαχειριστών';
 			$email->AddAddress($request->email);
 
-			$file_to_attach = public_path()."/VCF/managers.vcf";
+			$file_to_attach = storage_path()."/VCF/managers.vcf";
 
 			$email->AddAttachment( $file_to_attach , 'managers.vcf' );
 
 			$email->Send();
 
-			unlink(public_path()."/VCF/managers.vcf");
+			unlink(storage_path()."/VCF/managers.vcf");
 
 			return response()->json(["message" => "Η λίστα καταχωρημένων διαχειριστών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
 
@@ -88,7 +88,7 @@ class VcfController extends Controller
                 $variable .= $vcard->getOutput();
             }
 
-			$myfile = fopen(public_path()."/VCF/clients.vcf", "w") or die("Unable to open file!");
+			$myfile = fopen(storage_path()."/VCF/clients.vcf", "w") or die("Unable to open file!");
 			fwrite($myfile, $variable);
 			fclose($myfile);
 
@@ -99,13 +99,13 @@ class VcfController extends Controller
 			$email->Body      = 'Αποστολή Λίστα Πελατών';
 			$email->AddAddress($request->email);
 
-			$file_to_attach = public_path()."/VCF/clients.vcf";
+			$file_to_attach = storage_path()."/VCF/clients.vcf";
 
 			$email->AddAttachment( $file_to_attach , 'clients.vcf' );
 
 			$email->Send();
 
-			unlink(public_path()."/VCF/clients.vcf");
+			unlink(storage_path()."/VCF/clients.vcf");
 
 			return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
         }
@@ -126,7 +126,7 @@ class VcfController extends Controller
                 $variable .= $vcard->getOutput();
         	}
 
-			$myfile = fopen(public_path()."/VCF/users.vcf", "w") or die("Unable to open file!");
+			$myfile = fopen(storage_path()."/VCF/users.vcf", "w") or die("Unable to open file!");
 			fwrite($myfile, $variable);
 			fclose($myfile);
 
@@ -137,13 +137,13 @@ class VcfController extends Controller
 			$email->Body      = 'Αποστολή Λίστας Χρηστών';
 			$email->AddAddress($request->email);
 
-			$file_to_attach = public_path()."/VCF/users.vcf";
+			$file_to_attach = storage_path()."/VCF/users.vcf";
 
 			$email->AddAttachment( $file_to_attach , 'users.vcf' );
 
 			$email->Send();
 
-			unlink(public_path()."/VCF/users.vcf");
+			unlink(storage_path()."/VCF/users.vcf");
 
 			return response()->json(["message" => "Η λίστα χρηστών του συστήματος εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
 
