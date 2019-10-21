@@ -5,7 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Http\CustomClasses\v1\SendMail;
 
-class SendEmail extends Command
+class SendReminder extends Command
 {
     /**
      * The name and signature of the console command.
@@ -44,7 +44,10 @@ class SendEmail extends Command
         $mail->getEvents();
         $mail->createMessage();
         $mail->sendMail();
+        $mail = null;
 
         $this->info('Το μήνυμα εστάλη επιτυχώς!');
+
+
     }
 }
