@@ -17,13 +17,14 @@ class SupplementController extends Controller
      */
     public function index(Request $request)
     {
+
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 3)
         {
             return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"],401);
         }
 
-        $supplements = array();
+        $supplementsArray = array();
         $damages = Damage::where('status','Μη Ολοκληρωμένη')->where('supplement','!=',null)->get();
 
         $now = Carbon::now();
@@ -40,11 +41,22 @@ class SupplementController extends Controller
             // $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
             if($damage->appointment_start != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek)
             {
-                $supplement = new \stdClass();
-                $supplement->supplement = $damage->supplement;
-                $supplement->date = $appointmentDisplay;//if all goes wrong display $damage->appointment_start
+                $supplements = explode(',',$damage->supplement);
 
-                array_push($supplements,$supplement);
+                foreach($supplements as $supply)
+                {
+                    $supplement = new \stdClass();
+                    $supplement->supplement = $supply;
+                    $supplement->date = $appointmentDisplay;//if all goes wrong display $damage->appointment_start
+
+                    array_push($supplementsArray,$supplement);
+                }
+
+                // $supplement = new \stdClass();
+                // $supplement->supplement = $damage->supplement;
+                // $supplement->date = $appointmentDisplay;//if all goes wrong display $damage->appointment_start
+
+                // array_push($supplements,$supplement);
             }
         }
 
@@ -64,7 +76,7 @@ class SupplementController extends Controller
                 array_push($supplements,$supplement);
             }
         }
-        return response()->json(["data"=>$supplements],200);
+        return response()->json(["data"=>$supplementsArray],200);
     }
 
     /**

@@ -83,7 +83,9 @@ class FileController extends Controller
                 $n = count($filename);
                 $name = $filename[$n-1];
 
-                $contents = url("/api/files/v1/".$id."/".$name);
+                //$contents = url("/api/files/v1/".$id."/".$name);
+                $contents = file_get_contents($file);
+                $contents = "data:application/pdf;base64,".base64_encode($contents);
                 $class->file = $contents;
                 $class->type = "pdf";
                 $class->filename = $name;
@@ -252,7 +254,7 @@ class FileController extends Controller
 
         $fileExtension = explode('.' ,$filename);
         $n = count($fileExtension);
-        $extension = $fileExtension[$n];
+        $extension = $fileExtension[$n-1];
 
         if($extension == "pdf")
         {
@@ -316,9 +318,6 @@ class FileController extends Controller
      */
     public function upload(Request $request, $id)
     {
-
-       $file = $request->file;
-       return $file->getMimeType();
        // return $request;
             $role_id = $request->user()->role()->first()->id;
             if($role_id < 4)
