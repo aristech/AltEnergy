@@ -49,8 +49,9 @@ class FileController extends Controller
         {
             $class = new \stdClass();
             $info = pathinfo($file);
+			$type = mime_content_type($file);
 
-            if($info["extension"] == "jpg" || $info["extension"] == "jpeg")
+            if($type == "image/jpg")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
@@ -63,7 +64,7 @@ class FileController extends Controller
                 $class->filename = $name;
             }
 
-            if($info["extension"] == "pdf")
+            if($type == "application/pdf")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
@@ -75,11 +76,13 @@ class FileController extends Controller
                 $class->filename = $name;
             }
 
-            if($info["extension"] == "png")
+            if($type == "image/png")
             {
                 $filename = explode('/',$file);
                 $n = count($filename);
                 $name = $filename[$n-1];
+
+				$file =
 
                 $contents = file_get_contents($file);
                 $contents = "data:image/png;base64,".base64_encode($contents);
@@ -204,7 +207,7 @@ class FileController extends Controller
             ++$count;
         }
         array_map('unlink', glob( storage_path()."/Clients/".$client->foldername."/*.bmp"));
-        return response()->json(["message" => "Τα αρχεία ανέβηκαν με επιτυχία!"],200);
+        return response()->json(["message" => "Το σκαναρισμένο αρχείο αποθηκεύτηκε ως pdf στο σύστημα με επιτυχία!"],200);
     }
 
     /**
@@ -292,8 +295,10 @@ class FileController extends Controller
             {
                 return response()->json(["message" => "Θα πρέπει να υπάρχει αρχείο προς ανέβασμα"],422);
             }
-        foreach($request->file as $file)
-        {
+
+		//foreach($files as $file)
+       // {
+			//return $file;
             //return $file->getMimeType();
             if($file->getMimeType() != "image/jpeg" && $file->getMimeType() != "application/pdf" && $file->getMimeType() != "image/png" )
             {
@@ -306,15 +311,15 @@ class FileController extends Controller
             }
 
            //$file->move()
-           if(!move_uploaded_file($file, storage_path("Clients/".$client->foldername."/".$file->getClientOriginalName())))
+           if(!move_uploaded_file($file, storage_path("Clients/".$client->foldername."/".mb_strtolower($file->getClientOriginalName(),"UTF-8"))))
            {
-               return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName()]);
+               return response()->json(['message' => 'Παρουσιάστηκε πρόβλημα με το αρχείο '.$file->getClientOriginalName(), 'UTF-8']);
            }
 
 
-        }
+       // }
 
-        return response()->json(["message" => "Τα αρχεία ανέβηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Τo αρχείο ".$file->getClientOriginalName()." ανέβηκε επιτυχώς!"],200);
     }
 
     public function destroy(Request $request,$id,$filename)
