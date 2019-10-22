@@ -73,7 +73,8 @@ class AuthController extends Controller
             'client_id' => 'nullable|integer',
             'telephone' => 'nullable|string',
             'telephone2' => 'nullable|string',
-            'mobile' => 'nullable|string'
+            'mobile' => 'nullable|string',
+            'active' => 'required|boolean'
         ]);
 
         if($validator->fails())
