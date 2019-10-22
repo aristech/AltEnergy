@@ -347,8 +347,8 @@ class DamageSuperAdmin
         $calendar = Calendar::where('damage_id',$this->damage->id)->first();
 
         if($this->damage->status != "Μη Ολοκληρωμένη"){
-            $damagee = $this->damage->id;
-            Calendar::where('damage_id',$damagee)->first()->delete();
+
+            $calendar->delete();
         }
         if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)
         {
@@ -392,7 +392,7 @@ class DamageSuperAdmin
                 "techs" => $this->insertTechs()
             ];
         }
-        elseif($this->request->completed_no_transaction == 0 || $this->request->status == "Ακυρώθηκε")
+        elseif($this->request->completed_no_transaction == true || $this->request->status == "Ακυρώθηκε")
         {
             $this->input = array();
             $this->input =
