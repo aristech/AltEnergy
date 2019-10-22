@@ -92,12 +92,12 @@ class DamageResource extends JsonResource
                                 $techn = User::where('id', $tech)->first();
                                 array_push($technicians, $techn['lastname'] . " " . $techn['firstname']);
                                 $techno = new \stdClass();
-                                $techno->id = $techn->id;
+                                $techno->id = $techn['id'];
                                 $techno->fullname = $techn['lastname'] . " " . $techn['firstname'];
-                                $techno->email = $techn->email;
-                                $techno->telephone = $techn->telephone;
-                                $techno->telephone2 = $techn->telephone2;
-                                $techno->mobile = $techn->mobile;
+                                $techno->email = $techn['email'];
+                                $techno->telephone = $techn['telephone'];
+                                $techno->telephone2 = $techn['telephone2'];
+                                $techno->mobile = $techn['mobile'];
                                 array_push($technician_ids, $techno);
                             }
 
