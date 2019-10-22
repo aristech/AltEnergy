@@ -47,7 +47,7 @@ class VcfController extends Controller
                 $variable .= $vcard->getOutput();
         	}
 
-			$myfile = fopen(public_path()."/VCF/managers.vcf", "w") or die("Unable to open file!");
+			$myfile = fopen(storage_path()."/VCF/managers.vcf", "w") or die("Unable to open file!");
 			fwrite($myfile, $variable);
 			fclose($myfile);
 
