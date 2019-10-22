@@ -8,6 +8,8 @@ use App\Damage;
 use App\Service;
 use App\Eventt;
 use App\Client;
+use App\Manager;
+use DB;
 use App\Http\CustomClasses\v1\IndicatorManagement;
 
 class DashboardController extends Controller
@@ -53,6 +55,27 @@ class DashboardController extends Controller
         $dashboard->cancelled_events = $cancelledEvents;
 
         $dashboard->registered_clients = $clients;
+
+        $managers = Manager::all()->count();
+        $dashboard->registered_managers = $managers;
+
+        $technicians = DB::table('users')
+        ->join('role_user', function ($join)
+        {
+            $join->on('users.id', '=', 'role_user.user_id')
+                ->where('role_user.role_id', '=', 3);
+        })->count();
+
+        $dashboard->registered_technicians = $technicians;
+
+        $administrators = DB::table('users')
+        ->join('role_user', function ($join)
+        {
+            $join->on('users.id', '=', 'role_user.user_id')
+                ->where('role_user.role_id', '=', 3);
+        })->count();
+
+        $dashboard->registered_administrators = $administrators;
 
         $supplements = array();
         $supplementController =  app('App\Http\Controllers\v1\SupplementController')->index($request)->getContent();

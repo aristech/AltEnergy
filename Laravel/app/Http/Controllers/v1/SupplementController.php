@@ -47,7 +47,7 @@ class SupplementController extends Controller
                 {
                     $supplement = new \stdClass();
                     $supplement->supplement = $supply;
-                    $supplement->date = $appointmentDisplay;//if all goes wrong display $damage->appointment_start
+                    $supplement->date = $damage->appointment_start;
 
                     array_push($supplementsArray,$supplement);
                 }
@@ -81,7 +81,7 @@ class SupplementController extends Controller
                 }
                 $supplement = new \stdClass();
                 $supplement->supplement = $service->supplement;
-                $supplement->date = $appointmentDisplay; //if all goes south replace with $service->appointment_start
+                $supplement->date = $service->appointment_start;
 
                 array_push($supplementsArray,$supplement);
             }
