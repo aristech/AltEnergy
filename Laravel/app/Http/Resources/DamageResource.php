@@ -95,6 +95,10 @@ class DamageResource extends JsonResource
 
                             $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => $technician_ids, "holder" => $technicians, "required" => false];
                         }
+                        else
+                        {
+                            $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => null, "holder" => null, "required" => false];
+                        }
 
                         return $technicians;
                     }),
