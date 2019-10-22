@@ -16,8 +16,12 @@ class CalendarController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
+        if($request->user()->role()->first()->id < 3 )
+        {
+            return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να έχει πρόσβαση στο ημερολόγιο"],401);
+        }
         return CalendarResource::collection(Calendar::all());
     }
 

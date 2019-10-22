@@ -346,8 +346,14 @@ class DamageSuperAdmin
         //Calendar for update
         $calendar = Calendar::where('damage_id',$this->damage->id)->first();
 
-        if($this->damage->status != "Μη Ολοκληρωμένη")Calendar::where('damage_id',$this->damage->id)->first()->delete();
-        if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)Calendar::create(['type'=>'damages','name'=>'βλάβη','damage_id'=>$this->damage->id]);
+        if($this->damage->status != "Μη Ολοκληρωμένη"){
+            $damagee = $this->damage->id;
+            Calendar::where('damage_id',$damagee)->first()->delete();
+        }
+        if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)
+        {
+            Calendar::create(['type'=>'damages','name'=>'βλάβη','damage_id'=>$this->damage->id]);
+        }
         //End Calendar update process
         return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }

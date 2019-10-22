@@ -68,7 +68,7 @@ class DamageResource extends JsonResource
                 }),
 
                 "editable" => array([
-                    "resource" => "Βλάβη",
+                    "resource" => "damages",
                     "id" => $this->id,
                     "info" => [
                         "client_lastname" => $this->client['lastname'],
