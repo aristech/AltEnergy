@@ -47,7 +47,7 @@ class SupplementController extends Controller
                 {
                     $supplement = new \stdClass();
                     $supplement->supplement = $supply;
-                    $supplement->date = $damage->appointment_start;
+                    $supplement->date = $appointmentDisplay;
 
                     array_push($supplementsArray,$supplement);
                 }
