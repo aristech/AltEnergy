@@ -72,7 +72,7 @@ class DashboardController extends Controller
         ->join('role_user', function ($join)
         {
             $join->on('users.id', '=', 'role_user.user_id')
-                ->where('role_user.role_id', '=', 3);
+                ->where('role_user.role_id', '=', 4);
         })->count();
 
         $dashboard->registered_administrators = $administrators;
