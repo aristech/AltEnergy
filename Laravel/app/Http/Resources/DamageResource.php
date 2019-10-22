@@ -85,19 +85,27 @@ class DamageResource extends JsonResource
                     "techs" => $this->when(true, function () {
                         $technicians = array();
                         $technician_ids = array();
-                        if ($this->techs != null) {
+                        if ($this->techs != null)
+                        {
                             $techs = explode(',', $this->techs);
                             foreach ($techs as $tech) {
                                 $techn = User::where('id', $tech)->first();
                                 array_push($technicians, $techn['lastname'] . " " . $techn['firstname']);
-                                array_push($technician_ids, $tech);
+                                $techno = new \stdClass();
+                                $techno->id = $techn->id;
+                                $techno->fullname = $techn['lastname'] . " " . $techn['firstname'];
+                                $techno->email = $techn->email;
+                                $techno->telephone = $techn->telephone;
+                                $techno->telephone2 = $techn->telephone2;
+                                $techno->mobile = $techn->mobile;
+                                array_push($technician_ids, $techno);
                             }
 
                             $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => $technician_ids, "holder" => $technicians, "required" => false];
                         }
                         else
                         {
-                            $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => null, "holder" => null, "required" => false];
+                            $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => [], "holder" => [], "required" => false];
                         }
 
                         return $technicians;
