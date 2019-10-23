@@ -301,6 +301,7 @@ class DamageSuperAdmin
 
     public function updateDamage()
     {
+        return $this->insertTechs();
         $this->validatorUpdate();
         if($this->hasError == true)
         {
@@ -418,7 +419,7 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                //"user_id" => $this->request->user_id
+                //"user_id" => $this->request->user_id,
                 "techs" => $this->insertTechs()
             ];
 
@@ -454,7 +455,8 @@ class DamageSuperAdmin
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id
+                //"user_id" => $this->request->user_id,
+                "techs" => $this->insertTechs()
             ];
         }
     }
