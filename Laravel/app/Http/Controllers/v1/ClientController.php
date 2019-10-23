@@ -125,7 +125,7 @@ class ClientController extends Controller
 
         $lastClient = Client::latest()->first();
 
-        $foldername = $request->lastname."_".$request->firstname."_".($lastClient->id + 1);
+        $foldername = $request->lastname."_".$request->firstname."_".($lastClient['id'] + 1);
         $foldername = Greeklish::remove_accent($foldername);//conversion to greeklish
         $request->request->add(["foldername" => $foldername]);
 
