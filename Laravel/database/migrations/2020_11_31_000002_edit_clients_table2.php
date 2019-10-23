@@ -16,7 +16,7 @@ class EditClientsTable2 extends Migration
         Schema::table('clients',function(Blueprint $table)
         {
             $table->string('plithos_diamerismaton')->nullable()->after('arithmos_aitisis');
-            $table->string('dieuthinsi_paroxis')->nullable()->after('plithos_diamerismation');
+            $table->string('dieuthinsi_paroxis')->nullable()->after('plithos_diamerismaton');
             $table->string('kw_oikiako')->nullable()->after('dieuthinsi_paroxis');
             $table->string('kw')->nullable()->after('kw_oikiako');
             $table->string('levitas')->nullable()->after('kw');

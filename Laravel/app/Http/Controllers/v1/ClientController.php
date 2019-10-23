@@ -20,15 +20,19 @@ class ClientController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $mail = new SendMail();
-        //return $mail->checktime('2019-10-17T18:39:00.000Z');
-        $mail->getDamages();
-        $mail->getEvents();
-        $mail->createMessage();
-        $mail->sendMail();
-
+        $role_id = $request->user()->role()->first()->id;
+        // $mail = new SendMail();
+        // //return $mail->checktime('2019-10-17T18:39:00.000Z');
+        // $mail->getDamages();
+        // $mail->getEvents();
+        // $mail->createMessage();
+        // $mail->sendMail();
+        if($role_id < 4)
+        {
+            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        }
        //return $mail->message;
 
         return ClientResource::collection(Client::all());
@@ -56,7 +60,7 @@ class ClientController extends Controller
 
         //return $role_id;
 
-        if($role_id < 4 || $request->user()->active == false)
+        if($role_id < 4)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }

@@ -20,7 +20,7 @@ class ManagerController extends Controller
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4)
         {
-            return reponse()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"],401);
+            return response()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"],401);
         }
         return ManagerResource::collection(Manager::all());
     }
@@ -96,7 +96,7 @@ class ManagerController extends Controller
         $role_id = $request->user()->role()->first()->id;
         if($role_id < 4)
         {
-            return reponse()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"],401);
+            return response()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"],401);
         }
 
         $manager = Manager::find($manager);

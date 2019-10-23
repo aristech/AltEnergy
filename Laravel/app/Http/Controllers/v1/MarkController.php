@@ -20,7 +20,7 @@ class MarkController extends Controller
     public function index(Request $request, $manufacturer)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->user()->active == false)
+        if($role_id < 3)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -57,7 +57,7 @@ class MarkController extends Controller
     public function store(Request $request, $manufacturer)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->user()->active == false)
+        if($role_id < 3)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -127,7 +127,7 @@ class MarkController extends Controller
     public function destroy(Request $request, $manufacturer)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->user()->active == false)
+        if($role_id < 3)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }

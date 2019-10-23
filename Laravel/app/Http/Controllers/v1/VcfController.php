@@ -19,6 +19,11 @@ class VcfController extends Controller
 {
     public function export(Request $request)
     {
+        if($request->user()->role()->first()->id < 3)
+        {
+           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        }
+
         $validator = Validator::make($request->all(),[
             "task" => "required|string",
             "email" => "required|string|email"

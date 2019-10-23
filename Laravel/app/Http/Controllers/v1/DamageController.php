@@ -19,7 +19,7 @@ class DamageController extends Controller
     public function index(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 4)
+        if($role_id >= 3)
         {
             return DamageSuperAdmin::getDamages();
         }
@@ -28,7 +28,7 @@ class DamageController extends Controller
     public function history(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 4)
+        if($role_id >= 3)
         {
             return DamageSuperAdmin::getDamagesHistory();
         }
@@ -54,14 +54,14 @@ class DamageController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 4)
+        if($role_id >= 3)
         {
             $damage = new DamageSuperAdmin($request);
             return $damage->storeDamage();
         }
         else
         {
-            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να εισάγει βλάβες στο σύστημα!"],401);
+            return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να εισάγει βλάβες στο σύστημα!"],401);
         }
 
     }
@@ -126,7 +126,7 @@ class DamageController extends Controller
     public function destroy(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4)
+        if($role_id < 3)
         {
             return response()->json(["message" => "Χρήστες με δικαίωμα ".$request->user()->role()->first()->name." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"],401);
         }

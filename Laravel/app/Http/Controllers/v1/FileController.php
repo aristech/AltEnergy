@@ -19,6 +19,13 @@ class FileController extends Controller
      */
     public function index(Request $request,$id)
     {
+        $role_id = $request->user()->role()->first()->id;
+
+        if($role_id < 4)
+        {
+            return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση σ αυτά τα στοιχεία"],401);
+        }
+
         ini_set('memory_limit','256M');
 
         //Check if logged in user is authorized
@@ -169,6 +176,13 @@ class FileController extends Controller
      */
     public function store(Request $request,$id)
     {
+        $role_id = $request->user()->role()->first()->id;
+
+        if($role_id < 4)
+        {
+            return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση σ αυτά τα στοιχεία"],401);
+        }
+
         ini_set('memory_limit','256M');
 
         $client = Client::find($id);

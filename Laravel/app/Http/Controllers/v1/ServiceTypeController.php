@@ -17,7 +17,7 @@ class ServiceTypeController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->user()->role()->first()->id < 4)
+        if($request->user()->role()->first()->id < 3)
         {
            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
         }
@@ -44,7 +44,7 @@ class ServiceTypeController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->user()->role()->first()->id < 4)
+        if($request->user()->role()->first()->id < 3)
         {
            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
         }
@@ -105,7 +105,7 @@ class ServiceTypeController extends Controller
      */
     public function destroy(Request $request)
     {
-        if($request->user()->role()->first()->id < 4)
+        if($request->user()->role()->first()->id < 3)
         {
            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
         }
