@@ -360,7 +360,7 @@ class DamageSuperAdmin
 
     public function createUpdateInput()
     {
-        if(($this->request->appointment_pending == 0 && $this->request->technician_left == 1 && $this->request->technician_arrived == 1 && $this->request->appointment_completed == 1 && $this->request->appointment_needed == 0 && $this->request->damage_fixed == 1 && $this->request->supplement_pending == 0 && $this->request->completed_no_transaction == 0 && $this->request->damage_fixed == 1) || $this->request->status == "Ολοκληρωμένη")
+        if(($this->request->completed_no_transaction == false && $this->request->damage_fixed == true) || $this->request->status == "Ολοκληρωμένη")
         {
 
 
