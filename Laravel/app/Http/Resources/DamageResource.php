@@ -93,7 +93,7 @@ class DamageResource extends JsonResource
                                 array_push($technicians, $techn['lastname'] . " " . $techn['firstname']);
                                 $techno = new \stdClass();
                                 $techno->id = $techn['id'];
-                                $techno->fullname = $techn['lastname'] . " " . $techn['firstname'];
+                                $techno->fullname = $techn['firstname'] ." ". $techn['lastname'];
                                 $techno->email = $techn['email'];
                                 $techno->telephone = $techn['telephone'];
                                 $techno->telephone2 = $techn['telephone2'];
@@ -105,9 +105,8 @@ class DamageResource extends JsonResource
                         }
                         else
                         {
-                            $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => [], "holder" => [], "required" => false];
+                            $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => array(), "holder" => array(), "required" => false];
                         }
-
                         return $technicians;
                     }),
                     "manufacturer" => ["field" => "manufacturer_id", "value" => $this->manufacturer_id, "required" => true],
