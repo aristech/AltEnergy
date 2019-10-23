@@ -17,7 +17,7 @@ class ManufacturerController extends Controller
     public function index(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->user()->active == false)
+        if($role_id < 3 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -44,7 +44,7 @@ class ManufacturerController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->user()->active == false)
+        if($role_id < 3 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
@@ -108,7 +108,7 @@ class ManufacturerController extends Controller
     public function destroy(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 4 || $request->user()->active == false)
+        if($role_id < 3 || $request->user()->active == false)
         {
             return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
         }
