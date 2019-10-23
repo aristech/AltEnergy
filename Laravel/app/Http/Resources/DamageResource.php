@@ -126,7 +126,7 @@ class DamageResource extends JsonResource
                     "appointment_start" => ["field" => "appointment_start", "title" => "Έναρξη Ραντεβού", "type" => "datetime", "value" => $this->appointment_start, "required" => false],
                     "appointment_end" => ["field" => "appointment_end", "title" => "Λήξη Ραντεβού", "type" => "datetime", "value" => $this->appointment_end, "required" => false],
                     "cost" => ["field" => "cost", "value" => $this->cost, "type" => "float", "title" => "Τιμή", "required" => false],
-                    "supplement" => ["field" => "supplement", "title" => "Ανταλλακτικά(Για καταχώρηση άνω του ενός παρακαλώ χωρίστε με ',' )", "type" => "text", "value" => $this->supplement, "required" => false],
+                    "supplement" => ["field" => "supplement", "title" => "Ανταλλακτικά(Διαχωρίστε τα ανταλλακτικά με ',')", "type" => "text", "value" => $this->supplement, "required" => false],
                     "damage_comments" => ["field" => "damage_comments", "value" => $this->damage_comments, "type" => "text", "title" => "Σχόλια Βλάβης", "required" => false],
                     "comments" =>  ["field" => "comments", "type" => "text", "title" => "Γενικά Σχόλια", "value" => $this->comments, "required" => false]
                 ])
