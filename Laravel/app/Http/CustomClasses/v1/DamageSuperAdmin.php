@@ -301,7 +301,6 @@ class DamageSuperAdmin
 
     public function updateDamage()
     {
-        return $this->insertTechs();
         $this->validatorUpdate();
         if($this->hasError == true)
         {
