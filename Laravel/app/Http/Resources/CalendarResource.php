@@ -7,6 +7,7 @@ use App\Damage;
 use App\Eventt;
 use App\Service;
 use App\Http\CustomClasses\v1\CalendarClass;
+use App\Note;
 
 class CalendarResource extends JsonResource
 {
@@ -29,7 +30,7 @@ class CalendarResource extends JsonResource
             "id" => $this->id,
             "type" => $this->type,
             "name" => $this->name,
-            "event_id" => $this->when($this->damage_id != null || $this->service_id != null, function()
+            "event_id" => $this->when($this->damage_id != null || $this->service_id != null || $this->note_id != null, function()
             {
                 if($this->damage_id != null)
                 {
@@ -45,8 +46,13 @@ class CalendarResource extends JsonResource
                 {
                     return $this->service_id;
                 }
+
+                if($this->note_id != null)
+                {
+                    return $this->note_id;
+                }
             }),
-            "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null , function()
+            "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null || $this->note_id != null , function()
             {
                 if($this->damage_id != null)
                 {
@@ -62,8 +68,13 @@ class CalendarResource extends JsonResource
                 {
                     return Service::where('id',$this->service_id)->first()['type']['name'];
                 }
+
+                if($this->note_id != null)
+                {
+                    return Note::where('id',$this->note_id)->first()['title'];
+                }
             }),
-            "start" => $this->when($this->damage_id != null || $this->event_id != null , function()
+            "start" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null , function()
             {
                 if($this->damage_id != null)
                 {
@@ -74,9 +85,13 @@ class CalendarResource extends JsonResource
                 {
                     return Eventt::where('id',$this->event_id)->first()["event_start"];
                 }
+                if($this->note_id != null)
+                {
+                    return Note::where('id',$this->note_id)->first()["dateTime_start"];
+                }
 
             }),
-            "end" => $this->when($this->damage_id != null || $this->event_id != null, function()
+            "end" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null, function()
             {
                 if($this->damage_id != null)
                 {
@@ -87,21 +102,29 @@ class CalendarResource extends JsonResource
                 {
                    return Eventt::where('id',$this->event_id)->first()["event_end"];
                 }
+                if($this->note_id != null)
+                {
+                    return Note::where('id',$this->note_id)->first()["dateTime_end"];
+                }
 
             }),
-            "startRecur" => $this->when($this->service_id != null, function()
+            "all_day" => $this->when($this->note_id != null, function()
             {
-                return Service::where('id',$this->service_id)->first()['appointment_start'];
-            }),
-            "endRecur" => $this->when($this->service_id != null, function()
-            {
-                return Service::where('id',$this->service_id)->first()['appointment_end'];
-            }),
-            "frequency" => $this->when($this->service_id != null , function()
-            {
-                $service = Service::where('repeatable',true)->get()->first();
-                return $service['frequency'];
+                return Note::where('id',$this->note_id)->first()["all_day"];
             })
+            // "startRecur" => $this->when($this->service_id != null, function()
+            // {
+            //     return Service::where('id',$this->service_id)->first()['appointment_start'];
+            // }),
+            // "endRecur" => $this->when($this->service_id != null, function()
+            // {
+            //     return Service::where('id',$this->service_id)->first()['appointment_end'];
+            // }),
+            // "frequency" => $this->when($this->service_id != null , function()
+            // {
+            //     $service = Service::where('repeatable',true)->get()->first();
+            //     return $service['frequency'];
+            // })
         ];
     }
 }

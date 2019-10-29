@@ -11,6 +11,7 @@ use App\Client;
 use App\Manager;
 use DB;
 use App\Http\CustomClasses\v1\IndicatorManagement;
+use App\Note;
 
 class DashboardController extends Controller
 {
@@ -31,10 +32,10 @@ class DashboardController extends Controller
         $cancelledServices = Service::where('status','Ακυρώθηκε')->get()->count();
         $totalServices = $openServices + $completedServices + $cancelledServices;
 
-        $openEvents = Eventt::where('status','Μη Ολοκληρωμένο')->get()->count();
-        $completedEvents = Eventt::where('status','Ολοκληρωμένο')->get()->count();
-        $cancelledEvents = Eventt::where('status','Ακυρώθηκε')->get()->count();
-        $totalEvents = $openEvents + $completedEvents + $cancelledEvents;
+        // $openEvents = Eventt::where('status','Μη Ολοκληρωμένο')->get()->count();
+        // $completedEvents = Eventt::where('status','Ολοκληρωμένο')->get()->count();
+        // $cancelledEvents = Eventt::where('status','Ακυρώθηκε')->get()->count();
+        // $totalEvents = $openEvents + $completedEvents + $cancelledEvents;
 
         $clients = Client::all()->count();
 
@@ -49,10 +50,12 @@ class DashboardController extends Controller
         $dashboard->fixed_services = $completedServices;
         $dashboard->cancelled_services = $cancelledServices;
 
-        $dashboard->total_events = $totalEvents;
-        $dashboard->open_events = $openEvents;
-        $dashboard->fixed_events = $completedEvents;
-        $dashboard->cancelled_events = $cancelledEvents;
+        $dashboard->notes = Note::all()->count();
+
+        // $dashboard->total_events = $totalEvents;
+        // $dashboard->open_events = $openEvents;
+        // $dashboard->fixed_events = $completedEvents;
+        // $dashboard->cancelled_events = $cancelledEvents;
 
         $dashboard->registered_clients = $clients;
 
@@ -95,7 +98,7 @@ class DashboardController extends Controller
         $indications = new IndicatorManagement();
         $indications->getDamageIndicators();
         $indications->getServiceIndicators();
-        $indications->getEventIndicators();
+        //$indications->getEventIndicators();
 
         if(count($indications->indications) == 0)
         {

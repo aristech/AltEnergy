@@ -9,6 +9,7 @@ use Laravel\Passport\HasApiTokens;
 use App\Role;
 use App\Damage;
 use App\UsersRoles;
+use App\Note;
 
 class User extends Authenticatable
 {
@@ -46,6 +47,10 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class);
     }
 
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
+    }
     // public function damages()
     // {
     //     return $this->hasMany(Damage::class);

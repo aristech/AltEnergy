@@ -85,12 +85,18 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/searchdevices','SearchController@searchDevices');
             Route::post('/searchdamagetypes','SearchController@searchDamageTypes');
 
-            Route::get('/events','EventController@index');
-            Route::get('/eventhistory','EventController@history');
-            Route::get('/events/{event}','EventController@show');
-            Route::post('/events','EventController@store');
-            Route::put('/events','EventController@update');
-            Route::delete('/events','EventController@destroy');
+            // Route::get('/events','EventController@index');
+            // Route::get('/eventhistory','EventController@history');
+            // Route::get('/events/{event}','EventController@show');
+            // Route::post('/events','EventController@store');
+            // Route::put('/events','EventController@update');
+            // Route::delete('/events','EventController@destroy');
+
+            Route::get('/notes/{note}', 'NotesController@show');
+            Route::post('/notes','NotesController@store');
+            Route::put('/notes/{note}','NotesController@update');
+            Route::delete('/notes/{note}','NotesController@destroy');
+
 
             Route::get('/files/{id}','FileController@index');
             Route::post('/files/{id}','FileController@store');
