@@ -29,8 +29,8 @@ class NotesManagement
             'description' => 'required',
             'importance' => 'required|integer',
             'all_day' => 'required|boolean',
-            'dateTime_start' => 'required|string',
-            'dateTime_end'  => 'required|string'
+            'dateTime_start' => 'required',
+            'dateTime_end'  => 'required'
         ]);
 
         if($validator->fails())
