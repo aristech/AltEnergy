@@ -543,6 +543,46 @@ https://alten.aristech.gr/api/v1/events/{event-id}
 Display specific Service:
 https://alten.aristech.gr/api/v1/services/{service_id}
 
+NOTES:
+----------------------------------------------------------------------------
+GET:
+Get works for one entry at the time. so it follows the this template:
+https://{domain}/api/v1/notes/{note_id}
+
+body:NONE
+------
+POST:
+url: https://{domain}/api/v1/notes
+
+body:
+{
+	"title":"required | string",
+	"importance":"required|string",
+	"all_day":"required, must be boolean",
+	"description":"required must be text/string",
+	"dateTime_start":"required",
+	"dateTime_end": "required"
+}
+------
+PUT:
+url: https://{domain}/api/v1/notes/{note_id}
+
+body:
+{
+	"title":"required | string",
+	"importance":"required|string",
+	"all_day":"required, must be boolean",
+	"description":"required must be text/string",
+	"dateTime_start":"required",
+	"dateTime_end": "required"
+}
+------
+DELETE
+
+url:  https://{domain}/api/v1/notes/{note_id}
+body: NONE
+
+
 
 
 
