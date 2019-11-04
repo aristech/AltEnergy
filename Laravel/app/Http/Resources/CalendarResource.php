@@ -111,6 +111,33 @@ class CalendarResource extends JsonResource
             "all_day" => $this->when($this->note_id != null, function()
             {
                 return Note::where('id',$this->note_id)->first()["all_day"];
+            }),
+            "color" => $this->when($this->note_id != null || $this->damage_id != null, function()
+            {
+                if($this->note_id != null)
+                {
+                    $importance = Note::where('id',$this->note_id)->first()["importance"];
+                    switch($importance)
+                    {
+                        case 0:
+                            return "#ff0000";
+                            break;
+                        case 1:
+                            return "#ffa500";
+                            break;
+                        case 2:
+                            return "#008000";
+                            break;
+                        default:
+                            return null;
+                            break;
+                    }
+                }
+
+                if($this->damage_id != null)
+                {
+                    return "#5d5fea";
+                }
             })
             // "startRecur" => $this->when($this->service_id != null, function()
             // {

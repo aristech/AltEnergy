@@ -197,10 +197,10 @@ class FileController extends Controller
             return response()->json(["message" => "Δεν υπάρχουν σκαναρισμένα αρχεία για ανέβασμα"],404);
         }
 
-        foreach($request->all() as $file)
-        {
-            $filename = $file['filename'];
-            $filee = $file['preview'];
+        // foreach($request->all() as $file)
+        // {
+            $filename = $request->filename;
+            $filee = $request->preview;
 
             if(!$filename || !$filee)
             {
@@ -234,7 +234,7 @@ class FileController extends Controller
            // imagejpeg($resizedImage,$destinationPath.$filename.".jpg");
 
             ++$count;
-        }
+        //}
         array_map('unlink', glob( storage_path()."/Clients/".$client->foldername."/*.bmp"));
         return response()->json(["message" => "Το σκαναρισμένο αρχείο αποθηκεύτηκε ως pdf στο σύστημα με επιτυχία!"],200);
     }
