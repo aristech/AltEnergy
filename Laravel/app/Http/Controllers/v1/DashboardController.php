@@ -23,7 +23,7 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         $openDamages = Damage::where('status','Μη Ολοκληρωμένη')->get()->count();
-        $fixedDamages = Damage::where('status','Ολοκληρωμένη')->get()->count();
+        $fixedDamages = Damage::where('status','Ολοκληρώθηκε')->get()->count();
         $cancelledDamages = Damage::where('status','Ακυρώθηκε')->get()->count();
         $totalDamages = $openDamages + $fixedDamages + $cancelledDamages;
 

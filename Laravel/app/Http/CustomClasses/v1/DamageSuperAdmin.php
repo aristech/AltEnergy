@@ -29,7 +29,7 @@ class DamageSuperAdmin
 
     public static function getDamages()
     {
-        $damages = DamageResource::collection(Damage::all()); //Damage::where('status','Μη Ολοκληρωμένη')->get()
+        $damages = DamageResource::collection(Damage::orderBy('appointment_start', 'asc')->get()); //Damage::where('status','Μη Ολοκληρωμένη')->get()
         return $damages;
     }
 
@@ -55,7 +55,7 @@ class DamageSuperAdmin
 
     public static function getDamagesHistory()
     {
-        $damages = DamageResource::collection(Damage::where('status','Ολοκληρωμένη')->orWhere('status','Ακυρώθηκε')->orderBy('created_at','DESC')->get());
+        $damages = DamageResource::collection(Damage::where('status','Ολοκληρώθηκε')->orWhere('status','Ακυρώθηκε')->orderBy('created_at','DESC')->get());
         return $damages;
     }
 
@@ -270,9 +270,16 @@ class DamageSuperAdmin
         $techs = $this->insertTechs();
         $this->request->merge(['techs'=>$techs]);
 
+        //if not appointment then set pending date
+        if($this->request->appointment_start == null && $this->request->status == "Μη Ολοκληρωμένη")
+        {
+            $this->request->request->add(['appointment_pending' => true]);
+            $this->request->appointment_start = null;
+        }
+
         $damage = Damage::create($this->request->all());
         //Calendar Management
-        if($damage->status == "Μη Ολοκληρωμένη")Calendar::create(['name'=>'βλάβη','type'=>'damages','damage_id'=>$damage->id]);
+        if($damage->status == "Μη Ολοκληρωμένη")Calendar::create(['name'=>'βλάβη','type'=>'damages','damage_id'=>$damage->id]);//inserted change if entry is not null
         //End Calendar management
 
         // if($this->request->appointment_start != null)
@@ -342,12 +349,25 @@ class DamageSuperAdmin
         {
             $this->input['cost'] = 0.00;
         }
+
+        if($this->input['appointment_start'] == null && $this->input['status'] == "Μη Ολοκληρωμένη" )
+        {
+            $this->input['appointment_pending'] = true;
+            $this->input['appointment_end'] = null;
+        }
+        else
+        {
+            $this->input['appointment_pending'] = false;
+        }
+
+        //# Να δω αν σε περιπτωση π δεν εχει ξετικαρει το αναμονη ραντεβου θα ειναι ημ/νθια κενη ή οχι
+
         $this->damage->update($this->input);
         //Calendar for update
         $calendar = Calendar::where('damage_id',$this->damage->id)->first();
 
-        if($this->damage->status != "Μη Ολοκληρωμένη"){
-
+        if($this->damage->status != "Μη Ολοκληρωμένη" && $calendar)
+        {
             $calendar->delete();
         }
         if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)
@@ -360,10 +380,13 @@ class DamageSuperAdmin
 
     public function createUpdateInput()
     {
-        if(($this->request->completed_no_transaction == false && $this->request->damage_fixed == true) || $this->request->status == "Ολοκληρωμένη")
+        if($this->request->completed_no_transaction == true && $this->request->damage_fixed == true)
         {
-
-
+            $this->hasError = true;
+            $this->error = request()->json(["message" => "Η συναλλαγή δεν μπορεί να έιναι ακυρωμένη και επιδιορθωμένη!"],200);
+        }
+        elseif($this->request->damage_fixed == true) // in case of problems insert  || $this->request->status == "Ολοκληρωμένη" in if statement
+        {
             $this->input = array();
             $this->input =
             [
@@ -371,7 +394,7 @@ class DamageSuperAdmin
                 "damage_comments" => $this->request->damage_comments,
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
-                "status" => "Ολοκληρωμένη",
+                "status" => "Ολοκληρώθηκε",
                 "appointment_pending" => false,
                 "technician_left" => true,
                 "technician_arrived" => true,
@@ -392,7 +415,7 @@ class DamageSuperAdmin
                 "techs" => $this->insertTechs()
             ];
         }
-        elseif($this->request->completed_no_transaction == true || $this->request->status == "Ακυρώθηκε")
+        elseif($this->request->completed_no_transaction == true) // || $this->request->status == "Ακυρώθηκε" insert that in if statement if problems occur
         {
             $this->input = array();
             $this->input =
@@ -422,11 +445,6 @@ class DamageSuperAdmin
                 "techs" => $this->insertTechs()
             ];
 
-        }
-        elseif($this->request->completed_no_transaction == true && $this->request->damage_fixed == true)
-        {
-            $this->hasError = true;
-            $this->error = request()->json(["message" => "Η συναλλαγή δεν μπορεί να έιναι ακυρωμένη και επιδιορθωμένη!"],200);
         }
         else
         {

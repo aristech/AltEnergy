@@ -286,9 +286,14 @@ class ServiceManagement
         $techs = $this->insertTechs();
         $this->request->merge(['techs'=>$techs]);
 
+        if($this->request->appointment_start == null)
+        {
+            $this->request->request->add(['appointment_pending', true]);
+        }
+
         $service = Service::create($this->request->all());
 
-        if($service->repeatable == true)Calendar::create(["name"=>"service","type"=>"services" ,"service_id" => $service->id]);
+        if($service->appointment_start != null && $service->status == "Μη Ολοκληρωμένο")Calendar::create(["name"=>"service","type"=>"services" ,"service_id" => $service->id]);
 
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"],200);
     }
@@ -369,6 +374,17 @@ class ServiceManagement
         {
             $this->input['cost'] = 0.00;
         }
+
+        if($this->input['appointment_start'] == null )
+        {
+            $this->input['appointment_pending'] = true;
+        }
+
+        if($this->input['appointment_pending'] == true)
+        {
+            $this->input['appointment_start'] = null;
+        }
+
         $this->service->update($this->input);
 
 
@@ -384,7 +400,7 @@ class ServiceManagement
 
     public function createUpdateInput()
     {
-        if(($this->request->appointment_pending == 0 && $this->request->technician_left == 1 && $this->request->technician_arrived == 1 && $this->request->appointment_completed == 1 && $this->request->appointment_needed == 0 && $this->request->service_done == 1 && $this->request->supplement_pending == 0 && $this->request->completed_no_transaction == 0) || $this->request->status == "Ολοκληρωμένo")
+        if($this->request->service_done == true || $this->request->status == "Ολοκληρωμένo")
         {
             $this->input = array();
             $this->input =
