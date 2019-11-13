@@ -1,40 +1,38 @@
 <?php
 
 namespace App\Http\CustomClasses\v1;
-use App\Service;
+use App\Damage;
 use Validator;
 use App\Device;
-use App\Http\Resources\ServiceResource;
+use App\Http\Resources\DamageResource;
 use Illuminate\Http\Request;
 use App\Client;
-use App\ServiceType;
+use App\DamageType;
+use App\Eventt;
 use App\UsersRoles;
 use App\Calendar;
 
-class ServiceManagement
+class DamageCalendarUpdate
 {
     protected $request;
     protected $hasError = false;
     protected $error;
     protected $message;
-    protected $service;
-    protected $serviceInput;
+    protected $damage;
+    protected $damageInput;
+    protected $techs;
+    protected $damage_id;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, $damage_id)
     {
         $this->request = $request;
+        $this->damage_id = $damage_id;
     }
 
-    public static function getServices()
+    public static function getDamages()
     {
-        $services = ServiceResource::collection(Service::where('status','Μη Ολοκληρωμένο')->get());
-        return $services;
-    }
-
-    public static function getServicesHistory()
-    {
-        $services = ServiceResource::collection(Service::where('status','!=','Μη Ολοκληρωμένο')->orderBy('created_at','DESC')->get());
-        return $services;
+        $damages = DamageResource::collection(Damage::orderBy('appointment_start', 'asc')->get()); //Damage::where('status','Μη Ολοκληρωμένη')->get()
+        return $damages;
     }
 
     public function insertTechs()
@@ -44,7 +42,7 @@ class ServiceManagement
             $tech_array = array();
             foreach($this->request->techs as $technician)
             {
-                array_push($tech_array,$technician);
+                array_push($tech_array,$technician);//if all goes south $technician['tech_id]
             }
             $techs = implode(',',$tech_array);
 
@@ -54,25 +52,21 @@ class ServiceManagement
         {
             return null;
         }
-
     }
 
-    private function checkServiceType()
+    public static function getDamagesHistory()
     {
-        $serviceType = ServiceType::where('id',$this->request->service_type_id)->first();
-        if(!$serviceType)
-        {
-            $this->hasError = true;
-            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος service!"],404);
-        }
+        $damages = DamageResource::collection(Damage::where('status','Ολοκληρώθηκε')->orWhere('status','Ακυρώθηκε')->orderBy('created_at','DESC')->get());
+        return $damages;
     }
 
-    public function checkFrequency()
+    private function checkDamageType()
     {
-        if($this->request->repeatable == false && $this->request->frequency == null)
+        $damageType = DamageType::where('id',$this->request->damage_type_id)->first();
+        if(!$damageType)
         {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "Η συχνότητα δεν πρέπει να είναι κενή"],422);
+            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος βλάβης!"],404);
         }
     }
 
@@ -80,21 +74,20 @@ class ServiceManagement
     {
         $validator = Validator::make($this->request->all(),
         [
-            'service_type_id' => 'required|integer',
-            'service_comments' => 'nullable|min:4|max:10000',
+            'damage_type_id' => 'required|integer',
+            'damage_comments' => 'nullable',
             'cost' => 'nullable|numeric|between:0.00,999999.99',
             'guarantee' => 'required|boolean',
             'status' => 'required|string',
             'client_id' => 'required|integer',
             'device_id' => 'required|integer',
-            'comments' => 'nullable|min:4|max:100000',
+            'comments' => 'nullable',
             'manufacturer_id' => 'required|integer',
             'mark_id' => 'required|integer',
             'appointment_start' => 'nullable|string',
-            'appointment_end' => 'nullable|string',
-            'user_id' => 'nullable|integer',
-            'repeatable' => 'required|boolean',
-            'frequency' => 'nullable|string'
+            'appointment_end' => 'nullable|string'
+            // 'user_id' => 'nullable|integer'
+
         ]);
 
         if($validator->fails())
@@ -110,9 +103,8 @@ class ServiceManagement
     {
         $validator = Validator::make($this->request->all(),
         [
-            'id' => 'required|integer',
-            'service_type_id' => 'required|integer',
-            'service_comments' => 'nullable|min:4|max:10000',
+            'damage_type_id' => 'required|integer',
+            'damage_comments' => 'nullable',
             'cost' => 'nullable|numeric|between:0.00,999999.99',
             'guarantee' => 'required|boolean',
             'status' => 'required|string',
@@ -122,19 +114,17 @@ class ServiceManagement
             'appointment_completed' => 'required|boolean',
             'appointment_needed' => 'required|boolean',
             'supplement_pending' => 'required|boolean',
-            'service_done' => 'required|boolean',
+            'damage_fixed' => 'required|boolean',
             'completed_no_transaction' => 'required|boolean',
             'client_id' => 'required|integer',
             'device_id' => 'required|integer',
-            'comments' => 'nullable|min:4|max:100000',
+            'comments' => 'nullable',
             'manufacturer_id' => 'required|integer',
             'mark_id' => 'required|integer',
             'supplement' => 'nullable|string',
             'appointment_start' => 'nullable|string',
             'appointment_end' => 'nullable|string',
-            'user_id' => 'nullable|integer',
-            'repeatable' => 'required|boolean',
-            'frequency' => 'nullable|string'
+            // 'user_id' => 'nullable|integer'
         ]);
 
         if($validator->fails())
@@ -153,6 +143,7 @@ class ServiceManagement
         $device = Device::whereHas('mark', function($query) use($mark_id)
         {
             $query->where('id',$mark_id);
+
         })
         ->whereHas('mark.manufacturer', function($query) use ($manufacturer_id)
         {
@@ -233,19 +224,15 @@ class ServiceManagement
         }
     }
 
-    public function storeService()
+    public function storeDamage()
     {
+        //return $this->insertTechs();
         $this->validatorCreate();
         if($this->hasError == true)
         {
             return $this->error;
         }
-        $this->checkStatus();
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
-        $this->checkServiceType();
+        $this->checkDamageType();
         if($this->hasError == true)
         {
             return $this->error;
@@ -267,16 +254,13 @@ class ServiceManagement
         // {
         //     return $this->error;
         // }
+
         $this->checkTechnician();
         if($this->hasError == true)
         {
             return $this->error;
         }
-        $this->checkFrequency();
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
+
         if($this->request->cost == null)
         {
 
@@ -286,54 +270,50 @@ class ServiceManagement
         $techs = $this->insertTechs();
         $this->request->merge(['techs'=>$techs]);
 
-        if($this->request->appointment_start == null)
+        //if not appointment then set pending date
+        if($this->request->appointment_start == null && $this->request->status == "Μη Ολοκληρωμένη")
         {
-            $this->request->request->add(['appointment_pending', true]);
+            $this->request->request->add(['appointment_pending' => true]);
+            $this->request->appointment_start = null;
         }
 
-        $service = Service::create($this->request->all());
+        $damage = Damage::create($this->request->all());
+        //Calendar Management
+        if($damage->status == "Μη Ολοκληρωμένη")Calendar::create(['name'=>'βλάβη','type'=>'damages','damage_id'=>$damage->id]);//inserted change if entry is not null
+        //End Calendar management
 
-        if($service->appointment_start != null && $service->status == "Μη Ολοκληρωμένο")Calendar::create(["name"=>"service","type"=>"services" ,"service_id" => $service->id]);
+        // if($this->request->appointment_start != null)
+        // {
+        //     // $client = Client::where('id',$this->request->client_id)->first();
+        //     // Eventt::create(["event_type" => "damage", "event_id" => $damage->id]);
+        // }
 
-        return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"],200);
+
+        return response()->json(["message" => "Η βλάβη του πελάτη καταχωρήθηκε επιτυχως!"],200);
     }
 
-    public function checkService()
+    public function checkDamage()
     {
-        $service = Service::where('id',$this->request->id)->first();
-        if(!$service)
+        $damage = Damage::where('id',$this->damage_id)->first();
+        if(!$damage)
         {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "To service αυτο δεν είναι περασμένη στο σύστημα!"],404);
+            $this->error = response()->json(["message" => "Η βλάβη αυτή δεν είναι περασμένη στο σύστημα!"],404);
         }
         else
         {
-            $this->service = $service;
+            $this->damage = $damage;
         }
     }
 
-    public function checkStatus()
-    {
-        if($this->request->status != "Ολοκληρωμένο" && $this->request->status != "Μη Ολοκληρωμένο" && $this->request->status != "Ακυρώθηκε")
-        {
-            $this->hasError = true;
-            $this->error = response()->json(["message" => "Η κατάσταση του service δεν επιτρέπεται!"],422);
-        }
-    }
-
-    public function updateService()
+    public function updateDamage()
     {
         $this->validatorUpdate();
         if($this->hasError == true)
         {
             return $this->error;
         }
-        $this->checkStatus();
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
-        $this->checkServiceType();
+        $this->checkDamageType();
         if($this->hasError == true)
         {
             return $this->error;
@@ -348,18 +328,13 @@ class ServiceManagement
         {
             return $this->error;
         }
-        $this->checkService();
+        $this->checkDamage();
 
         if($this->hasError == true)
         {
             return $this->error;
         }
         $this->checkTechnician();
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
-        $this->checkFrequency();
         if($this->hasError == true)
         {
             return $this->error;
@@ -375,45 +350,48 @@ class ServiceManagement
             $this->input['cost'] = 0.00;
         }
 
-        if($this->input['appointment_start'] == null )
+        if($this->input['appointment_start'] == null && $this->input['status'] == "Μη Ολοκληρωμένη" )
         {
             $this->input['appointment_pending'] = true;
+            $this->input['appointment_end'] = null;
         }
-
-        if($this->input['appointment_pending'] == true)
+        else
         {
-            $this->input['appointment_start'] = null;
+            $this->input['appointment_pending'] = false;
         }
 
+        //# Να δω αν σε περιπτωση π δεν εχει ξετικαρει το αναμονη ραντεβου θα ειναι ημ/νθια κενη ή οχι
 
+        $this->damage->update($this->input);
+        //Calendar for update
+        $calendar = Calendar::where('damage_id',$this->damage->id)->first();
 
-        $this->service->update($this->input);
-
-
-        //Calendar Events
-        $calendar = Calendar::where('service_id',$this->service->id)->first();
-
-        if($this->service->status != "Μη Ολοκληρωμένο" && $calendar && $this->service->repeatable == false)$calendar->delete();
-        //if($this->service->status != "Ολοκληρωμένο" && $this->repeatable->status == false && $calendar)$calendar->delete();
-        if($this->service->status == "Μη Ολοκληρωμένο" && !$calendar &&$this->repeatable == true)Calendar::create(['name' => 'service', 'type' => 'services','service_id' => $this->service->id]);
-
-        return response()->json(["message" => "Τα στοίχεια του service με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
+        if($this->damage->status != "Μη Ολοκληρωμένη" && $calendar)
+        {
+            $calendar->delete();
+        }
+        if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)
+        {
+            Calendar::create(['type'=>'damages','name'=>'βλάβη','damage_id'=>$this->damage->id]);
+        }
+        //End Calendar update process
+        return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
     }
 
     public function createUpdateInput()
     {
-        if($this->request->completed_no_transaction == true && $this->request->service_done == true)
+        if($this->request->completed_no_transaction == true && $this->request->damage_fixed == true)
         {
             $this->hasError = true;
             $this->error = request()->json(["message" => "Η συναλλαγή δεν μπορεί να έιναι ακυρωμένη και επιδιορθωμένη!"],200);
         }
-        elseif($this->request->service_done == true)
+        elseif($this->request->damage_fixed == true) // in case of problems insert  || $this->request->status == "Ολοκληρωμένη" in if statement
         {
             $this->input = array();
             $this->input =
             [
-                "service_type" => $this->request->service_type,
-                "service_comments" => $this->request->service_comments,
+                "damage_type" => $this->request->damage_type,
+                "damage_comments" => $this->request->damage_comments,
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
                 "status" => "Ολοκληρώθηκε",
@@ -424,7 +402,7 @@ class ServiceManagement
                 "appointment_needed" => false,
                 "supplement_pending" => false,
                 "completed_no_transaction" => false,
-                "service_done" => true,
+                "damage_fixed" => true,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
@@ -433,19 +411,17 @@ class ServiceManagement
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                // "user_id" => $this->request->user_id,
-                "techs" => $this->insertTechs(),
-                "repeatable" => $this->request->repeatable,
-                "frequency" => $this->request->frequency
+                //"user_id" => $this->request->user_id,
+                "techs" => $this->insertTechs()
             ];
         }
-        elseif($this->request->status == "Ακυρώθηκε")
+        elseif($this->request->completed_no_transaction == true) // || $this->request->status == "Ακυρώθηκε" insert that in if statement if problems occur
         {
             $this->input = array();
             $this->input =
             [
-                "service_type" => $this->request->service_type,
-                "service_comments" => $this->request->service_comments,
+                "damage_type" => $this->request->damage_type,
+                "damage_comments" => $this->request->damage_comments,
                 "cost" => $this->request->cost,
                 "guarantee" => $this->request->guarantee,
                 "status" => "Ακυρώθηκε",
@@ -456,7 +432,7 @@ class ServiceManagement
                 "appointment_needed" => $this->request->appointment_needed,
                 "supplement_pending" => $this->request->supplement_pending,
                 "completed_no_transaction" => true,
-                "service_done" => false,
+                "damage_fixed" => false,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
@@ -465,10 +441,8 @@ class ServiceManagement
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                // "user_id" => $this->request->user_id,
-                "techs" => $this->insertTechs(),
-                "repeatable" => $this->request->repeatable,
-                "frequency" => $this->request->frequency
+                //"user_id" => $this->request->user_id,
+                "techs" => $this->insertTechs()
             ];
 
         }
@@ -477,19 +451,19 @@ class ServiceManagement
             $this->input = array();
             $this->input =
             [
-                "service_type" => $this->request->service_type,
-                "service_comments" => $this->request->service_comments,
+                "damage_type" => $this->request->damage_type,
+                "damage_comments" => $this->request->damage_comments,
                 "cost" => $this->request->cost,
-                "guarantee" => $this->request->guarantee,
-                "status" => $this->status,
-                "appointment_pending" => $this->request->appointment_pending,
-                "technician_left" => $this->request->technician_left,
-                "technician_arrived" => $this->request->technician_arrived,
-                "appointment_completed" => $this->appointment_completed,
-                "appointment_needed" => $this->appointment_needed,
-                "supplement_pending" => $this->supplement_pending,
-                "completed_no_transaction" => $this->completed_no_transca,
-                "service_done" => false,
+                "guarantee" => (int)$this->request->guarantee,
+                "status" => $this->request->status,
+                "appointment_pending" => (int)$this->request->appointment_pending,
+                "technician_left" => (int)$this->request->technician_left,
+                "technician_arrived" => (int)$this->request->technician_arrived,
+                "appointment_completed" => (int)$this->request->appointment_completed,
+                "appointment_needed" => (int)$this->request->appointment_needed,
+                "supplement_pending" => (int)$this->request->supplement_pending,
+                "completed_no_transaction" => (int)$this->request->completed_no_transaction,
+                "damage_fixed" => false,
                 "client_id" => $this->request->client_id,
                 "device_id" => $this->request->device_id,
                 "comments" => $this->request->comments,
@@ -498,9 +472,8 @@ class ServiceManagement
                 "supplement" => $this->request->supplement,
                 "appointment_start" => $this->request->appointment_start,
                 "appointment_end" => $this->request->appointment_end,
-                "user_id" => $this->request->user_id,
-                "repeatable" => $this->repeatable,
-                "frequency" => $this->frequency
+                //"user_id" => $this->request->user_id,
+                "techs" => $this->insertTechs()
             ];
         }
     }

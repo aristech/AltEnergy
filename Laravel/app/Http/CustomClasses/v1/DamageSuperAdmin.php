@@ -50,7 +50,6 @@ class DamageSuperAdmin
         {
             return null;
         }
-
     }
 
     public static function getDamagesHistory()

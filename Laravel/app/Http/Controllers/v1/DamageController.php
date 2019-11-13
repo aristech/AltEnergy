@@ -7,6 +7,7 @@ use App\Http\Resources\DamageResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\CustomClasses\v1\DamageSuperAdmin;
+use App\Http\CustomClasses\v1\DamageCalendarUpdate;
 use App\Calendar;
 
 class DamageController extends Controller
@@ -94,9 +95,15 @@ class DamageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $damage)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 3)
+        {
+            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
+        }
+        $damage = new DamageCalendarUpdate($request, $damage);
+        return $damage->updateDamage();
     }
 
     /**

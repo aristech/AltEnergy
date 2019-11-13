@@ -76,6 +76,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/damages','DamageController@store');
             Route::put('/damages','DamageController@update');
             Route::delete('/damages','DamageController@destroy');
+            Route::put('/damages/{damage}','DamageController@edit');
 
             Route::post('/searchclients','SearchController@searchClients');
             Route::post('/searchtechs','SearchController@searchTechs');
