@@ -42,7 +42,7 @@ class DamageCalendarUpdate
             $tech_array = array();
             foreach($this->request->techs as $technician)
             {
-                array_push($tech_array,$technician);//if all goes south $technician['tech_id]
+                array_push($tech_array,$technician['tech_id']);//if all goes south $technician['tech_id]
             }
             $techs = implode(',',$tech_array);
 
@@ -213,7 +213,7 @@ class DamageCalendarUpdate
         {
             foreach($this->request->techs as $techn)
             {
-                $tech = UsersRoles::where('user_id',$techn)->where('role_id','3')->first();
+                $tech = UsersRoles::where('user_id',$techn['tech_id'])->where('role_id','3')->first();
                 if(!$tech)
                 {
                     $this->hasError = true;
