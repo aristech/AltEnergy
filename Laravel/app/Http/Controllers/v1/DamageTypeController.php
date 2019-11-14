@@ -17,13 +17,11 @@ class DamageTypeController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
         }
 
         return DamageTypeResource::collection(DamageType::all());
-
     }
 
     /**
@@ -44,23 +42,23 @@ class DamageTypeController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
         }
 
-        $validator = Validator::make($request->all(),
-        [
-            "name" => "required|string"
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "name" => "required|string"
+            ]
+        );
 
-        if($validator->fails())
-        {
-            return response()->json(["message"=>$validator->errors()->first()]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors()->first()]);
         }
 
-        DamageType::create($request->all());
-        return response()->json(["message" => "Ο τύπος βλάβης αποθηκεύτηκε επιτυχώς!"],200);
+        $new_dmg_type = DamageType::create($request->all());
+        return response()->json(["message" => "Ο τύπος βλάβης αποθηκεύτηκε επιτυχώς!", "id" => $new_dmg_type->id], 200);
     }
 
     /**
@@ -105,18 +103,16 @@ class DamageTypeController extends Controller
      */
     public function destroy(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
         }
 
         $damage_type_id = $request->id;
-        $damage_type = DamageType::where('id',$damage_type_id)->first();
-        if(!$damage_type)
-        {
-            return response()->json(["message" => "Η συγκεκριμενη βλάβη δεν υπάρχει στο σύστημα!"],404);
+        $damage_type = DamageType::where('id', $damage_type_id)->first();
+        if (!$damage_type) {
+            return response()->json(["message" => "Η συγκεκριμενη βλάβη δεν υπάρχει στο σύστημα!"], 404);
         }
         $damage_type->delete();
-        return response()->json(["message" => "Ο συγκεκριμένος τυπος βλάβης διαγράφηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Ο συγκεκριμένος τυπος βλάβης διαγράφηκε επιτυχώς!"], 200);
     }
 }
