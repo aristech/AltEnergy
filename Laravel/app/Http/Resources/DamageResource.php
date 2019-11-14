@@ -18,6 +18,7 @@ class DamageResource extends JsonResource
 
         return
             [
+                'resource' => 'damages',
                 "id" => $this->id,
                 "damage_type" => $this->type['name'],
                 "damage_comments" => $this->damage_comments,

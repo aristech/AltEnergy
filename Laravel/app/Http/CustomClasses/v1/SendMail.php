@@ -1,24 +1,35 @@
 <?php
 
 namespace App\Http\CustomClasses\v1;
-use App\Eventt;
-use App\Damage;
 
+use App\Note;
+use App\Damage;
+use App\Http\Resources\DamageResource;
+use App\Http\Resources\NoteResource;
 
 //#TODO : Insert herefor services as well
 class SendMail
 {
-    private $reminderDmg=array();
-    private $reminderEvt=array();
+
+
+    private $reminderDmg = array();
+    private $reminderEvt = array();
+    public $test;
+
+    public $notifications = array();
 
     public $message;
 
 
     public function checktime($diff)
     {
-        $time = strtotime($diff) - 10800;//prod server time
+        date_default_timezone_set('GMT');
+        $temp = explode(".", $diff);
+        $diffe = str_replace("T", " ", $temp[0]);
+        $time = strtotime($diffe) - 10800; //prod server time
+        $this->test = date("F j, Y, g:i a", strtotime($diff));
         $now = time();
-        $minutes = ($time - $now)/60;
+        $minutes = ($time - $now) / 60;
 
         return $minutes;
     }
@@ -42,116 +53,98 @@ class SendMail
 
     public function getDamages()
     {
-        $damages = Damage::where("status","Μη Ολοκληρωμένη")->where('appointment_start','!=',null)->get();
+        $damages = Damage::where("status", "Μη Ολοκληρωμένη")->where('appointment_start', '!=', null)->get();
 
-        if(count($damages) > 0)
-        {
-            foreach($damages as $damage)
-            {
+        if (count($damages) > 0) {
+            foreach ($damages as $damage) {
                 $diff = $damage["appointment_start"];
 
-                if($this->checktime($diff) <= 30 && $this->checktime($diff) > 0)
-                {
-                    $obj = new \stdClass();
-                    $obj->type = $damage["type"]["name"];
-                    $obj->client = $damage["client"]["firstname"]." ".$damage["client"]["lastname"];
-                    $obj->address = "<a href='http://maps.google.com/?q=".$damage["client"]["address"].",".$damage["client"]["location"].",".$damage["client"]["zipcode"]."'>".$damage["client"]["address"].",".$damage["client"]["location"].",".$damage["client"]["zipcode"]."</a>";
+                if ($this->checktime($diff) <= 30 && $this->checktime($diff) > 0) {
+                    array_push($this->notifications, DamageResource::make($damage));
 
-                    if($damage['client']['telephone'] != null)
-                    {
-                        $obj->tel = "<a href='tel:".$damage['client']['telephone']."'>".$damage['client']['telephone']."</a>";
-                    }
-                    elseif($damage['client']['telephone2'] != null)
-                    {
-                        $obj->tel = "<a href='tel:".$damage['client']['telephone2']."'>".$damage['client']['telephone2']."</a>";
-                    }
-                    elseif($damage['client']['mobile'] != null)
-                    {
-                        $obj->tel = "<a href='tel:".$damage['client']['mobile']."'>".$damage['client']['mobile']."</a>";
-                    }
-                    else
-                    {
-                        $obj->tel = "N/A";
-                    }
+                    // $obj = new \stdClass();
+                    // $obj->type = $damage["type"]["name"];
+                    // $obj->client = $damage["client"]["firstname"]." ".$damage["client"]["lastname"];
+                    // $obj->address = "<a href='http://maps.google.com/?q=".$damage["client"]["address"].",".$damage["client"]["location"].",".$damage["client"]["zipcode"]."'>".$damage["client"]["address"].",".$damage["client"]["location"].",".$damage["client"]["zipcode"]."</a>";
 
-                    $appointment = explode('T',$damage['appointment_start']);
-                    $appointment = explode('.',$appointment[1]);
+                    // if($damage['client']['telephone'] != null)
+                    // {
+                    //     $obj->tel = "<a href='tel:".$damage['client']['telephone']."'>".$damage['client']['telephone']."</a>";
+                    // }
+                    // elseif($damage['client']['telephone2'] != null)
+                    // {
+                    //     $obj->tel = "<a href='tel:".$damage['client']['telephone2']."'>".$damage['client']['telephone2']."</a>";
+                    // }
+                    // elseif($damage['client']['mobile'] != null)
+                    // {
+                    //     $obj->tel = "<a href='tel:".$damage['client']['mobile']."'>".$damage['client']['mobile']."</a>";
+                    // }
+                    // else
+                    // {
+                    //     $obj->tel = "N/A";
+                    // }
 
-                    $obj->date = $appointment[0];
-                    array_push($this->reminderDmg,$obj);
+                    // $appointment = explode('T',$damage['appointment_start']);
+                    // $appointment = explode('.',$appointment[1]);
+
+                    // $obj->date = $appointment[0];
+                    // array_push($this->reminderDmg,$obj);
                 }
             }
         }
     }
 
-        public function getEvents()
-        {
-            $events = Eventt::where('status','Μη Ολοκληρωμένο')->where('event_start','!=',null)->get();
-            if(count($events) > 0)
-            {
-                foreach($events as $event)
-                {
-                   $diff = $event["event_start"];
-                    if( $this->checktime($diff) <= 30 && $this->checktime($diff) > 0)
-                    {
-                        $obj = new \stdClass();
-                        $obj->type = $event["title"];
+    public function getNotes()
+    {
+        $notes = Note::where('dateTime_start', '!=', null)->get();
+        if (count($notes) > 0) {
+            foreach ($notes as $note) {
+                $diff = $note["dateTime_start"];
+                if ($this->checktime($diff) <= 30 && $this->checktime($diff) > 0) {
+                    // $obj = new \stdClass();
+                    // $obj->type = $event["title"];
 
-                        $appointment = explode('T',$event["event_start"]);
-                        $appointment = explode('.',$appointment[1]);
-                        $obj->date = $appointment[0];
+                    // $appointment = explode('T', $event["event_start"]);
+                    // $appointment = explode('.', $appointment[1]);
+                    // $obj->date = $appointment[0];
 
-                        array_push($this->reminderEvt,$obj);
-                    }
+                    array_push($this->notifications, NoteResource::make($note));
                 }
-            }
-        }
-
-        public function createMessage()
-        {
-            if($this->reminderEvt||$this->reminderDmg)
-            {
-                $this->message = "<html><head></head><body><div><center>";
-                $this->message .= "<h3>Ραντεβού κανονισμένα εντός των 30 λεπτών</h3><br><br>";
-
-                if(count($this->reminderDmg) != 0)
-                {
-                    $this->message .= "<h4>Ραντεβού για βλάβες</h4>";
-                    $this->message .= "<table border='2'>";
-                    $this->message .= "<tr><th>Τυπος Βλάβης</th><th>Όνομα Πελάτη</th><th>Διεύθυνση</th><th>Τηλέφωνο Επικοινωνίας</th><th>Ωρα Ραντεβού</th></tr>";
-
-                    foreach($this->reminderDmg as $dmg)
-                    {
-                        $this->message .= "<tr><td>".$dmg->type."</td><td>".$dmg->client."</td><td>".$dmg->address."</td><td>".$dmg->tel."</td><td>".$dmg->date."</td></tr>";
-                    }
-
-                    $this->message .= "</table><br><br>";
-                }
-
-                if(count($this->reminderEvt) != 0)
-                {
-                    $this->message .= "<h4>Λοιπές Δραστηριότητες</h4>";
-                    $this->message .= "<table border='2' >";
-                    $this->message .= "<tr><th>Δραστηριότητα</th><th>Ωρα Ραντεβού</th></tr>";
-
-                    foreach($this->reminderEvt as $evt)
-                    {
-                        $this->message .= "<tr><td>".$evt->type."</td><td>".$evt->date."</td></tr>";
-                    }
-
-                    $this->message .= "</table><br><br>";
-                }
-
-                $this->message .= "</center></div></body></html>";
-
             }
         }
     }
 
+    public function createMessage()
+    {
+        if ($this->reminderEvt || $this->reminderDmg) {
+            $this->message = "<html><head></head><body><div><center>";
+            $this->message .= "<h3>Ραντεβού κανονισμένα εντός των 30 λεπτών</h3><br><br>";
 
+            if (count($this->reminderDmg) != 0) {
+                $this->message .= "<h4>Ραντεβού για βλάβες</h4>";
+                $this->message .= "<table border='2'>";
+                $this->message .= "<tr><th>Τυπος Βλάβης</th><th>Όνομα Πελάτη</th><th>Διεύθυνση</th><th>Τηλέφωνο Επικοινωνίας</th><th>Ωρα Ραντεβού</th></tr>";
 
+                foreach ($this->reminderDmg as $dmg) {
+                    $this->message .= "<tr><td>" . $dmg->type . "</td><td>" . $dmg->client . "</td><td>" . $dmg->address . "</td><td>" . $dmg->tel . "</td><td>" . $dmg->date . "</td></tr>";
+                }
 
+                $this->message .= "</table><br><br>";
+            }
 
+            if (count($this->reminderEvt) != 0) {
+                $this->message .= "<h4>Λοιπές Δραστηριότητες</h4>";
+                $this->message .= "<table border='2' >";
+                $this->message .= "<tr><th>Δραστηριότητα</th><th>Ωρα Ραντεβού</th></tr>";
 
+                foreach ($this->reminderEvt as $evt) {
+                    $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $evt->date . "</td></tr>";
+                }
 
+                $this->message .= "</table><br><br>";
+            }
 
+            $this->message .= "</center></div></body></html>";
+        }
+    }
+}
