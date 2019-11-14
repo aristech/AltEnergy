@@ -147,10 +147,40 @@ class DamageController extends Controller
         $damage->delete();
         //delete stored entry in calendar
         $calendar = Calendar::where('damage_id',$request->id)->first();
-        $calendar->delete();
-        //end delete calendar entry
+        if($calendar)
+        {
+            $calendar->delete();
+            //end delete calendar entry
+        }
+
 
 
         return response()->json(["message" => "Η βλάβη με κωδικό ".$request->id." διαγραφηκε επιτυχώς!"],200);
+    }
+
+    public function remove(Request $request, $damageId)
+    {
+        $role_id = $request->user()->role()->first()->id;
+        if($role_id < 3)
+        {
+            return response()->json(["message" => "Χρήστες με δικαίωμα ".$request->user()->role()->first()->name." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"],401);
+        }
+
+        $damage = Damage::where('id',$damageId)->first();
+        if(!$damage)
+        {
+            return response()->json(["message" => "Η βλάβη με κωδικό ".$damageId." δεν είναι καταχωρημένη!"],404);
+        }
+
+        $damage->delete();
+        //delete stored entry in calendar
+        $calendar = Calendar::where('damage_id',$damageId)->first();
+        if($calendar)
+        {
+            $calendar->delete();
+            //end delete calendar entry
+        }
+
+        return response()->json(["message" => "Η βλάβη με κωδικό ".$damageId." διαγραφηκε επιτυχώς!"],200);
     }
 }

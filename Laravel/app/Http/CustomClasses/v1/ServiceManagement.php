@@ -69,10 +69,10 @@ class ServiceManagement
 
     public function checkFrequency()
     {
-        if($this->request->repeatable == false && $this->request->frequency == null)
+        if(($this->request->repeatable == false && $this->request->frequency != null) || ($this->request->repeatable == false && $this->request->frequency != null) )
         {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "Η συχνότητα δεν πρέπει να είναι κενή"],422);
+            $this->error = response()->json(["message" => ""],422);
         }
     }
 

@@ -58,11 +58,13 @@ class DamageResource extends JsonResource
                     }
                     $techs = explode(',', $this->techs);
                     foreach ($techs as $tech) {
-                        $techn = User::where('id', $tech)->first();
                         $technician = new \stdClass();
-                        $technician->tech_id = $tech;
-                        $technician->tech_fullname = $techn['lastname'] . " " . $techn['firstname'];
-                        array_push($technicians, $technician);
+                        $techn = User::where('id', $tech)->where('active', true)->first();
+                        if ($techn) {
+                            $technician->tech_id = $tech;
+                            $technician->tech_fullname = $techn['lastname'] . " " . $techn['firstname'];
+                            array_push($technicians, $technician);
+                        }
                     }
                     return $technicians;
                 }),
@@ -85,26 +87,25 @@ class DamageResource extends JsonResource
                     "techs" => $this->when(true, function () {
                         $technicians = array();
                         $technician_ids = array();
-                        if ($this->techs != null)
-                        {
+                        if ($this->techs != null) {
                             $techs = explode(',', $this->techs);
                             foreach ($techs as $tech) {
-                                $techn = User::where('id', $tech)->first();
-                                array_push($technicians, $techn['lastname'] . " " . $techn['firstname']);
-                                $techno = new \stdClass();
-                                $techno->id = $techn['id'];
-                                $techno->fullname = $techn['firstname'] ." ". $techn['lastname'];
-                                $techno->email = $techn['email'];
-                                $techno->telephone = $techn['telephone'];
-                                $techno->telephone2 = $techn['telephone2'];
-                                $techno->mobile = $techn['mobile'];
-                                array_push($technician_ids, $techno);
+                                $techn = User::where('id', $tech)->where('active', true)->first();
+                                if ($techn) {
+                                    array_push($technicians, $techn['lastname'] . " " . $techn['firstname']);
+                                    $techno = new \stdClass();
+                                    $techno->id = $techn['id'];
+                                    $techno->fullname = $techn['firstname'] . " " . $techn['lastname'];
+                                    $techno->email = $techn['email'];
+                                    $techno->telephone = $techn['telephone'];
+                                    $techno->telephone2 = $techn['telephone2'];
+                                    $techno->mobile = $techn['mobile'];
+                                    array_push($technician_ids, $techno);
+                                }
                             }
 
                             $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => $technician_ids, "holder" => $technicians, "required" => false];
-                        }
-                        else
-                        {
+                        } else {
                             $technicians = ["title" => "Τεχνικοί", "field" => "techs", "type" => "searchtechs", "page" => "tech", "value" => array(), "holder" => array(), "required" => false];
                         }
                         return $technicians;
