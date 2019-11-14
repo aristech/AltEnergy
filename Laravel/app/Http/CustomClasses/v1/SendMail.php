@@ -23,10 +23,7 @@ class SendMail
 
     public function checktime($diff)
     {
-        date_default_timezone_set('GMT');
-        $temp = explode(".", $diff);
-        $diffe = str_replace("T", " ", $temp[0]);
-        $time = strtotime($diffe) - 10800; //prod server time
+        $time = strtotime($diff) - 10800; //prod server time
         $this->test = date("F j, Y, g:i a", strtotime($diff));
         $now = time();
         $minutes = ($time - $now) / 60;
