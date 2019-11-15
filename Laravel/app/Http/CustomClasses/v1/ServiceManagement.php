@@ -163,7 +163,7 @@ class ServiceManagement
 
     public function checkFrequency()
     {
-        if (($this->repeatable == false && $this->frequency != null) || ($this->repeatable == true && $this->frequency == null)) {
+        if (($this->request->repeatable == false && $this->request->frequency != null) || ($this->request->repeatable == true && $this->request->frequency == null)) {
             $this->hasError;
             $this->error = response()->json(["message" => "Πρέπει να οριστεί και επαναλαμβανόμενο πεδίο και συχνότητα!"], 422);
         }
