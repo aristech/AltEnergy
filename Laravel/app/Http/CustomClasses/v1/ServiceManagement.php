@@ -28,7 +28,7 @@ class ServiceManagement
 
     public static function getServices()
     {
-        $services = ServiceResource::collection(Service::where('status', 'Μη Ολοκληρωμένο')->get());
+        $services = ServiceResource::collection(Service::orderBy('appointment_start', 'asc')->get());
         return $services;
     }
 
@@ -226,7 +226,7 @@ class ServiceManagement
         }
 
         if ($this->request->frequency == true && $this->request->appointment_start != null) {
-            $newDate = date('DATE_ISO8601', strtotime($this->request->frequency, strtotime($this->request->appointment_start)));
+            $newDate = date('c', strtotime($this->request->frequency, strtotime($this->request->appointment_start)));
             $newDateArray = explode('+', $newDate);
             $newDate = $newDateArray[0] . ".000Z";
             $this->request->merge(['appointment_start' => $newDate]);
@@ -334,7 +334,7 @@ class ServiceManagement
         } elseif ($this->request->service_completed == true || $this->request->status == "Ολοκληρώθηκε") {
             $this->input = array();
             if ($this->request->frequency == true && $this->request->appointment_start != null) {
-                $newDate = date('DATE_ISO8601', strtotime($this->request->frequency, strtotime($this->request->appointment_start)));
+                $newDate = date('c', strtotime($this->request->frequency, strtotime($this->request->appointment_start)));
                 $newDateArray = explode('+', $newDate);
                 $newDate = $newDateArray[0] . ".000Z";
                 $status = 1;
