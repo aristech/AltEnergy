@@ -253,7 +253,7 @@ class ServiceManagement
 
     public function checkStatus()
     {
-        if ($this->request->status != "Ολοκληρωμένο" && $this->request->status != "Μη Ολοκληρωμένο" && $this->request->status != "Ακυρώθηκε") {
+        if ($this->request->status != "Ολοκληρώθηκε" && $this->request->status != "Μη Ολοκληρωμένο" && $this->request->status != "Ακυρώθηκε") {
             $this->hasError = true;
             $this->error = response()->json(["message" => "Η κατάσταση του service δεν επιτρέπεται!"], 422);
         }
