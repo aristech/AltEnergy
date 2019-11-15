@@ -20,7 +20,7 @@ class ReminderController extends Controller
         $reminder->getDamages();
         $reminder->getNotes();
 
-        return $reminder->test;
+        //return $reminder->test;
 
         return response()->json(["data" => $reminder->notifications], 200);
     }
