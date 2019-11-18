@@ -417,10 +417,10 @@ class ServiceCalendarUpdate
                     "appointment_pending" => $this->request->appointment_pending,
                     "technician_left" => $this->request->technician_left,
                     "technician_arrived" => $this->request->technician_arrived,
-                    "appointment_completed" => $this->appointment_completed,
-                    "appointment_needed" => $this->appointment_needed,
-                    "supplement_pending" => $this->supplement_pending,
-                    "completed_no_transaction" => $this->completed_no_transca,
+                    "appointment_completed" => $this->request->appointment_completed,
+                    "appointment_needed" => $this->request->appointment_needed,
+                    "supplement_pending" => $this->request->supplement_pending,
+                    "completed_no_transaction" => $this->request->completed_no_transca,
                     "service_completed" => false,
                     "client_id" => $this->request->client_id,
                     "device_id" => $this->request->device_id,
@@ -431,8 +431,8 @@ class ServiceCalendarUpdate
                     "appointment_start" => $this->request->appointment_start,
                     "appointment_end" => $this->request->appointment_end,
                     "user_id" => $this->request->user_id,
-                    "repeatable" => $this->repeatable,
-                    "frequency" => $this->frequency
+                    "repeatable" => $this->request->repeatable,
+                    "frequency" => $this->request->frequency
                 ];
         }
     }
