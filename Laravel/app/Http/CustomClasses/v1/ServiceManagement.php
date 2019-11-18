@@ -225,7 +225,7 @@ class ServiceManagement
             $this->request->request->add(['appointment_pending', true]);
         }
 
-        if ($this->request->repeatable == true && $this->request->appointment_start != null) {
+        if ($this->request->repeatable == true && $this->request->appointment_start != null && $this->request->status == "Ολοκληρώθηκε") {
             $newDateTime = strtotime($this->request->frequency, strtotime($this->request->appointment_start));
             $newDate = date('c', $newDateTime);
             $newDateArray = explode('+', $newDate);
