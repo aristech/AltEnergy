@@ -26,135 +26,115 @@ class CalendarResource extends JsonResource
     public function toArray($request)
     {
         return
-        [
-            "id" => $this->id,
-            "type" => $this->type,
-            "name" => $this->name,
-            "event_id" => $this->when($this->damage_id != null || $this->service_id != null || $this->note_id != null, function()
-            {
-                if($this->damage_id != null)
-                {
-                    return $this->damage_id;
-                }
-
-                if($this->event_id)
-                {
-                    return $this->event_id;
-                }
-
-                if($this->service_id != null)
-                {
-                    return $this->service_id;
-                }
-
-                if($this->note_id != null)
-                {
-                    return $this->note_id;
-                }
-            }),
-            "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null || $this->note_id != null , function()
-            {
-                if($this->damage_id != null)
-                {
-                    return Damage::where('id',$this->damage_id)->first()['type']['name'];
-                }
-
-                if($this->event_id != null)
-                {
-                    return Eventt::where('id',$this->event_id)->first()['title'];
-                }
-
-                if($this->service_id != null)
-                {
-                    return Service::where('id',$this->service_id)->first()['type']['name'];
-                }
-
-                if($this->note_id != null)
-                {
-                    return Note::where('id',$this->note_id)->first()['title'];
-                }
-            }),
-            "start" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null , function()
-            {
-                if($this->damage_id != null)
-                {
-                    return Damage::where('id',$this->damage_id)->first()['appointment_start'];
-                }
-
-                if($this->event_id != null)
-                {
-                    return Eventt::where('id',$this->event_id)->first()["event_start"];
-                }
-                if($this->note_id != null)
-                {
-                    return Note::where('id',$this->note_id)->first()["dateTime_start"];
-                }
-
-            }),
-            "end" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null, function()
-            {
-                if($this->damage_id != null)
-                {
-                   return Damage::where('id',$this->damage_id)->first()['appointment_end'];
-                }
-
-                if($this->event_id != null)
-                {
-                   return Eventt::where('id',$this->event_id)->first()["event_end"];
-                }
-                if($this->note_id != null)
-                {
-                    return Note::where('id',$this->note_id)->first()["dateTime_end"];
-                }
-
-            }),
-            "all_day" => $this->when($this->note_id != null, function()
-            {
-                return Note::where('id',$this->note_id)->first()["all_day"];
-            }),
-            // "startRecur" => $this->when($this->service_id != null, function()
-            // {
-            //     return Service::where('id',$this->service_id)->first()['appointment_start'];
-            // }),
-            // "endRecur" => $this->when($this->service_id != null, function()
-            // {
-            //     return Service::where('id',$this->service_id)->first()['appointment_end'];
-            // }),
-            // "frequency" => $this->when($this->service_id != null , function()
-            // {
-            //     $service = Service::where('repeatable',true)->get()->first();
-            //     return $service['frequency'];
-            // })
-            "color" => $this->when($this->note_id != null || $this->damage_id != null, function()
-            {
-                if($this->note_id != null)
-                {
-                    $importance = Note::where('id',$this->note_id)->first()["importance"];
-                    switch($importance)
-                    {
-                        case 0:
-                            return "#ff0000";
-                            break;
-                        case 1:
-                            return "#ffa500";
-                            break;
-                        case 2:
-                            return "#008000";
-                            break;
-                        default:
-                            return null;
-                            break;
+            [
+                "id" => $this->id,
+                "type" => $this->type,
+                "name" => $this->name,
+                "event_id" => $this->when($this->damage_id != null || $this->service_id != null || $this->note_id != null, function () {
+                    if ($this->damage_id != null) {
+                        return $this->damage_id;
                     }
-                }
-                if($this->damage_id != null)
-                {
-                    return "#5d5fea";
-                }
-                if($this->note_id != null)
-                {
-                    return "#296d98";
-                }
-            })
-        ];
+
+                    if ($this->event_id) {
+                        return $this->event_id;
+                    }
+
+                    if ($this->service_id != null) {
+                        return $this->service_id;
+                    }
+
+                    if ($this->note_id != null) {
+                        return $this->note_id;
+                    }
+                }),
+                "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null || $this->note_id != null, function () {
+                    if ($this->damage_id != null) {
+                        return Damage::where('id', $this->damage_id)->first()['type']['name'];
+                    }
+
+                    if ($this->event_id != null) {
+                        return Eventt::where('id', $this->event_id)->first()['title'];
+                    }
+
+                    if ($this->service_id != null) {
+                        return Service::where('id', $this->service_id)->first()['type']['name'];
+                    }
+
+                    if ($this->note_id != null) {
+                        return Note::where('id', $this->note_id)->first()['title'];
+                    }
+                }),
+                "start" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        return Damage::where('id', $this->damage_id)->first()['appointment_start'];
+                    }
+
+                    if ($this->event_id != null) {
+                        return Eventt::where('id', $this->event_id)->first()["event_start"];
+                    }
+                    if ($this->note_id != null) {
+                        return Note::where('id', $this->note_id)->first()["dateTime_start"];
+                    }
+                    if ($this->service_id != null) {
+                        return Service::where('id', $this->service_id)->first()["appointment_start"];
+                    }
+                }),
+                "end" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null, function () {
+                    if ($this->damage_id != null) {
+                        return Damage::where('id', $this->damage_id)->first()['appointment_end'];
+                    }
+
+                    if ($this->event_id != null) {
+                        return Eventt::where('id', $this->event_id)->first()["event_end"];
+                    }
+                    if ($this->note_id != null) {
+                        return Note::where('id', $this->note_id)->first()["dateTime_end"];
+                    }
+                    if ($this->service_id != null) {
+                        return Service::where('id', $this->service_id)->first()["appointment_end"];
+                    }
+                }),
+                "all_day" => $this->when($this->note_id != null, function () {
+                    return Note::where('id', $this->note_id)->first()["all_day"];
+                }),
+                // "startRecur" => $this->when($this->service_id != null, function()
+                // {
+                //     return Service::where('id',$this->service_id)->first()['appointment_start'];
+                // }),
+                // "endRecur" => $this->when($this->service_id != null, function()
+                // {
+                //     return Service::where('id',$this->service_id)->first()['appointment_end'];
+                // }),
+                // "frequency" => $this->when($this->service_id != null , function()
+                // {
+                //     $service = Service::where('repeatable',true)->get()->first();
+                //     return $service['frequency'];
+                // })
+                "color" => $this->when($this->note_id != null || $this->damage_id != null, function () {
+                    if ($this->note_id != null) {
+                        $importance = Note::where('id', $this->note_id)->first()["importance"];
+                        switch ($importance) {
+                            case 0:
+                                return "#ff0000";
+                                break;
+                            case 1:
+                                return "#ffa500";
+                                break;
+                            case 2:
+                                return "#008000";
+                                break;
+                            default:
+                                return null;
+                                break;
+                        }
+                    }
+                    if ($this->damage_id != null) {
+                        return "#5d5fea";
+                    }
+                    if ($this->note_id != null) {
+                        return "#296d98";
+                    }
+                })
+            ];
     }
 }
