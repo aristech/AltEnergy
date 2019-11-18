@@ -175,7 +175,7 @@ class ServiceCalendarUpdate
     {
         if (count($this->request->techs) != 0) {
             foreach ($this->request->techs as $techn) {
-                $tech = UsersRoles::where('user_id', $techn)->where('role_id', '3')->first();
+                $tech = UsersRoles::where('user_id', $techn['tech_id'])->where('role_id', '3')->first();
                 if (!$tech) {
                     $this->hasError = true;
                     $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό " . $techn . " δεν είναι τεχνικός!"], 405);
