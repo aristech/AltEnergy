@@ -415,7 +415,7 @@ class ServiceManagement
                     "appointment_pending" => $this->request->appointment_pending,
                     "technician_left" => $this->request->technician_left,
                     "technician_arrived" => $this->request->technician_arrived,
-                    "appointment_completed" => $this->appointment_completed,
+                    "appointment_completed" => $this->request->appointment_completed,
                     "appointment_needed" => $this->appointment_needed,
                     "supplement_pending" => $this->supplement_pending,
                     "completed_no_transaction" => $this->completed_no_transca,
