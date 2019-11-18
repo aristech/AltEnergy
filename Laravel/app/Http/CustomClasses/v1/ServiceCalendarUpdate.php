@@ -227,8 +227,8 @@ class ServiceCalendarUpdate
             $this->request->request->add(['appointment_pending', true]);
         }
 
-        if ($this->request->frequency == true && $this->request->appointment_start != null) {
-            $newDateTime = strtotime("+3 months", strtotime($this->request->appointment_start));
+        if ($this->request->repeatable == true && $this->request->appointment_start != null) {
+            $newDateTime = strtotime($this->request->frequency, strtotime($this->request->appointment_start));
             $newDate = date('c', $newDateTime);
             $newDateArray = explode('+', $newDate);
             $newDate = $newDateArray[0] . ".000Z";
@@ -353,15 +353,15 @@ class ServiceCalendarUpdate
                     "service_comments" => $this->request->service_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,
-                    "status" => $status = 1 ? "Μη Ολοκληρωμένο" : "Ολοκληρώθηκε",
-                    "appointment_pending" =>  $status = 1 ? true : false,
-                    "technician_left" => $status = 1 ? false : $this->request->technician_left,
-                    "technician_arrived" => $status = 1 ? false : $this->request->technician_arrived,
-                    "appointment_completed" => $status = 1 ? false : $this->request->appointment_completed,
-                    "appointment_needed" => $status = 1 ? false : $this->request->appointment_needed,
-                    "supplement_pending" => $status = 1 ? false : $this->request->supplement_pending,
-                    "completed_no_transaction" => $status = 1 ? false : $this->request->completed_no_transaction,
-                    "service_completed" => $status = 1 ? false : true,
+                    "status" => $status == 1 ? "Μη Ολοκληρωμένο" : "Ολοκληρώθηκε",
+                    "appointment_pending" =>  $status == 1 ? true : false,
+                    "technician_left" => $status == 1 ? false : $this->request->technician_left,
+                    "technician_arrived" => $status == 1 ? false : $this->request->technician_arrived,
+                    "appointment_completed" => $status == 1 ? false : $this->request->appointment_completed,
+                    "appointment_needed" => $status == 1 ? false : $this->request->appointment_needed,
+                    "supplement_pending" => $status == 1 ? false : $this->request->supplement_pending,
+                    "completed_no_transaction" => $status == 1 ? false : $this->request->completed_no_transaction,
+                    "service_completed" => $status == 1 ? false : true,
                     "client_id" => $this->request->client_id,
                     "device_id" => $this->request->device_id,
                     "comments" => $this->request->comments,
