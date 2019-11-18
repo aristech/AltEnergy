@@ -32,7 +32,7 @@ class SendMail
     {
         //$temp = explode(".", $diff);
         //$diffe = str_replace("T", " ", $temp[0]);
-        $time = strtotime($diff) - 10800; //prod server time
+        $time = strtotime($diff) - 7200; //prod server time
         //$this->test = date("F j, Y, g:i a", $time);
         $now = time();
         $minutes = ($time - $now) / 60;
