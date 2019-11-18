@@ -8,7 +8,7 @@ use App\Device;
 use App\Http\Resources\ServiceResource;
 use Illuminate\Http\Request;
 use App\Client;
-use App\ServiceType;
+use App\DamageType;
 use App\UsersRoles;
 use App\Calendar;
 
@@ -57,7 +57,7 @@ class ServiceCalendarUpdate
 
     private function checkServiceType()
     {
-        $serviceType = ServiceType::where('id', $this->request->service_type_id)->first();
+        $serviceType = DamageType::where('id', $this->request->service_type_id2)->first();
         if (!$serviceType) {
             $this->hasError = true;
             $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος service!"], 404);
@@ -69,7 +69,7 @@ class ServiceCalendarUpdate
         $validator = Validator::make(
             $this->request->all(),
             [
-                'service_type_id' => 'required|integer',
+                'service_type_id2' => 'required|integer',
                 'service_comments' => 'nullable|min:4|max:10000',
                 'cost' => 'nullable|numeric|between:0.00,999999.99',
                 'guarantee' => 'required|boolean',
@@ -100,7 +100,7 @@ class ServiceCalendarUpdate
             $this->request->all(),
             [
                 'id' => 'required|integer',
-                'service_type_id' => 'required|integer',
+                'service_type_id2' => 'required|integer',
                 'service_comments' => 'nullable|min:4|max:10000',
                 'cost' => 'nullable|numeric|between:0.00,999999.99',
                 'guarantee' => 'required|boolean',
@@ -349,7 +349,7 @@ class ServiceCalendarUpdate
 
             $this->input =
                 [
-                    "service_type_id" => $this->request->service_type_id,
+                    "service_type_id2" => $this->request->service_type_id2,
                     "service_comments" => $this->request->service_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,
@@ -379,7 +379,7 @@ class ServiceCalendarUpdate
             $this->input = array();
             $this->input =
                 [
-                    "service_type_id" => $this->request->service_type_id,
+                    "service_type_id2" => $this->request->service_type_id2,
                     "service_comments" => $this->request->service_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,
@@ -409,7 +409,7 @@ class ServiceCalendarUpdate
             $this->input = array();
             $this->input =
                 [
-                    "service_type_id" => $this->request->service_type_id,
+                    "service_type_id2" => $this->request->service_type_id2,
                     "service_comments" => $this->request->service_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,

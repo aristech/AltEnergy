@@ -83,7 +83,7 @@ class ServiceResource extends JsonResource
                             if ($this->client['mobile'] != null) return $this->client['mobile'];
                         })
                     ],
-                    "service" => ["field" => "service_type_id", "value" => $this->service_type_id, "type" => "search", "title" => "Τύπος Σέρβις", "page" => "servicetypes", "holder" => $this->type['name'], "required" => false],
+                    "service" => ["field" => "service_type_id2", "value" => $this->service_type_id2, "type" => "search", "title" => "Τύπος Σέρβις", "page" => "damagetypes", "holder" => $this->type['name'], "required" => false],
                     "client" => ["field" => "client_id", "value" => $this->client_id, "type" => "search", "title" => "Πελάτης", "page" => "clients", "holder" => $this->client['firstname'] . " " . $this->client['lastname'] . " | " . $this->client['address'], "required" => true],
                     "techs" => $this->when(true, function () {
                         $technicians = array();
