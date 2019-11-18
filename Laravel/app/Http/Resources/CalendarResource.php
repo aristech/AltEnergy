@@ -131,8 +131,8 @@ class CalendarResource extends JsonResource
                     if ($this->damage_id != null) {
                         return "#5d5fea";
                     }
-                    if ($this->note_id != null) {
-                        return "#296d98";
+                    if ($this->service_id != null) {
+                        return "#bd391b";
                     }
                 })
             ];
