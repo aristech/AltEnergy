@@ -310,8 +310,8 @@ class ServiceCalendarUpdate
             $this->input['appointment_pending'] = true;
         }
 
-        if ($this->input['appointment_pending'] == true) {
-            $this->input['appointment_start'] = null;
+        if ($this->input['appointment_start'] != null) {
+            $this->input['appointment_pending'] = false;
         }
 
 
