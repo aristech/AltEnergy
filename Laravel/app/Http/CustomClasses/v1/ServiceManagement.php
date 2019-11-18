@@ -411,7 +411,7 @@ class ServiceManagement
                     "service_comments" => $this->request->service_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,
-                    "status" => $this->status,
+                    "status" => $this->request->status,
                     "appointment_pending" => $this->request->appointment_pending,
                     "technician_left" => $this->request->technician_left,
                     "technician_arrived" => $this->request->technician_arrived,
