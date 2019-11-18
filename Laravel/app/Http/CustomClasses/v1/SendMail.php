@@ -141,7 +141,7 @@ class SendMail
 
                     $obj = new \stdClass();
                     $obj->type = $note["title"];
-                    $οbj->importance = $note[]
+                    $obj->importance = $note["importance"];
                     $appointment = explode('T', $note["dateTime_start"]);
                     $appointment = explode('.', $appointment[1]);
                     $obj->date = $appointment[0];
