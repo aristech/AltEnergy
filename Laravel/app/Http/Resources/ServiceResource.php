@@ -29,7 +29,7 @@ class ServiceResource extends JsonResource
                 "appointment_completed" => $this->appointment_completed,
                 "appointment_needed" => $this->appointment_needed,
                 "supplement_pending" => $this->supplement_pending,
-                "service_done" => $this->service_done,
+                "service_completed" => $this->service_completed,
                 "completed_no_transaction" => $this->completed_no_transaction,
                 "client_id" => $this->client_id,
                 "client_lastname" => $this->client['lastname'],
