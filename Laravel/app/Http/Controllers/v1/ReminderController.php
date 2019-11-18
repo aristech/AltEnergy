@@ -19,8 +19,8 @@ class ReminderController extends Controller
         //return $mail->checktime('2019-10-17T18:39:00.000Z');
         $reminder->getDamages();
         $reminder->getNotes();
+        $reminder->getServices();
 
-        return $reminder->test;
 
         return response()->json(["data" => $reminder->notifications], 200);
     }
