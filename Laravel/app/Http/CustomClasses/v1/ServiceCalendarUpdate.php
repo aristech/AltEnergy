@@ -420,7 +420,7 @@ class ServiceCalendarUpdate
                     "appointment_completed" => $this->request->appointment_completed,
                     "appointment_needed" => $this->request->appointment_needed,
                     "supplement_pending" => $this->request->supplement_pending,
-                    "completed_no_transaction" => $this->request->completed_no_transca,
+                    "completed_no_transaction" => $this->request->completed_no_transaction,
                     "service_completed" => false,
                     "client_id" => $this->request->client_id,
                     "device_id" => $this->request->device_id,
