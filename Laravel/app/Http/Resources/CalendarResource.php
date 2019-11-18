@@ -110,7 +110,7 @@ class CalendarResource extends JsonResource
                 //     $service = Service::where('repeatable',true)->get()->first();
                 //     return $service['frequency'];
                 // })
-                "color" => $this->when($this->note_id != null || $this->damage_id != null, function () {
+                "color" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
                     if ($this->note_id != null) {
                         $importance = Note::where('id', $this->note_id)->first()["importance"];
                         switch ($importance) {
