@@ -366,7 +366,7 @@ class ServiceManagement
                     "manufacturer_id" => $this->request->manufacturer_id,
                     "mark_id" => $this->request->mark_id,
                     "supplement" => $this->request->supplement,
-                    "appointment_start" => $status == 1 ? $newDate : $this->request->appointment_start,
+                    "appointment_start" => $newDate,
                     "appointment_end" => $this->request->appointment_end,
                     // "user_id" => $this->request->user_id,
                     "techs" => $this->insertTechs(),
