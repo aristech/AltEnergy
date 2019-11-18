@@ -83,6 +83,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/searchmarks', 'SearchController@searchMarks');
             Route::post('/searchdevices', 'SearchController@searchDevices');
             Route::post('/searchdamagetypes', 'SearchController@searchDamageTypes');
+            Route::post('/searchservicetypes', 'SearchController@searchServiceTypes');
 
             // Route::get('/events','EventController@index');
             // Route::get('/eventhistory','EventController@history');
