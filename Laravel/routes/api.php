@@ -113,6 +113,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/services', 'ServiceController@store');
             Route::put('/services', 'ServiceController@update');
             Route::delete('/services', 'ServiceController@destroy');
+            Route::put('/services/{service}', 'ServiceController@edit');
+            Route::delete('/services/{serviceId}', 'ServiceController@remove');
 
             Route::get('/dashboard', 'DashboardController@index');
 

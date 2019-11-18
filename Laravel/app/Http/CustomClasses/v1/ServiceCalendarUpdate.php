@@ -12,7 +12,7 @@ use App\ServiceType;
 use App\UsersRoles;
 use App\Calendar;
 
-class ServiceManagement
+class ServiceCalendarUpdate
 {
     protected $request;
     protected $hasError = false;
@@ -20,10 +20,12 @@ class ServiceManagement
     protected $message;
     protected $service;
     protected $serviceInput;
+    protected $service_id;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, $service_id)
     {
         $this->request = $request;
+        $this->service_id = $service_id;
     }
 
     public static function getServices()
@@ -225,8 +227,8 @@ class ServiceManagement
             $this->request->request->add(['appointment_pending', true]);
         }
 
-        if ($this->request->repeatable == true && $this->request->appointment_start != null) {
-            $newDateTime = strtotime($this->request->frequency, strtotime($this->request->appointment_start));
+        if ($this->request->frequency == true && $this->request->appointment_start != null) {
+            $newDateTime = strtotime("+3 months", strtotime($this->request->appointment_start));
             $newDate = date('c', $newDateTime);
             $newDateArray = explode('+', $newDate);
             $newDate = $newDateArray[0] . ".000Z";
@@ -243,7 +245,7 @@ class ServiceManagement
 
     public function checkService()
     {
-        $service = Service::where('id', $this->request->id)->first();
+        $service = Service::where('id', $this->service_id)->first();
         if (!$service) {
             $this->hasError = true;
             $this->error = response()->json(["message" => "To service αυτο δεν είναι περασμένη στο σύστημα!"], 404);
@@ -373,7 +375,7 @@ class ServiceManagement
                     "repeatable" => $this->request->repeatable,
                     "frequency" => $this->request->frequency
                 ];
-        } elseif ($this->request->completed_no_transaction == true) {
+        } elseif ($this->request->status == "Ακυρώθηκε") {
             $this->input = array();
             $this->input =
                 [

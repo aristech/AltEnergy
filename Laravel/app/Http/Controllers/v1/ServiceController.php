@@ -7,6 +7,7 @@ use App\Http\Resources\ServiceResource;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\CustomClasses\v1\ServiceManagement;
+use App\Http\CustomClasses\v1\ServiceCalendarUpdate;
 use App\Calendar;
 
 class ServiceController extends Controller
@@ -19,8 +20,7 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 4)
-        {
+        if ($role_id >= 4) {
             return ServiceManagement::getServices();
         }
     }
@@ -28,8 +28,7 @@ class ServiceController extends Controller
     public function history(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 3)
-        {
+        if ($role_id >= 3) {
             return ServiceManagement::getServicesHistory();
         }
     }
@@ -40,10 +39,7 @@ class ServiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    {
-
-
-    }
+    { }
 
     /**
      * Store a newly created resource in storage.
@@ -54,16 +50,12 @@ class ServiceController extends Controller
     public function store(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id >= 3)
-        {
+        if ($role_id >= 3) {
             $service = new ServiceManagement($request);
             return $service->storeService();
+        } else {
+            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να εισάγει services στο σύστημα!"], 401);
         }
-        else
-        {
-            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να εισάγει services στο σύστημα!"],401);
-        }
-
     }
 
     /**
@@ -75,13 +67,12 @@ class ServiceController extends Controller
     public function show($service, Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3)
-        {
-            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
+        if ($role_id < 3) {
+            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
         }
 
         $service = Service::find($service);
-        if(!$service)return response()->json(["message" => "Δεν βρέθηκε το service στο σύστημα"],404);
+        if (!$service) return response()->json(["message" => "Δεν βρέθηκε το service στο σύστημα"], 404);
 
         return ServiceResource::make($service);
     }
@@ -92,9 +83,14 @@ class ServiceController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Request $request, $service)
     {
-        //
+        $role_id = $request->user()->role()->first()->id;
+        if ($role_id < 3) {
+            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
+        }
+        $service = new ServiceCalendarUpdate($request, $service);
+        return $service->updateService();
     }
 
     /**
@@ -107,9 +103,8 @@ class ServiceController extends Controller
     public function update(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3)
-        {
-            return response()->json(["message" => "Ο χρήστης με ρόλο ".$request->user()->role()->first()->name." δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"],401);
+        if ($role_id < 3) {
+            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
         }
         $service = new ServiceManagement($request);
         return $service->updateService();
@@ -124,22 +119,43 @@ class ServiceController extends Controller
     public function destroy(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3)
-        {
-            return response()->json(["message" => "Χρήστες με δικαίωμα ".$request->user()->role()->first()->name." δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"],401);
+        if ($role_id < 3) {
+            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->name . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
         }
 
-        $service = Service::where('id',$request->id)->first();
-        if(!$service)
-        {
-            return response()->json(["message" => "Το service με κωδικό ".$request->id." δεν είναι καταχωρημένo!"],404);
+        $service = Service::where('id', $request->id)->first();
+        if (!$service) {
+            return response()->json(["message" => "Το service με κωδικό " . $request->id . " δεν είναι καταχωρημένo!"], 404);
         }
         $service->delete();
 
 
-        $calendar = Calendar::where('service_id',$request->id)->first();
-        if(!$calendar)$calendar->delete();
+        $calendar = Calendar::where('service_id', $request->id)->first();
+        if (!$calendar) $calendar->delete();
 
-        return response()->json(["message" => "Το service με κωδικό ".$request->id." διαγραφηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Το service με κωδικό " . $request->id . " διαγραφηκε επιτυχώς!"], 200);
+    }
+
+    public function remove(Request $request, $serviceId)
+    {
+        $role_id = $request->user()->role()->first()->id;
+        if ($role_id < 3) {
+            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->name . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
+        }
+
+        $service = Service::where('id', $serviceId)->first();
+        if (!$service) {
+            return response()->json(["message" => "Το σέρβις με κωδικό " . $serviceId . " δεν είναι καταχωρημένη!"], 404);
+        }
+
+        $service->delete();
+        //delete stored entry in calendar
+        $calendar = Calendar::where('service_id', $serviceId)->first();
+        if ($calendar) {
+            $calendar->delete();
+            //end delete calendar entry
+        }
+
+        return response()->json(["message" => "Το σέρβις με κωδικό " . $serviceId . " διαγραφηκε επιτυχώς!"], 200);
     }
 }
