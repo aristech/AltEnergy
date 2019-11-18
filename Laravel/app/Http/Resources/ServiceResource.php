@@ -131,8 +131,8 @@ class ServiceResource extends JsonResource
                     "supplement" => ["field" => "supplement", "title" => "Ανταλλακτικά(Διαχωρίστε τα ανταλλακτικά με ',')", "type" => "text", "value" => $this->supplement, "required" => false],
                     "service_comments" => ["field" => "service_comments", "value" => $this->service_comments, "type" => "text", "title" => "Σχόλια Σέρβις", "required" => false],
                     "comments" =>  ["field" => "comments", "type" => "text", "title" => "Γενικά Σχόλια", "value" => $this->comments, "required" => false],
-                    "repeatable" => ["field" => "repeatable", "value" => $this->repeatable, "type" => "boolean", "title" => "Σέρβις Επαναλαμβανόμενο;", "radioItems" => [["id" => 1, "title" => "Ναι"], ["id" => 0, "title" => "Όχι"]], "required" => true],
-                    "frequency" => ["field" => "frequency", "value" => $this->status, "type" => "boolean", "title" => "Επανάληψη κάθε:", "radioItems" => [["id" => "+3 months", "title" => "Τρίμηνο"], ["id" => "+6 months", "title" => "Εξάμηνο"], ["id" => "+1 year", "title" => "Έτος"],  ["id" => "+3 years", "title" => "Τριετία"]], "required" => true]
+                    "repeatable" => ["field" => "repeatable", "value" => $this->repeatable, "type" => "boolean", "title" => "Σέρβις Επαναλαμβανόμενο;", "radioItems" => [["id" => 1, "title" => "Ναι"], ["id" => 0, "title" => "Όχι"]], "required" => false],
+                    "frequency" => ["field" => "frequency", "value" => $this->status, "type" => "boolean", "title" => "Επανάληψη κάθε:", "radioItems" => [["id" => "+3 months", "title" => "Τρίμηνο"], ["id" => "+6 months", "title" => "Εξάμηνο"], ["id" => "+1 year", "title" => "Έτος"],  ["id" => "+3 years", "title" => "Τριετία"]], "required" => false]
                 ])
 
             ];
