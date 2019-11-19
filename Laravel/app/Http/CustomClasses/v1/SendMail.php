@@ -95,7 +95,7 @@ class SendMail
 
     public function getServices()
     {
-        $services = Service::where("status", "Μη Ολοκληρωμένη")->where('appointment_start', '!=', null)->get();
+        $services = Service::where("status", "Μη Ολοκληρωμένο")->where('appointment_start', '!=', null)->get();
 
         if (count($services) > 0) {
             foreach ($services as $service) {
@@ -123,7 +123,7 @@ class SendMail
                     $appointment = explode('.', $appointment[1]);
 
                     $obj->date = $appointment[0];
-                    array_push($this->reminderDmg, $obj);
+                    array_push($this->reminderService, $obj);
                 }
             }
         }
@@ -145,6 +145,8 @@ class SendMail
                     $appointment = explode('T', $note["dateTime_start"]);
                     $appointment = explode('.', $appointment[1]);
                     $obj->date = $appointment[0];
+
+                    array_push($this->reminderNt, $obj);
                 }
             }
         }
@@ -180,12 +182,12 @@ class SendMail
                 $this->message .= "</table><br><br>";
             }
 
-            if (count($this->reminderEvt) != 0) {
+            if (count($this->reminderNt) != 0) {
                 $this->message .= "<h4>Λοιπές Δραστηριότητες</h4>";
                 $this->message .= "<table border='2' >";
                 $this->message .= "<tr><th>Δραστηριότητα</th><th>Βαθμός Σημαντικότητας</th><th>Ωρα Ραντεβού</th></tr>";
 
-                foreach ($this->reminderEvt as $evt) {
+                foreach ($this->reminderNt as $evt) {
                     $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $evt->date . "</td></tr>";
                 }
 
