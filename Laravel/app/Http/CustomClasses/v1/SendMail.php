@@ -42,7 +42,7 @@ class SendMail
 
     public function sendMail()
     {
-        if (count($this->notifications > 0)) {
+        if (count($this->notifications) > 0) {
             $to = 'sales@atlenergy.gr';
 
             $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
