@@ -126,6 +126,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::get('/indications', 'IndicatorsController@index');
 
             Route::get('/reminder', 'ReminderController@index');
+
+            Route::post('/importclients', 'ImportClientsController@import');
         });
     });
 });
