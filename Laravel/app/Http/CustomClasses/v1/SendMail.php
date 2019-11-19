@@ -164,7 +164,12 @@ class SendMail
                 $this->message .= "<tr><th>Τυπος Βλάβης</th><th>Όνομα Πελάτη</th><th>Διεύθυνση</th><th>Τηλέφωνο Επικοινωνίας</th><th>Ωρα Ραντεβού</th></tr>";
 
                 foreach ($this->reminderDmg as $dmg) {
-                    $this->message .= "<tr><td>" . $dmg->type . "</td><td>" . $dmg->client . "</td><td>" . $dmg->address . "</td><td>" . $dmg->tel . "</td><td>" . $dmg->date . "</td></tr>";
+
+                    $timestamp = strtotime($dmg->date) + 2 * 60 * 60;
+
+                    $time = date('H:i', $timestamp);
+
+                    $this->message .= "<tr><td>" . $dmg->type . "</td><td>" . $dmg->client . "</td><td>" . $dmg->address . "</td><td>" . $dmg->tel . "</td><td>" . $time . "</td></tr>";
                 }
 
                 $this->message .= "</table><br><br>";
@@ -176,7 +181,12 @@ class SendMail
                 $this->message .= "<tr><th>Τυπος Σέρβις</th><th>Όνομα Πελάτη</th><th>Διεύθυνση</th><th>Τηλέφωνο Επικοινωνίας</th><th>Ωρα Ραντεβού</th></tr>";
 
                 foreach ($this->reminderService as $serv) {
-                    $this->message .= "<tr><td>" . $serv->type . "</td><td>" . $serv->client . "</td><td>" . $serv->address . "</td><td>" . $serv->tel . "</td><td>" . $serv->date . "</td></tr>";
+
+                    $timestamp = strtotime($serv->date) + 2 * 60 * 60;
+
+                    $time = date('H:i', $timestamp);
+
+                    $this->message .= "<tr><td>" . $serv->type . "</td><td>" . $serv->client . "</td><td>" . $serv->address . "</td><td>" . $serv->tel . "</td><td>" . $time . "</td></tr>";
                 }
 
                 $this->message .= "</table><br><br>";
@@ -193,9 +203,18 @@ class SendMail
 
                     $time = date('H:i', $timestamp);
 
+                    switch ($evt->importance) {
+                        case 0:
+                            $importance = "Υψηλή";
+                            break;
+                        case 1:
+                            $importance = "Μέτρια";
+                            break;
+                        default:
+                            $importance = "Χαμηλή";
+                    }
 
-
-                    $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $evt->importance . "</td><td>" . $time . "</td></tr>";
+                    $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $importance . "</td><td>" . $time . "</td></tr>";
                 }
 
                 $this->message .= "</table><br><br>";
