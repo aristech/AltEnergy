@@ -17,39 +17,34 @@ class SupplementController extends Controller
      */
     public function index(Request $request)
     {
-
         $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3)
-        {
-            return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"],401);
+        if ($role_id < 3) {
+            return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"], 401);
         }
 
         $supplementsArray = array();
-        $damages = Damage::where('status','Μη Ολοκληρωμένη')->where('supplement','!=',null)->get();
+        $damages = Damage::where('status', 'Μη Ολοκληρωμένη')->where('supplement', '!=', null)->get();
 
         $now = Carbon::now();
         $startweek = strtotime($now->startOfWeek());
         $endweek = strtotime($now->endOfWeek());
-        foreach($damages as $damage)
-        {
-            $appointment = $damage->appointment_start;
+        foreach ($damages as $damage) {
+            $appointment = $damage['appointment_start'];
             // $appointment_temp = str_replace("T"," ",$appointment);
             // $split_appointment = explode(".",$appointment_temp);
             // $appointmentDisplay = $split_appointment[0];
-            $appointmentDisplay = date("F j, Y, g:i a",strtotime($appointment));
+            $appointmentDisplay = date("F j, Y, g:i a", strtotime($appointment));
             // $apointment = explode(" ",$damage->appointment_start);
             // $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
-            if($damage->appointment_start != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek)
-            {
-                $supplements = explode(',',$damage->supplement);
+            if ($damage['appointment_start'] != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek) {
+                $supplements = explode(',', $damage['supplement']);
 
-                foreach($supplements as $supply)
-                {
+                foreach ($supplements as $supply) {
                     $supplement = new \stdClass();
                     $supplement->supplement = $supply;
                     $supplement->date = $appointmentDisplay;
 
-                    array_push($supplementsArray,$supplement);
+                    array_push($supplementsArray, $supplement);
                 }
 
                 // $supplement = new \stdClass();
@@ -60,33 +55,30 @@ class SupplementController extends Controller
             }
         }
 
-        $services = Service::where('status','Μη Ολοκληρωμένο')->where('supplements','!=',null)->get();
-        foreach($services as $service)
-        {
-            $appointment = $service->appointment_start;
-            $appointmentDisplay = date("F j, Y, g:i a",strtotime($appointment));
+        $services = Service::where('status', 'Μη Ολοκληρωμένο')->where('supplements', '!=', null)->get();
+        foreach ($services as $service) {
+            $appointment = $service['appointment_start'];
+            $appointmentDisplay = date("F j, Y, g:i a", strtotime($appointment));
             // $apointment = explode(" ",$service->appointment_start);
             // $appointment = $apointment[0]." ".$apointment[1]." ".$apointment[2]." ".$apointment[3]." ".$apointment[4]." ".$apointment[5];
-            if($service->appointment_start != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek)
-            {
-                $supplements = explode(',',$service->supplement);
+            if ($service['appointment_start'] != null && strtotime($appointment) >= $startweek && strtotime($appointment) <= $endweek) {
+                $supplements = explode(',', $service['supplements']);
 
-                foreach($supplements as $supply)
-                {
+                foreach ($supplements as $supply) {
                     $supplement = new \stdClass();
                     $supplement->supplement = $supply;
-                    $supplement->date = $appointmentDisplay;//if all goes wrong display $damage->appointment_start
+                    $supplement->date = $appointmentDisplay; //if all goes wrong display $damage->appointment_start
 
-                    array_push($supplementsArray,$supplement);
+                    array_push($supplementsArray, $supplement);
                 }
                 $supplement = new \stdClass();
-                $supplement->supplement = $service->supplement;
-                $supplement->date = $service->appointment_start;
+                $supplement->supplement = $service['supplements'];
+                $supplement->date = $service['appointment_start'];
 
-                array_push($supplementsArray,$supplement);
+                array_push($supplementsArray, $supplement);
             }
         }
-        return response()->json(["data"=>$supplementsArray],200);
+        return response()->json(["data" => $supplementsArray], 200);
     }
 
     /**

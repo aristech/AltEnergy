@@ -128,7 +128,7 @@ class ServiceResource extends JsonResource
                     "appointment_start" => ["field" => "appointment_start", "title" => "Έναρξη Ραντεβού", "type" => "datetime", "value" => $this->appointment_start, "required" => false],
                     "appointment_end" => ["field" => "appointment_end", "title" => "Λήξη Ραντεβού", "type" => "datetime", "value" => $this->appointment_end, "required" => false],
                     "cost" => ["field" => "cost", "value" => $this->cost, "type" => "float", "title" => "Τιμή", "required" => false],
-                    "supplement" => ["field" => "supplement", "title" => "Ανταλλακτικά(Διαχωρίστε τα ανταλλακτικά με ',')", "type" => "text", "value" => $this->supplement, "required" => false],
+                    "supplements" => ["field" => "supplements", "title" => "Ανταλλακτικά(Διαχωρίστε τα ανταλλακτικά με ',')", "type" => "text", "value" => $this->supplements, "required" => false],
                     "service_comments" => ["field" => "service_comments", "value" => $this->service_comments, "type" => "text", "title" => "Σχόλια Σέρβις", "required" => false],
                     "comments" =>  ["field" => "comments", "type" => "text", "title" => "Γενικά Σχόλια", "value" => $this->comments, "required" => false],
                     "repeatable" => ["field" => "repeatable", "value" => $this->repeatable, "type" => "boolean", "title" => "Σέρβις Επαναλαμβανόμενο;", "radioItems" => [["id" => 1, "title" => "Ναι"], ["id" => 0, "title" => "Όχι"]], "required" => false],
