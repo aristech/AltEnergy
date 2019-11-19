@@ -42,19 +42,21 @@ class SendMail
 
     public function sendMail()
     {
-        $to = 'manentis.gerasimos@outlook.com';
+        if (count($this->notifications > 0)) {
+            $to = 'sales@atlenergy.gr';
 
-        $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας';
+            $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
 
-        $headers = "From: " . "reminder@atlenergy.gr" . "\r\n";
-        $headers .= "CC:aris@progressnet.gr\r\n";
-        $headers .= "MIME-Version: 1.0\r\n";
-        $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            $headers = "From: " . "reminder@atlenergy.gr" . "\r\n";
+            //$headers .= "CC:aris@progressnet.gr\r\n";
+            $headers .= "MIME-Version: 1.0\r\n";
+            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
-        $message = $this->message;
+            $message = $this->message;
 
 
-        mail($to, $subject, $message, $headers);
+            mail($to, $subject, $message, $headers);
+        }
     }
 
     public function getDamages()
