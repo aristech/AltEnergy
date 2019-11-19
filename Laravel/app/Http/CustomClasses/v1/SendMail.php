@@ -195,7 +195,7 @@ class SendMail
             if (count($this->reminderNt) != 0) {
                 $this->message .= "<h4>Λοιπές Δραστηριότητες</h4>";
                 $this->message .= "<table border='2' >";
-                $this->message .= "<tr><th>Δραστηριότητα</th><th>Βαθμός Σημαντικότητας</th><th>Ωρα Ραντεβού</th></tr>";
+                $this->message .= "<tr><th>Δραστηριότητα</th><th>Σημαντικότητα</th><th>Ωρα Ραντεβού</th></tr>";
 
                 foreach ($this->reminderNt as $evt) {
 
