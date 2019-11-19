@@ -71,9 +71,9 @@ class SupplementController extends Controller
 
                     array_push($supplementsArray, $supplement);
                 }
-                $supplement = new \stdClass();
-                $supplement->supplement = $service['supplements'];
-                $supplement->date = $service['appointment_start'];
+                // $supplement = new \stdClass();
+                // $supplement->supplement = $service['supplements'];
+                // $supplement->date = $service['appointment_start'];
 
                 array_push($supplementsArray, $supplement);
             }

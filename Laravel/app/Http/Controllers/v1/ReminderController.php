@@ -21,6 +21,9 @@ class ReminderController extends Controller
         $reminder->getNotes();
         $reminder->getServices();
 
+        $reminder->sendMail();
+
+
 
         return response()->json(["data" => $reminder->notifications], 200);
     }
