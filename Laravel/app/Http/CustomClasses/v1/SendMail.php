@@ -188,7 +188,14 @@ class SendMail
                 $this->message .= "<tr><th>Δραστηριότητα</th><th>Βαθμός Σημαντικότητας</th><th>Ωρα Ραντεβού</th></tr>";
 
                 foreach ($this->reminderNt as $evt) {
-                    $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $evt->date . "</td></tr>";
+
+                    $timestamp = strtotime($evt->date) + 2 * 60 * 60;
+
+                    $time = date('H:i', $timestamp);
+
+
+
+                    $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $evt->importance . "</td><td>" . $time . "</td></tr>";
                 }
 
                 $this->message .= "</table><br><br>";
