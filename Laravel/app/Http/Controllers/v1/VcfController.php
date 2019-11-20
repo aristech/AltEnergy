@@ -15,6 +15,7 @@ use PHPMailer\PHPMailer\Exception;
 use App\User;
 use App\Http\Resources\UserResource;
 
+
 class VcfController extends Controller
 {
     public function export(Request $request)
