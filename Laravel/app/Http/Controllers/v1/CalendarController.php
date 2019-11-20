@@ -7,7 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\CalendarResource;
 use App\Calendar;
 use App\Damage;
-use App\Eventt;
+use App\Service;
 
 class CalendarController extends Controller
 {
@@ -18,11 +18,31 @@ class CalendarController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->user()->role()->first()->id < 3 )
-        {
-            return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να έχει πρόσβαση στο ημερολόγιο"],401);
+        if ($request->user()->role()->first()->id >= 3) {
+            return CalendarResource::collection(Calendar::all());
         }
-        return CalendarResource::collection(Calendar::all());
+        //elseif ($request->user()->role()->first()->id == 2) {
+        //     $calendar = Calendar::where('damage_id', '!=', null)->orWhere('service_id', '!=', null)->get();
+        //     $calendar_array = array();
+        //     foreach ($calendar as $entry) {
+        //         if ($entry['damage_id'] != null) {
+        //             $damage = Damage::find($entry['damage_id']);
+        //             if ($damage->client->manager->id == $request->user()->manager_id) {
+        //                 array_push($calendar_array, $entry);
+        //             }
+        //         }
+        //         if ($entry['service_id'] != null) {
+        //             $service = Service::find($entry['service_id']);
+        //             if ($damage->client->manager->id == $request->user()->manager_id) {
+        //                 array_push($calendar_array, $entry);
+        //             }
+        //         }
+        //         return CalendarResource::collection($calendar_array);
+        //     }
+        // }
+        else {
+            return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να έχει πρόσβαση στο ημερολόγιο"], 401);
+        }
     }
 
     /**

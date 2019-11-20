@@ -90,9 +90,30 @@ class DamageTypeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $damagetype)
     {
-        //
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
+        }
+
+        $damagetype = DamageType::find($damagetype);
+        if (!$damagetype) {
+            return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος τύπος βλάβης που αναζητείτε!"], 404);
+        }
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "name" => "required|string"
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors()->first()]);
+        }
+
+        $damagetype->update($request->all());
+        return response()->json(["message" => "Ο τύπος βλάβης / σέρβις με κωδικό " . $damagetype->id . " ενημερώθηκε επιτυχώς!"], 200);
     }
 
     /**

@@ -19,28 +19,24 @@ class VcfController extends Controller
 {
     public function export(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
         }
 
-        $validator = Validator::make($request->all(),[
+        $validator = Validator::make($request->all(), [
             "task" => "required|string",
             "email" => "required|string|email"
         ]);
 
-        if($validator->fails())
-        {
-            return response()->json(["message" => $validator->errors()->first()],422);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors()->first()], 422);
         }
 
         $variable = "";
 
-        if($request->task == "managers")
-        {
+        if ($request->task == "managers") {
             $managers = ManagerResource::collection(Manager::all());
-            foreach($managers as $manager)
-            {
+            foreach ($managers as $manager) {
                 $vcard = new VCard();
 
                 $vcard->addName($manager->lastname, $manager->firstname);
@@ -50,35 +46,32 @@ class VcfController extends Controller
                 $vcard->addPhoneNumber($manager->telephone2, 'TELEPHONE2');
                 $vcard->addPhoneNumber($manager->mobile, 'MOBILE');
                 $variable .= $vcard->getOutput();
-        	}
+            }
 
-			$myfile = fopen(storage_path()."/VCF/managers.vcf", "w") or die("Unable to open file!");
-			fwrite($myfile, $variable);
-			fclose($myfile);
+            $myfile = fopen(storage_path() . "/VCF/managers.vcf", "w") or die("Unable to open file!");
+            fwrite($myfile, $variable);
+            fclose($myfile);
 
-			$email = new PHPMailer();
-			$email->CharSet = "UTF-8";
-			$email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
-			$email->Subject   = 'Λίστα Διαχειριστών';
-			$email->Body      = 'Αποστολή Λίστας Διαχειριστών';
-			$email->AddAddress($request->email);
+            $email = new PHPMailer();
+            $email->CharSet = "UTF-8";
+            $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
+            $email->Subject   = 'Λίστα Διαχειριστών';
+            $email->Body      = 'Αποστολή Λίστας Διαχειριστών';
+            $email->AddAddress($request->email);
 
-			$file_to_attach = storage_path()."/VCF/managers.vcf";
+            $file_to_attach = storage_path() . "/VCF/managers.vcf";
 
-			$email->AddAttachment( $file_to_attach , 'managers.vcf' );
+            $email->AddAttachment($file_to_attach, 'managers.vcf');
 
-			$email->Send();
+            $email->Send();
 
-			unlink(storage_path()."/VCF/managers.vcf");
+            unlink(storage_path() . "/VCF/managers.vcf");
 
-			return response()->json(["message" => "Η λίστα καταχωρημένων διαχειριστών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
-
-		}
-        if($request->task == "clients")
-        {
+            return response()->json(["message" => "Η λίστα καταχωρημένων διαχειριστών εστάλη επιτυχώς στη διεύθυνση " . $request->email], 200);
+        }
+        if ($request->task == "clients") {
             $clients = ClientResource::collection(Client::all());
-            foreach($clients as $client)
-            {
+            foreach ($clients as $client) {
                 $vcard = new VCard();
 
                 $vcard->addName($client->lastname, $client->firstname);
@@ -93,65 +86,62 @@ class VcfController extends Controller
                 $variable .= $vcard->getOutput();
             }
 
-			$myfile = fopen(storage_path()."/VCF/clients.vcf", "w") or die("Unable to open file!");
-			fwrite($myfile, $variable);
-			fclose($myfile);
+            $myfile = fopen(storage_path() . "/VCF/clients.vcf", "w") or die("Unable to open file!");
+            fwrite($myfile, $variable);
+            fclose($myfile);
 
-			$email = new PHPMailer();
-			$email->CharSet = "UTF-8";
-			$email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
-			$email->Subject   = 'Λίστα Πελατών';
-			$email->Body      = 'Αποστολή Λίστα Πελατών';
-			$email->AddAddress($request->email);
+            $email = new PHPMailer();
+            $email->CharSet = "UTF-8";
+            $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
+            $email->Subject   = 'Λίστα Πελατών';
+            $email->Body      = 'Αποστολή Λίστα Πελατών';
+            $email->AddAddress($request->email);
 
-			$file_to_attach = storage_path()."/VCF/clients.vcf";
+            $file_to_attach = storage_path() . "/VCF/clients.vcf";
 
-			$email->AddAttachment( $file_to_attach , 'clients.vcf' );
+            $email->AddAttachment($file_to_attach, 'clients.vcf');
 
-			$email->Send();
+            $email->Send();
 
-			unlink(storage_path()."/VCF/clients.vcf");
+            unlink(storage_path() . "/VCF/clients.vcf");
 
-			return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
+            return response()->json(["message" => "Η λίστα πελατών εστάλη επιτυχώς στη διεύθυνση " . $request->email], 200);
         }
 
-        if($request->task == "users")
-        {
+        if ($request->task == "users") {
             $users = User::all();
-            foreach($users as $user)
-            {
+            foreach ($users as $user) {
                 $vcard = new VCard();
 
                 $vcard->addName($user->lastname, $user->firstname);
                 $vcard->addEmail($user->email);
-                $vcard->addRole('ATL/'.$user->role()->first()->title);
+                $vcard->addRole('ATL/' . $user->role()->first()->title);
                 $vcard->addPhoneNumber($user->telephone, 'TELEPHONE');
                 $vcard->addPhoneNumber($user->telephone2, 'TELEPHONE2');
                 $vcard->addPhoneNumber($user->mobile, 'MOBILE');
                 $variable .= $vcard->getOutput();
-        	}
+            }
 
-			$myfile = fopen(storage_path()."/VCF/users.vcf", "w") or die("Unable to open file!");
-			fwrite($myfile, $variable);
-			fclose($myfile);
+            $myfile = fopen(storage_path() . "/VCF/users.vcf", "w") or die("Unable to open file!");
+            fwrite($myfile, $variable);
+            fclose($myfile);
 
-			$email = new PHPMailer();
-			$email->CharSet = "UTF-8";
-			$email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
-			$email->Subject   = 'Λίστα χρηστών του συστήματος';
-			$email->Body      = 'Αποστολή Λίστας Χρηστών';
-			$email->AddAddress($request->email);
+            $email = new PHPMailer();
+            $email->CharSet = "UTF-8";
+            $email->SetFrom('atlenergy@mail.gr', 'ATLEnergy'); //Name is optional
+            $email->Subject   = 'Λίστα χρηστών του συστήματος';
+            $email->Body      = 'Αποστολή Λίστας Χρηστών';
+            $email->AddAddress($request->email);
 
-			$file_to_attach = storage_path()."/VCF/users.vcf";
+            $file_to_attach = storage_path() . "/VCF/users.vcf";
 
-			$email->AddAttachment( $file_to_attach , 'users.vcf' );
+            $email->AddAttachment($file_to_attach, 'users.vcf');
 
-			$email->Send();
+            $email->Send();
 
-			unlink(storage_path()."/VCF/users.vcf");
+            unlink(storage_path() . "/VCF/users.vcf");
 
-			return response()->json(["message" => "Η λίστα χρηστών του συστήματος εστάλη επιτυχώς στη διεύθυνση ".$request->email],200);
-
-		}
+            return response()->json(["message" => "Η λίστα χρηστών του συστήματος εστάλη επιτυχώς στη διεύθυνση " . $request->email], 200);
+        }
     }
 }

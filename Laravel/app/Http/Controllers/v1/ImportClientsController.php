@@ -56,17 +56,17 @@ class ImportClientsController extends Controller
             $input['location'] = $value;
 
             if ($row[4] == "" && $row[5] == "" && $row[6] == "") {
-                $input["telephone1"] = "N/A";
+                $input["telephone"] = "N/A";
                 $input["telephone2"] = "";
                 $input["mobile"] = "";
             } else {
-                $input["telephone1"] = $row[4];
+                $input["telephone"] = $row[4];
                 $input["telephone2"] = $row[5];
                 $input["mobile"] = $row[6];
             }
 
             $input["zipcode"] = "N/A";
-            $input["floor"] = "N/A";
+            $input["level"] = "N/A";
             $input["email"] = $row[7];
 
             $lastClient = Client::latest()->first();
@@ -86,6 +86,6 @@ class ImportClientsController extends Controller
         }
 
         unlink(storage_path() . '/test20.csv');
-        return response()->json(["message" => "Τα στοιχεία περάστικαν επιτυχως!"], 200);
+        return response()->json(["message" => "Τα στοιχεία περάστηκαν επιτυχως!"], 200);
     }
 }
