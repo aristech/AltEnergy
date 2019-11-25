@@ -8,6 +8,7 @@ use App\Http\Resources\DamageResource;
 use App\Http\Resources\NoteResource;
 use App\Service;
 use App\Http\Resources\ServiceResource;
+use DB;
 
 //#TODO : Insert herefor services as well
 class SendMail
@@ -43,19 +44,43 @@ class SendMail
     public function sendMail()
     {
         if (count($this->notifications) > 0) {
-            $to = 'sales@atlenergy.gr';
 
-            $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
+            $timestamp_current = time();
+            $last_mail_timestamp = DB::table('last_reminder_mail')->where('last_timestamp', '!=', null)->first();
 
-            $headers = "From: " . "reminder@atlenergy.gr" . "\r\n";
-            //$headers .= "CC:aris@progressnet.gr\r\n";
-            $headers .= "MIME-Version: 1.0\r\n";
-            $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+            if (!$last_mail_timestamp) {
+                //$to = 'sales@atlenergy.gr';
+                $to = 'manentis.gerasimos@outlook.com';
 
-            $message = $this->message;
+                $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
 
+                $headers = "From: " . "reminder@atlenergy.gr" . "\r\n";
+                //$headers .= "CC:aris@progressnet.gr\r\n";
+                $headers .= "MIME-Version: 1.0\r\n";
+                $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
-            mail($to, $subject, $message, $headers);
+                $message = $this->message;
+
+                mail($to, $subject, $message, $headers);
+                DB::table('last_reminder_email')->insert(['last_timestamp' => time()]);
+            } else {
+                $difference = ($timestamp_current - $last_mail_timestamp) / 60;
+                if ($difference <= 30) {
+                    //$to = 'sales@atlenergy.gr';
+                    $to = 'manentis.gerasimos@outlook.com';
+
+                    $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
+
+                    $headers = "From: " . "reminder@atlenergy.gr" . "\r\n";
+                    //$headers .= "CC:aris@progressnet.gr\r\n";
+                    $headers .= "MIME-Version: 1.0\r\n";
+                    $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
+
+                    $message = $this->message;
+                    mail($to, $subject, $message, $headers);
+                    DB::table('last_reminder_email')->where("id", 1)->update(['last_timestamp' => time()]);
+                }
+            }
         }
     }
 
