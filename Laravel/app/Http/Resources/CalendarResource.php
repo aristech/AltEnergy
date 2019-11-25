@@ -97,6 +97,77 @@ class CalendarResource extends JsonResource
                 "all_day" => $this->when($this->note_id != null, function () {
                     return Note::where('id', $this->note_id)->first()["all_day"];
                 }),
+                "client_name" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+                        $current_client = $current_damage['client'];
+                        return $current_client['firstname'] . " " . $current_client['lastname'];
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+                        $current_client = $current_service['client'];
+                        return $current_client['firstname'] . " " . $current_client['lastname'];
+                    }
+                }),
+                "client_address" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+                        $current_client = $current_damage['client'];
+                        return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+                        $current_client = $current_service['client'];
+                        return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                    }
+                }),
+                "client_telephone" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+                        $current_client = $current_damage['client'];
+                        $tel_array = array();
+                        if ($current_client['telephone'] != null || $current_client['telephone'] != "") {
+                            array_push($tel_array, $current_client['telephone']);
+                        }
+
+                        if ($current_client['telephone2'] != null || $current_client['telephone2'] != "") {
+                            array_push($tel_array, $current_client['telephone2']);
+                        }
+
+                        if ($current_client['mobile'] != null || $current_client['mobile'] != "") {
+                            array_push($tel_array, $current_client['mobile']);
+                        }
+
+                        $phone_numbers = implode(", ", $tel_array);
+
+
+                        return $phone_numbers;
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+                        $current_client = $current_service['client'];
+                        $tel_array = array();
+                        if ($current_client['telephone'] != null || $current_client['telephone'] != "") {
+                            array_push($tel_array, $current_client['telephone']);
+                        }
+
+                        if ($current_client['telephone2'] != null || $current_client['telephone2'] != "") {
+                            array_push($tel_array, $current_client['telephone2']);
+                        }
+
+                        if ($current_client['mobile'] != null || $current_client['mobile'] != "") {
+                            array_push($tel_array, $current_client['mobile']);
+                        }
+
+                        $phone_numbers = implode(", ", $tel_array);
+
+                        return $phone_numbers;
+                    }
+                }),
+
                 // "startRecur" => $this->when($this->service_id != null, function()
                 // {
                 //     return Service::where('id',$this->service_id)->first()['appointment_start'];
