@@ -58,7 +58,7 @@ class VcfController extends Controller
 
                     //$vcard->addRole('Διαχειριστής');
                     if ($manager['telephone'] != null) {
-                        $vcard->addPhoneNumber($manager['telephone'], 'PREF;WORK');
+                        $vcard->addPhoneNumber($manager['telephone'], 'HOME');
                     }
 
                     if ($manager['telephone2'] != null) {
@@ -66,7 +66,7 @@ class VcfController extends Controller
                     }
 
                     if ($manager['mobile'] != null) {
-                        $vcard->addPhoneNumber($manager['mobile'], 'MOBILE');
+                        $vcard->addPhoneNumber($manager['mobile'], 'CELL');
                     }
 
 
@@ -119,7 +119,7 @@ class VcfController extends Controller
 
                     //$vcard->addRole('Διαχειριστής');
                     if ($client['telephone'] != null) {
-                        $vcard->addPhoneNumber($client['telephone'], 'PREF;WORK');
+                        $vcard->addPhoneNumber($client['telephone'], 'HOME');
                     }
 
                     if ($client['telephone2'] != null) {
@@ -127,7 +127,7 @@ class VcfController extends Controller
                     }
 
                     if ($client['mobile'] != null) {
-                        $vcard->addPhoneNumber($client['mobile'], 'MOBILE');
+                        $vcard->addPhoneNumber($client['mobile'], 'CELL');
                     }
                     //$vcard->addRole('Πελάτης');
                     // $vcard->addPhoneNumber(1234121212, 'PREF;WORK');
@@ -184,7 +184,7 @@ class VcfController extends Controller
 
                     //$vcard->addRole('Διαχειριστής');
                     if ($user['telephone'] != null) {
-                        $vcard->addPhoneNumber($user['telephone'], 'PREF;WORK');
+                        $vcard->addPhoneNumber($user['telephone'], 'HOME');
                     }
 
                     if ($user['telephone2'] != null) {
@@ -192,7 +192,7 @@ class VcfController extends Controller
                     }
 
                     if ($user['mobile'] != null) {
-                        $vcard->addPhoneNumber($user['mobile'], 'MOBILE');
+                        $vcard->addPhoneNumber($user['mobile'], 'CELL');
                     }
                     // $vcard->addRole('ATL/' . $user->role()->first()->title);
                     // $vcard->addPhoneNumber($user->telephone, 'TELEPHONE');
