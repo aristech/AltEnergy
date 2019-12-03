@@ -48,6 +48,20 @@ class SendMail
             $timestamp_current = time();
             $last_mail_timestamp = DB::table('last_reminder_mail')->where('last_timestamp', '!=', null)->first();
 
+            $techs = DB::table('users')
+                ->join('role_user', function ($join) {
+                    $join->on('users.id', '=', 'role_user.user_id')
+                        ->where('role_user.role_id', '=', 3);
+                })->get();
+            $tech_array = array();
+            foreach ($techs as $tech) {
+                array_push($tech_array, $tech['email']);
+            }
+
+            $technicians = implode(", ");
+            $first_tech = $techs[0];
+
+
             if (!$last_mail_timestamp) {
                 //$to = 'sales@atlenergy.gr';
                 $to = 'manentis.gerasimos@outlook.com';
@@ -55,17 +69,25 @@ class SendMail
                 $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
 
                 $headers = "From: " . "reminder@atlenergy.gr" . "\r\n";
-                //$headers .= "CC:aris@progressnet.gr\r\n";
+                if (count($techs) > 1) {
+                    $headers .= "CC:" . $technicians . "\r\n";
+                }
+
+                if (count($techs) == 1) {
+                    $headers .= "CC:" . $first_tech['email'] . "\r\n";
+                }
+                $headers .= "CC:aris@progressnet.gr, gmanentis@progressnet.gr\r\n";
                 $headers .= "MIME-Version: 1.0\r\n";
                 $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
                 $message = $this->message;
 
                 mail($to, $subject, $message, $headers);
-                DB::table('last_reminder_email')->insert(['last_timestamp' => time()]);
+                DB::table('last_reminder_mail')->insert(['last_timestamp' => time()]);
             } else {
-                $difference = ($timestamp_current - $last_mail_timestamp) / 60;
-                if ($difference <= 30) {
+                $last_timestamp = $last_mail_timestamp->last_timestamp;
+                $difference = ($timestamp_current - $last_timestamp) / 60;
+                if ($difference >= 30) {
                     //$to = 'sales@atlenergy.gr';
                     $to = 'manentis.gerasimos@outlook.com';
 
@@ -78,7 +100,7 @@ class SendMail
 
                     $message = $this->message;
                     mail($to, $subject, $message, $headers);
-                    DB::table('last_reminder_email')->where("id", 1)->update(['last_timestamp' => time()]);
+                    DB::table('last_reminder_mail')->where("id", 1)->update(['last_timestamp' => time()]);
                 }
             }
         }
