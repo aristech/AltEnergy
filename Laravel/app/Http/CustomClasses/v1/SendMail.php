@@ -69,7 +69,7 @@ class SendMail
 
             if (count($tech_array) == 1) {
                 //$receivers = 'sales@atlenergy.gr' . ',' . $first_tech;
-                $receivers = 'manentis.gerasimos@outlook.com' . ',' . $technicians;
+                $receivers = 'manentis.gerasimos@outlook.com' . ',' . $first_tech;
             }
 
             if (count($tech_array) == 0) {
