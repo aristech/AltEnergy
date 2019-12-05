@@ -62,10 +62,27 @@ class SendMail
             $technicians = implode(",", $tech_array);
             $first_tech = $tech_array[0];
 
+            if (count($tech_array) > 1) {
+                //$receivers = 'sales@atlenergy.gr' . ',' . $technicians;
+                $receivers = 'manentis.gerasimos@outlook.com' . ',' . $technicians;
+            }
+
+            if (count($tech_array) == 1) {
+                //$receivers = 'sales@atlenergy.gr' . ',' . $first_tech;
+                $receivers = 'manentis.gerasimos@outlook.com' . ',' . $technicians;
+            }
+
+            if (count($tech_array) == 0) {
+                //$receivers = 'sales@atlenergy.gr';
+                $receivers = 'manentis.gerasimos@outlook.com';
+            }
+
+
+
 
             if (!$last_mail_timestamp) {
-                //$to = 'sales@atlenergy.gr';
-                $to = 'manentis.gerasimos@outlook.com';
+                $to = $receivers;
+                //$to = 'manentis.gerasimos@outlook.com';
 
                 $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
 
@@ -77,7 +94,7 @@ class SendMail
                 if (count($tech_array) == 1) {
                     $headers .= "CC:" . $first_tech . "\r\n";
                 }
-                $headers .= "CC:aris@progressnet.gr, gmanentis@progressnet.gr\r\n";
+                //$headers .= "CC:aris@progressnet.gr, gmanentis@progressnet.gr\r\n";
                 $headers .= "MIME-Version: 1.0\r\n";
                 $headers .= "Content-Type: text/html; charset=UTF-8\r\n";
 
