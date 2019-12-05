@@ -53,13 +53,14 @@ class SendMail
                     $join->on('users.id', '=', 'role_user.user_id')
                         ->where('role_user.role_id', '=', 3);
                 })->get();
+
             $tech_array = array();
             foreach ($techs as $tech) {
-                array_push($tech_array, $tech['email']);
+                array_push($tech_array, $tech->email);
             }
 
             $technicians = implode(",", $tech_array);
-            $first_tech = $techs[0];
+            $first_tech = $tech_array[0];
 
 
             if (!$last_mail_timestamp) {
@@ -69,12 +70,12 @@ class SendMail
                 $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
 
                 $headers = "From: " . "reminder@atlenergy.gr" . "\r\n";
-                if (count($techs) > 1) {
+                if (count($tech_array) > 1) {
                     $headers .= "CC:" . $technicians . "\r\n";
                 }
 
-                if (count($techs) == 1) {
-                    $headers .= "CC:" . $first_tech['email'] . "\r\n";
+                if (count($tech_array) == 1) {
+                    $headers .= "CC:" . $first_tech . "\r\n";
                 }
                 $headers .= "CC:aris@progressnet.gr, gmanentis@progressnet.gr\r\n";
                 $headers .= "MIME-Version: 1.0\r\n";
