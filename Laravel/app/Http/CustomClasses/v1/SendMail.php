@@ -41,7 +41,7 @@ class SendMail
         return $minutes;
     }
 
-    public function sendMail()
+    public function sendMails()
     {
         if (count($this->notifications) > 0) {
 
@@ -58,7 +58,7 @@ class SendMail
                 array_push($tech_array, $tech['email']);
             }
 
-            $technicians = implode(", ");
+            $technicians = implode(",", $tech_array);
             $first_tech = $techs[0];
 
 

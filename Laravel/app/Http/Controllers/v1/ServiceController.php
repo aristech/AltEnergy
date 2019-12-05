@@ -9,6 +9,9 @@ use App\Http\Controllers\Controller;
 use App\Http\CustomClasses\v1\ServiceManagement;
 use App\Http\CustomClasses\v1\ServiceCalendarUpdate;
 use App\Calendar;
+use App\Http\Resources\ManagerDamageResource;
+use App\Http\Resources\ManagerServiceResource;
+use Validator;
 
 class ServiceController extends Controller
 {
@@ -20,9 +23,15 @@ class ServiceController extends Controller
     public function index(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if ($role_id >= 4) {
+        if ($role_id >= 3) {
             return ServiceManagement::getServices();
         }
+        //elseif ($role_id == 2) {
+        //     $serv = Service::whereHas('client', function ($query) use ($request) {
+        //         $query->where('manager_id', $request->user()->manager_id);
+        //     })->get();
+        //     return ManagerServiceResource::collection($serv);
+        // }
     }
 
     public function history(Request $request)
@@ -67,14 +76,24 @@ class ServiceController extends Controller
     public function show($service, Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 3) {
+        if ($role_id < 2) {
             return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
         }
 
-        $service = Service::find($service);
-        if (!$service) return response()->json(["message" => "Δεν βρέθηκε το service στο σύστημα"], 404);
+        if ($role_id >= 3) {
+            $service = Service::find($service);
+            if (!$service) return response()->json(["message" => "Δεν βρέθηκε το service στο σύστημα"], 404);
 
-        return ServiceResource::make($service);
+            return ServiceResource::make($service);
+        }
+
+        if ($role_id == 2) {
+            $serv = Service::where('id', $service)->first();
+            $manager_id = $serv['client']['manager']['id'];
+            if ($manager_id == $request->user()->manager_id) {
+                return ServiceResource::make($serv);
+            }
+        }
     }
 
     /**
@@ -86,11 +105,12 @@ class ServiceController extends Controller
     public function edit(Request $request, $service)
     {
         $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 3) {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
+        if ($role_id >= 2) {
+            $service = new ServiceCalendarUpdate($request, $service);
+            return $service->updateService();
+        } else {
+            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
         }
-        $service = new ServiceCalendarUpdate($request, $service);
-        return $service->updateService();
     }
 
     /**
@@ -103,11 +123,12 @@ class ServiceController extends Controller
     public function update(Request $request)
     {
         $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 3) {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
+        if ($role_id >= 2) {
+            $service = new ServiceManagement($request);
+            return $service->updateService();
+        } else {
+            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
         }
-        $service = new ServiceManagement($request);
-        return $service->updateService();
     }
 
     /**
@@ -120,7 +141,7 @@ class ServiceController extends Controller
     {
         $role_id = $request->user()->role()->first()->id;
         if ($role_id < 3) {
-            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->name . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
+            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
         }
 
         $service = Service::where('id', $request->id)->first();
@@ -140,7 +161,7 @@ class ServiceController extends Controller
     {
         $role_id = $request->user()->role()->first()->id;
         if ($role_id < 3) {
-            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->name . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
+            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
         }
 
         $service = Service::where('id', $serviceId)->first();

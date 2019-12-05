@@ -5,6 +5,7 @@ namespace App\Http\Controllers\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\ServiceType;
+use App\Service;
 use Validator;
 use App\Http\Resources\ServiceTypeResource;
 
@@ -17,13 +18,11 @@ class ServiceTypeController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
         }
 
         return ServiceTypeResource::collection(ServiceType::all());
-
     }
 
     /**
@@ -44,23 +43,23 @@ class ServiceTypeController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
         }
 
-        $validator = Validator::make($request->all(),
-        [
-            "name" => "required|string"
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "name" => "required|string"
+            ]
+        );
 
-        if($validator->fails())
-        {
-            return response()->json(["message"=>$validator->errors()->first()]);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors()->first()]);
         }
 
         ServiceType::create($request->all());
-        return response()->json(["message" => "Ο τύπος service αποθηκεύτηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Ο τύπος service αποθηκεύτηκε επιτυχώς!"], 200);
     }
 
     /**
@@ -105,18 +104,21 @@ class ServiceTypeController extends Controller
      */
     public function destroy(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-           return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"],401);
+        if ($request->user()->role()->first()->id < 3) {
+            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
         }
 
         $service_type_id = $request->id;
-        $service_type = ServiceType::where('id',$service_type_id)->first();
-        if(!$service_type)
-        {
-            return response()->json(["message" => "Ο συγκεκριμένος τύπος service δεν υπάρχει στο σύστημα!"],404);
+        $service_type = ServiceType::where('id', $service_type_id)->first();
+        if (!$service_type) {
+            return response()->json(["message" => "Ο συγκεκριμένος τύπος service δεν υπάρχει στο σύστημα!"], 404);
+        }
+
+        $services = Service::where('service_type_id2', $request->id)->get();
+        if (count($services) > 0) {
+            return response()->json(["message" => "Η συγκεκριμένη εγγραφή χρησιμοποιείται ήδη και δεν μπορεί να διαγραφεί!"], 422);
         }
         $service_type->delete();
-        return response()->json(["message" => "Ο συγκεκριμένος τύπος service διαγράφηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Ο συγκεκριμένος τύπος service διαγράφηκε επιτυχώς!"], 200);
     }
 }

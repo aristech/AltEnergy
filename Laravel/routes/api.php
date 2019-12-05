@@ -19,13 +19,14 @@ use Illuminate\Http\Request;
 
 
 Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], function () {
+    Route::get('/user', 'AuthController@user');
     Route::post('/login', 'AuthController@login');
     Route::post('/signup', 'AuthController@signup');
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::group(['middleware' => 'active'], function () {
             Route::get('/logout', 'AuthController@logout');
-            Route::get('/user', 'AuthController@user');
+
 
             Route::post('/users', 'AuthController@createUser');
             Route::put('/users', 'AuthController@editUser');

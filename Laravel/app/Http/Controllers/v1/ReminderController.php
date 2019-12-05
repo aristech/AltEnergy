@@ -22,7 +22,7 @@ class ReminderController extends Controller
         $reminder->getServices();
 
         $reminder->createMessage();
-        $reminder->sendMail();
+        $reminder->sendMails();
 
 
 

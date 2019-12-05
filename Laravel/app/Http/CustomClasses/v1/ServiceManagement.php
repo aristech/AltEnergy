@@ -81,7 +81,8 @@ class ServiceManagement
                 'appointment_end' => 'nullable|string',
                 'user_id' => 'nullable|integer',
                 'repeatable' => 'required|boolean',
-                'frequency' => 'nullable|string'
+                'frequency' => 'nullable|string',
+                'manager_payment' => 'nullable|numeric|between:0.00,999999.99'
             ]
         );
 
@@ -304,6 +305,10 @@ class ServiceManagement
             $this->input['cost'] = 0.00;
         }
 
+        if ($this->input['manager_payment'] == null) {
+            $this->input['manager_payment'] = 0.00;
+        }
+
         if ($this->input['appointment_start'] == null) {
             $this->input['appointment_pending'] = true;
         }
@@ -371,7 +376,8 @@ class ServiceManagement
                     // "user_id" => $this->request->user_id,
                     "techs" => $this->insertTechs(),
                     "repeatable" => $this->request->repeatable,
-                    "frequency" => $this->request->frequency
+                    "frequency" => $this->request->frequency,
+                    "manager_payment" => $this->request->manager_payment
                 ];
         } elseif ($this->request->completed_no_transaction == true) {
             $this->input = array();
@@ -401,7 +407,8 @@ class ServiceManagement
                     // "user_id" => $this->request->user_id,
                     "techs" => $this->insertTechs(),
                     "repeatable" => $this->request->repeatable,
-                    "frequency" => $this->request->frequency
+                    "frequency" => $this->request->frequency,
+                    "manager_payment" => $this->request->manager_payment
                 ];
         } else {
             $this->input = array();
@@ -430,7 +437,8 @@ class ServiceManagement
                     "appointment_end" => $this->request->appointment_end,
                     "user_id" => $this->request->user_id,
                     "repeatable" => $this->request->repeatable,
-                    "frequency" => $this->request->frequency
+                    "frequency" => $this->request->frequency,
+                    "manager_payment" => $this->request->manager_payment
                 ];
         }
     }

@@ -6,7 +6,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 use App\Damage;
 use App\Eventt;
 use App\Service;
-use App\Http\CustomClasses\v1\CalendarClass;
+//use App\Http\CustomClasses\v1\CalendarClass;
 use App\Note;
 
 class CalendarResource extends JsonResource
@@ -49,7 +49,15 @@ class CalendarResource extends JsonResource
                 }),
                 "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null || $this->note_id != null, function () {
                     if ($this->damage_id != null) {
-                        return Damage::where('id', $this->damage_id)->first()['type']['name'];
+                        $damage = Damage::where('id', $this->damage_id)->first();
+                        if ($damage['client']['telephone'] != null) {
+                            $phone = $damage['client']['telephone'];
+                        } elseif ($damage['client']['telephone2'] != null) {
+                            $phone = $damage['client']['telephone2'];
+                        } else {
+                            $phone = $damage['client']['mobile'];
+                        }
+                        return $damage['type']['name'] . " - " . $damage['client']['firstname'] . " " . $damage['client']['lastname'] . " - " . $phone;
                     }
 
                     if ($this->event_id != null) {
@@ -57,7 +65,15 @@ class CalendarResource extends JsonResource
                     }
 
                     if ($this->service_id != null) {
-                        return Service::where('id', $this->service_id)->first()['type']['name'];
+                        $service = Service::where('id', $this->service_id)->first();
+                        if ($service['client']['telephone'] != null) {
+                            $phone = $service['client']['telephone'];
+                        } elseif ($service['client']['telephone2'] != null) {
+                            $phone = $service['client']['telephone2'];
+                        } else {
+                            $phone = $service['client']['mobile'];
+                        }
+                        return $service['type']['name'] . " - " . $service['client']['firstname'] . " " . $service['client']['lastname'] . " - " . $phone;
                     }
 
                     if ($this->note_id != null) {

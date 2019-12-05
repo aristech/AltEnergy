@@ -5,6 +5,8 @@ namespace App\Http\Controllers\v1;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\DamageType;
+use App\Damage;
+use App\Service;
 use Validator;
 use App\Http\Resources\DamageTypeResource;
 
@@ -132,6 +134,16 @@ class DamageTypeController extends Controller
         $damage_type = DamageType::where('id', $damage_type_id)->first();
         if (!$damage_type) {
             return response()->json(["message" => "Η συγκεκριμενη βλάβη δεν υπάρχει στο σύστημα!"], 404);
+        }
+
+        $damages = Damage::where('damage_type_id', $request->id)->get();
+        if (count($damages) > 0) {
+            return response()->json(["message" => "Η συγκεκριμένη εγγραφή χρησιμοποιείται ήδη και δεν μπορεί να διαγραφεί!"], 422);
+        }
+
+        $services = Service::where('service_type_id2', $request->id)->get();
+        if (count($services) > 0) {
+            return response()->json(["message" => "Η συγκεκριμένη εγγραφή χρησιμοποιείται ήδη και δεν μπορεί να διαγραφεί!"], 422);
         }
         $damage_type->delete();
         return response()->json(["message" => "Ο συγκεκριμένος τυπος βλάβης διαγράφηκε επιτυχώς!"], 200);
