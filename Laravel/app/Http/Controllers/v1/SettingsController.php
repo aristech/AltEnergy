@@ -4,6 +4,8 @@ namespace App\Http\Controllers\v1;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\ScannerSettings;
+use App\Http\Resources\ScannerSettingsResource;
 
 class SettingsController extends Controller
 {
@@ -17,8 +19,16 @@ class SettingsController extends Controller
         $settings = array();
 
         $settings_type = new \stdClass();
-        $settings_type->name = "Προτεινόμενες ονομασίες αρχείων Scanner";
-        $settings_type->url = "settings/scanner";
+        $settings_type->name = "Scanner";
+        $settings_type->url = "scanner";
+        $settings_type->data = ScannerSettingsResource::collection(ScannerSettings::all());
+
+        array_push($settings, $settings_type);
+
+        $settings_type = new \stdClass();
+        $settings_type->name = "Χρώματα";
+        $settings_type->url = "colors";
+        $settings_type->data = "";
 
         array_push($settings, $settings_type);
 
