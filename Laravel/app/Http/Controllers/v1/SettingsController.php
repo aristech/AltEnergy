@@ -18,7 +18,7 @@ class SettingsController extends Controller
 
         $settings_type = new \stdClass();
         $settings_type->name = "Προτεινόμενες ονομασίες αρχείων Scanner";
-        $settings_type->url = url("/api/v1/settings/scanner");
+        $settings_type->url = "settings/scanner";
 
         array_push($settings, $settings_type);
 

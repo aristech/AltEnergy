@@ -18,7 +18,7 @@ class ScannerSettingsResource extends JsonResource
             "id" => $this->id,
             "title" => $this->title,
             "filename" => $this->filename,
-            "edit_url" => url('/api/v1/settings/scanner/' . $this->id),
+            "edit_url" => 'scanner/' . $this->id,
 
         ];
     }
