@@ -28,7 +28,7 @@ class SettingsController extends Controller
         $settings_type = new \stdClass();
         $settings_type->name = "Χρώματα";
         $settings_type->url = "colors";
-        $settings_type->data = "";
+        $settings_type->data = array();
 
         array_push($settings, $settings_type);
 
