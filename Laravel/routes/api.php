@@ -132,6 +132,16 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::get('/reminder', 'ReminderController@index');
 
             Route::post('/importclients', 'ImportClientsController@import');
+
+            Route::group(['middleware' => 'admin-only'], function () {
+                Route::get('/settings', 'SettingsController@index');
+
+                Route::get('/settings/scanner', 'ScannerSettingsController@index');
+                Route::get('/settings/scanner/{id}', 'ScannerSettingsController@show');
+                Route::post('/settings/scanner', 'ScannerSettingsController@store');
+                Route::put('/settings/scanner/{id}', 'ScannerSettingsController@update');
+                Route::delete('/settings/scanner/{id}', 'ScannerSettingsController@destroy');
+            });
         });
     });
 });
