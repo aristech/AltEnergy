@@ -45,10 +45,14 @@ class Kernel extends HttpKernel
 
         'cors' => [
             \Barryvdh\Cors\HandleCors::class,
-            ],
+        ],
 
         'active' => [
             \App\Http\Middleware\UserIsActive::class,
+        ],
+
+        'admin-only' => [
+            \App\Http\Middleware\AdminOnlyMiddleware::class,
         ],
     ];
 
