@@ -17,7 +17,8 @@ class ScannerSettingsResource extends JsonResource
         return [
             "id" => $this->id,
             "title" => $this->title,
-            "filename" => $this->filename
+            "filename" => $this->filename,
+            "disabled" => $this->disabled
         ];
     }
 }
