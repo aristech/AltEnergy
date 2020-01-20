@@ -4,12 +4,13 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use App\ServiceType;
+use App\Mark;
 
 class Service extends Model
 {
     protected $table = 'services';
 
-    protected $fillable = ['service_type_id2', 'service_comments', 'cost', 'manager_payment', 'guarantee', 'status', 'appointment_pending', 'technician_left', 'technician_arrived', 'appointment_completed', 'appointment_needed', 'supplement_pending', 'service_completed', 'completed_no_transaction', 'client_id', 'manufacturer_id', 'mark_id', 'device_id', 'supplements', 'comments', 'user_id', 'techs', 'appointment_start', 'appointment_end', 'repeatable', 'frequency'];
+    protected $fillable = ['service_type_id2', 'service_comments', 'cost', 'manager_payment', 'guarantee', 'status', 'appointment_pending', 'technician_left', 'technician_arrived', 'appointment_completed', 'appointment_needed', 'supplement_pending', 'service_completed', 'completed_no_transaction', 'client_id', 'manufacturer_id', 'mark_id', 'device_id', 'marks', 'supplements', 'comments', 'user_id', 'techs', 'appointment_start', 'appointment_end', 'repeatable', 'frequency'];
 
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -26,6 +27,11 @@ class Service extends Model
     public function device()
     {
         return $this->belongsTo(Device::class, 'device_id');
+    }
+
+    public function mark()
+    {
+        return $this->belongsTo(Mark::class, 'mark_id');
     }
 
     public function type()

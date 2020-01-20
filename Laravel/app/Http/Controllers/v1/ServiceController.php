@@ -12,6 +12,7 @@ use App\Calendar;
 use App\Http\Resources\ManagerDamageResource;
 use App\Http\Resources\ManagerServiceResource;
 use Validator;
+use App\Http\CustomClasses\v1\AuthorityClass;
 
 class ServiceController extends Controller
 {
@@ -22,10 +23,10 @@ class ServiceController extends Controller
      */
     public function index(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id >= 3) {
-            return ServiceManagement::getServices();
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id >= 3) {
+        return ServiceManagement::getServices();
+        //}
         //elseif ($role_id == 2) {
         //     $serv = Service::whereHas('client', function ($query) use ($request) {
         //         $query->where('manager_id', $request->user()->manager_id);
@@ -36,10 +37,10 @@ class ServiceController extends Controller
 
     public function history(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id >= 3) {
-            return ServiceManagement::getServicesHistory();
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id >= 3) {
+        return ServiceManagement::getServicesHistory();
+        //}
     }
 
     /**
@@ -48,7 +49,8 @@ class ServiceController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function create()
-    { }
+    {
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -58,13 +60,13 @@ class ServiceController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id >= 3) {
-            $service = new ServiceManagement($request);
-            return $service->storeService();
-        } else {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να εισάγει services στο σύστημα!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id >= 3) {
+        $service = new ServiceManagement($request);
+        return $service->storeService();
+        // } else {
+        //     return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να εισάγει services στο σύστημα!"], 401);
+        // }
     }
 
     /**
@@ -75,19 +77,20 @@ class ServiceController extends Controller
      */
     public function show($service, Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 2) {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->name . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
+        $highest_role = AuthorityClass::getAuthorityLevel($request);
+        //$role_id = $request->user()->role()->first()->id;
+        if ($highest_role < 2) {
+            return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"], 401);
         }
 
-        if ($role_id >= 3) {
+        if ($highest_role >= 3) {
             $service = Service::find($service);
             if (!$service) return response()->json(["message" => "Δεν βρέθηκε το service στο σύστημα"], 404);
 
             return ServiceResource::make($service);
         }
 
-        if ($role_id == 2) {
+        if ($highest_role == 2) {
             $serv = Service::where('id', $service)->first();
             $manager_id = $serv['client']['manager']['id'];
             if ($manager_id == $request->user()->manager_id) {
@@ -104,12 +107,13 @@ class ServiceController extends Controller
      */
     public function edit(Request $request, $service)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id >= 2) {
+        $highest_role = AuthorityClass::getAuthorityLevel($request);
+        //$role_id = $request->user()->role()->first()->id;
+        if ($highest_role >= 2) {
             $service = new ServiceCalendarUpdate($request, $service);
             return $service->updateService();
         } else {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
+            return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"], 401);
         }
     }
 
@@ -122,12 +126,13 @@ class ServiceController extends Controller
      */
     public function update(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id >= 2) {
+        //$role_id = $request->user()->role()->first()->id;
+        $highest_role = AuthorityClass::getAuthorityLevel($request);
+        if ($highest_role >= 2) {
             $service = new ServiceManagement($request);
             return $service->updateService();
         } else {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να έχει πρόσβαση στα στοιχεία αυτά"], 401);
+            return response()->json(["message" => "Δεν μπορείτε να κάνετε αυτή την ενέργεια"], 401);
         }
     }
 
@@ -139,14 +144,14 @@ class ServiceController extends Controller
      */
     public function destroy(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 3) {
-            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 3) {
+        //     return response()->json(["message" => "Δεν μπορείτε να πραγματοποιήσετε την ενέργεια αυτή!"], 401);
+        // }
 
         $service = Service::where('id', $request->id)->first();
         if (!$service) {
-            return response()->json(["message" => "Το service με κωδικό " . $request->id . " δεν είναι καταχωρημένo!"], 404);
+            return response()->json(["message" => "Το service αυτό δεν είναι καταχωρημένo στο σύστημα!"], 404);
         }
         $service->delete();
 
@@ -154,19 +159,19 @@ class ServiceController extends Controller
         $calendar = Calendar::where('service_id', $request->id)->first();
         if (!$calendar) $calendar->delete();
 
-        return response()->json(["message" => "Το service με κωδικό " . $request->id . " διαγραφηκε επιτυχώς!"], 200);
+        return response()->json(["message" => "Το service διαγραφηκε επιτυχώς!"], 200);
     }
 
     public function remove(Request $request, $serviceId)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 3) {
-            return response()->json(["message" => "Χρήστες με δικαίωμα " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 3) {
+        //     return response()->json(["message" => "Δεν μπορείτε να πραγματοποιήσει την ενέργεια αυτή!"], 401);
+        // }
 
         $service = Service::where('id', $serviceId)->first();
         if (!$service) {
-            return response()->json(["message" => "Το σέρβις με κωδικό " . $serviceId . " δεν είναι καταχωρημένη!"], 404);
+            return response()->json(["message" => "Το σέρβις δεν βρέθηκε στο σύστημα!"], 404);
         }
 
         $service->delete();
@@ -177,6 +182,6 @@ class ServiceController extends Controller
             //end delete calendar entry
         }
 
-        return response()->json(["message" => "Το σέρβις με κωδικό " . $serviceId . " διαγραφηκε επιτυχώς!"], 200);
+        return response()->json(["message" => "Το σέρβις διαγραφηκε επιτυχώς!"], 200);
     }
 }

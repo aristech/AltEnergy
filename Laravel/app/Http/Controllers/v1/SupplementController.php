@@ -17,10 +17,10 @@ class SupplementController extends Controller
      */
     public function index(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 3) {
-            return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 3) {
+        //     return response()->json(["message" => "Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"], 401);
+        // }
 
         $supplementsArray = array();
         $damages = Damage::where('status', 'Μη Ολοκληρωμένη')->where('supplement', '!=', null)->get();

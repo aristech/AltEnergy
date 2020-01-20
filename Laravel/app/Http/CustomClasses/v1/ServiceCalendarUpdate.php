@@ -11,6 +11,7 @@ use App\Client;
 use App\DamageType;
 use App\UsersRoles;
 use App\Calendar;
+use App\Mark;
 
 class ServiceCalendarUpdate
 {
@@ -45,7 +46,7 @@ class ServiceCalendarUpdate
         if (count($this->request->techs) != 0) {
             $tech_array = array();
             foreach ($this->request->techs as $technician) {
-                array_push($tech_array, $technician);
+                array_push($tech_array, $technician['tech_id']);
             }
             $techs = implode(',', $tech_array);
 
@@ -53,6 +54,24 @@ class ServiceCalendarUpdate
         } else {
             return null;
         }
+    }
+
+    public function insertMarks()
+    {
+        if (count($this->request->marks) != 0) {
+            $mark_array = array();
+            foreach ($this->request->marks as $mark) {
+                array_push($mark_array, $mark['id']); //if all goes south $technician['tech_id]
+            }
+            $marks = implode(',', $mark_array);
+
+            return $marks;
+        } else {
+            return null;
+        }
+
+        $marks = implode(',', $this->request->marks);
+        $this->request->merge(['marks' => $marks]);
     }
 
     private function checkServiceType()
@@ -75,10 +94,10 @@ class ServiceCalendarUpdate
                 'guarantee' => 'required|boolean',
                 'status' => 'required|string',
                 'client_id' => 'required|integer',
-                'device_id' => 'required|integer',
+                //'device_id' => 'required|integer',
                 'comments' => 'nullable|min:4|max:100000',
                 'manufacturer_id' => 'required|integer',
-                'mark_id' => 'required|integer',
+                //'mark_id' => 'required|integer',
                 'appointment_start' => 'nullable|string',
                 'appointment_end' => 'nullable|string',
                 'user_id' => 'nullable|integer',
@@ -115,10 +134,10 @@ class ServiceCalendarUpdate
                 'service_completed' => 'required|boolean',
                 'completed_no_transaction' => 'required|boolean',
                 'client_id' => 'required|integer',
-                'device_id' => 'required|integer',
+                //'device_id' => 'required|integer',
                 'comments' => 'nullable|min:4|max:100000',
-                'manufacturer_id' => 'required|integer',
-                'mark_id' => 'required|integer',
+                //'manufacturer_id' => 'required|integer',
+                //'mark_id' => 'required|integer',
                 'supplements' => 'nullable|string',
                 'appointment_start' => 'nullable|string',
                 'appointment_end' => 'nullable|string',
@@ -137,22 +156,30 @@ class ServiceCalendarUpdate
 
     public function checkDevice()
     {
-        $manufacturer_id = $this->request->manufacturer_id;
-        $mark_id = $this->request->mark_id;
-        $device_id = $this->request->device_id;
-
-        $device = Device::whereHas('mark', function ($query) use ($mark_id) {
-            $query->where('id', $mark_id);
-        })
-            ->whereHas('mark.manufacturer', function ($query) use ($manufacturer_id) {
-                $query->where('id', $manufacturer_id);
-            })
-            ->where('id', $device_id)->first();
-
-        if (!$device) {
-            $this->hasErrors = true;
-            $this->error = response()->json(["message" => "Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"], 404);
+        $marks = $this->request->marks;
+        foreach ($marks as $mark) {
+            $check_mark = Mark::where('id', $mark)->first();
+            if (!$check_mark) {
+                $this->hasError = true;
+                $this->error = response()->json(["message" => "Μια ή περισσότερες συσκευές δεν υπάρχουν στο σύστημα"], 404);
+            }
         }
+        // $manufacturer_id = $this->request->manufacturer_id;
+        // $mark_id = $this->request->mark_id;
+        // $device_id = $this->request->device_id;
+
+        // $device = Device::whereHas('mark', function ($query) use ($mark_id) {
+        //     $query->where('id', $mark_id);
+        // })
+        //     ->whereHas('mark.manufacturer', function ($query) use ($manufacturer_id) {
+        //         $query->where('id', $manufacturer_id);
+        //     })
+        //     ->where('id', $device_id)->first();
+
+        // if (!$device) {
+        //     $this->hasErrors = true;
+        //     $this->error = response()->json(["message" => "Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"], 404);
+        // }
     }
 
     public function checkClient()
@@ -224,6 +251,9 @@ class ServiceCalendarUpdate
 
         $techs = $this->insertTechs();
         $this->request->merge(['techs' => $techs]);
+
+        $marks = implode(",", $this->request->marks);
+        $this->request->merge(['marks' => $marks]);
 
         if ($this->request->appointment_start == null) {
             $this->request->request->add(['appointment_pending', true]);
@@ -369,10 +399,11 @@ class ServiceCalendarUpdate
                     "completed_no_transaction" => $status == 1 ? false : $this->request->completed_no_transaction,
                     "service_completed" => $status == 1 ? false : true,
                     "client_id" => $this->request->client_id,
-                    "device_id" => $this->request->device_id,
+                    "marks" => $this->insertMarks(),
+                    //"device_id" => $this->request->device_id,
                     "comments" => $this->request->comments,
-                    "manufacturer_id" => $this->request->manufacturer_id,
-                    "mark_id" => $this->request->mark_id,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
                     "supplements" => $this->request->supplements,
                     "appointment_start" => $newDate,
                     "appointment_end" => $this->request->appointment_end,
@@ -409,6 +440,7 @@ class ServiceCalendarUpdate
                     "appointment_end" => $this->request->appointment_end,
                     // "user_id" => $this->request->user_id,
                     "techs" => $this->insertTechs(),
+                    "marks" => $this->insertMarks(),
                     "repeatable" => $this->request->repeatable,
                     "frequency" => $this->request->frequency,
                     "manager_payment" => $this->request->manager_payment
@@ -431,14 +463,16 @@ class ServiceCalendarUpdate
                     "completed_no_transaction" => $this->request->completed_no_transaction,
                     "service_completed" => false,
                     "client_id" => $this->request->client_id,
-                    "device_id" => $this->request->device_id,
+                    //"device_id" => $this->request->device_id,
                     "comments" => $this->request->comments,
-                    "manufacturer_id" => $this->request->manufacturer_id,
-                    "mark_id" => $this->request->mark_id,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
+                    "marks" => $this->insertMarks(),
+                    "techs" => $this->insertTechs(),
                     "supplements" => $this->request->supplements,
                     "appointment_start" => $this->request->appointment_start,
                     "appointment_end" => $this->request->appointment_end,
-                    "user_id" => $this->request->user_id,
+                    //"user_id" => $this->request->user_id,
                     "repeatable" => $this->request->repeatable,
                     "frequency" => $this->request->frequency,
                     "manager_payment" => $this->request->manager_payment

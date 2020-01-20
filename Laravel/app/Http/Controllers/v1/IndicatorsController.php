@@ -19,20 +19,19 @@ class IndicatorsController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-            return response()->json(["Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"],404);
-        }
+        // if($request->user()->role()->first()->id < 3)
+        // {
+        //     return response()->json(["Δεν μπορείτε να έχετε πρόσβαση στα στοιχεία αυτά"],404);
+        // }
 
         $indications = new IndicatorManagement();
         $indications->getDamageIndicators();
         $indications->getEventIndicators();
-        if(count($indications->indications) == 0)
-        {
-            return response()->json(["message" => "Δεν υπάρχει κάποια καθυστερημένη υποχρέωση"],404);
+        if (count($indications->indications) == 0) {
+            return response()->json(["message" => "Δεν υπάρχει κάποια καθυστερημένη υποχρέωση"], 404);
         }
 
-        return response()->json(["data"=>$indications->indications],200);
+        return response()->json(["data" => $indications->indications], 200);
     }
 
     /**

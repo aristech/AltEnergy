@@ -16,11 +16,11 @@ class ManufacturerController extends Controller
      */
     public function index(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3 || $request->user()->active == false)
-        {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if($role_id < 3 || $request->user()->active == false)
+        // {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        // }
 
         return Manufacturer::all();
     }
@@ -43,21 +43,22 @@ class ManufacturerController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3 || $request->user()->active == false)
-        {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if($role_id < 3 || $request->user()->active == false)
+        // {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        // }
 
-        $validator = Validator::make($request->all(),
-        [
-            "name" => "required|string"
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "name" => "required|string"
+            ]
+        );
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             $errors = $validator->errors()->first();
-            return response()->json(["message" => $errors],422);
+            return response()->json(["message" => $errors], 422);
         }
 
         Manufacturer::create(["name" => $request->name]);
@@ -107,20 +108,19 @@ class ManufacturerController extends Controller
      */
     public function destroy(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3 || $request->user()->active == false)
-        {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if($role_id < 3 || $request->user()->active == false)
+        // {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        // }
 
         $manu = Manufacturer::where('id', $request->id)->first();
-        if(!$manu)
-        {
+        if (!$manu) {
             return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος κατασκευαστής"]);
         }
 
         $manu->delete();
 
-        return response()->json(["message" => "Ο κατασκευαστής διαγράφηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Ο κατασκευαστής διαγράφηκε επιτυχώς!"], 200);
     }
 }

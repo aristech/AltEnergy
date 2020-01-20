@@ -11,6 +11,9 @@ use App\Client;
 use App\DamageType;
 use App\UsersRoles;
 use App\Calendar;
+use App\Http\CustomClasses\v1\TechMail;
+//update for only two layers
+use App\Mark;
 
 class ServiceManagement
 {
@@ -40,17 +43,39 @@ class ServiceManagement
 
     public function insertTechs()
     {
-        if (count($this->request->techs) != 0) {
+        if (count($this->request->techs) > 0) {
             $tech_array = array();
             foreach ($this->request->techs as $technician) {
-                array_push($tech_array, $technician);
+                if (is_int($technician)) {
+                    array_push($tech_array, $technician);
+                } else {
+                    array_push($tech_array, $technician['id']);
+                }
             }
             $techs = implode(',', $tech_array);
 
             return $techs;
         } else {
+            return array();
+        }
+    }
+
+    public function insertMarks()
+    {
+        if (count($this->request->marks) != 0) {
+            $mark_array = array();
+            foreach ($this->request->marks as $mark) {
+                array_push($mark_array, $mark); //if all goes south $technician['tech_id]
+            }
+            $marks = implode(',', $mark_array);
+
+            return $marks;
+        } else {
             return null;
         }
+
+        $marks = implode(',', $this->request->marks);
+        $this->request->merge(['marks' => $marks]);
     }
 
     private function checkServiceType()
@@ -73,10 +98,10 @@ class ServiceManagement
                 'guarantee' => 'required|boolean',
                 'status' => 'required|string',
                 'client_id' => 'required|integer',
-                'device_id' => 'required|integer',
+                //'device_id' => 'required|integer',
                 'comments' => 'nullable|min:4|max:100000',
-                'manufacturer_id' => 'required|integer',
-                'mark_id' => 'required|integer',
+                //'manufacturer_id' => 'required|integer',
+                //'mark_id' => 'required|integer',
                 'appointment_start' => 'nullable|string',
                 'appointment_end' => 'nullable|string',
                 'user_id' => 'nullable|integer',
@@ -113,10 +138,10 @@ class ServiceManagement
                 'service_completed' => 'required|boolean',
                 'completed_no_transaction' => 'required|boolean',
                 'client_id' => 'required|integer',
-                'device_id' => 'required|integer',
+                //'device_id' => 'nullable|integer', //return to required if all goes wrong
                 'comments' => 'nullable|min:4|max:100000',
-                'manufacturer_id' => 'required|integer',
-                'mark_id' => 'required|integer',
+                //'manufacturer_id' => 'required|integer',
+                //'mark_id' => 'required|integer',
                 'supplements' => 'nullable|string',
                 'appointment_start' => 'nullable|string',
                 'appointment_end' => 'nullable|string',
@@ -134,22 +159,26 @@ class ServiceManagement
 
     public function checkDevice()
     {
-        $manufacturer_id = $this->request->manufacturer_id;
-        $mark_id = $this->request->mark_id;
-        $device_id = $this->request->device_id;
-
-        $device = Device::whereHas('mark', function ($query) use ($mark_id) {
-            $query->where('id', $mark_id);
-        })
-            ->whereHas('mark.manufacturer', function ($query) use ($manufacturer_id) {
-                $query->where('id', $manufacturer_id);
-            })
-            ->where('id', $device_id)->first();
-
-        if (!$device) {
-            $this->hasErrors = true;
-            $this->error = response()->json(["message" => "Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"], 404);
+        $marks = $this->request->marks;
+        foreach ($marks as $mark) {
+            $check_mark = Mark::where('id', $mark)->first();
+            if (!$check_mark) {
+                $this->hasError = true;
+                $this->error = response()->json(["message" => "Μια ή περισσότερες συσκευές δεν υπάρχουν στο σύστημα"], 404);
+            }
         }
+
+
+
+        // $device = Device::whereHas('mark', function ($query) use ($mark_id) {
+        //     $query->where('id', $mark_id);
+        // })
+        //     ->whereHas('mark.manufacturer', function ($query) use ($manufacturer_id) {
+        //         $query->where('id', $manufacturer_id);
+        //     })
+        //     ->where('id', $device_id)->first();
+
+
     }
 
     public function checkClient()
@@ -174,10 +203,15 @@ class ServiceManagement
     {
         if (count($this->request->techs) != 0) {
             foreach ($this->request->techs as $techn) {
-                $tech = UsersRoles::where('user_id', $techn)->where('role_id', '3')->first();
+                if (is_int($techn)) {
+                    $tech = UsersRoles::where('user_id', $techn)->where('role_id', '3')->first();
+                } else {
+                    $tech = UsersRoles::where('user_id', $techn['id'])->where('role_id', '3')->first();
+                }
+
                 if (!$tech) {
                     $this->hasError = true;
-                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό " . $techn . " δεν είναι τεχνικός!"], 405);
+                    $this->error = response()->json(["message" => "Παρακαλώ ελέγξτε πάλι τους τεχνικούς"], 405);
                     break;
                 }
             }
@@ -222,6 +256,9 @@ class ServiceManagement
         $techs = $this->insertTechs();
         $this->request->merge(['techs' => $techs]);
 
+        $marks = implode(",", $this->request->marks);
+        $this->request->merge(['marks' => $marks]);
+
         if ($this->request->appointment_start == null) {
             $this->request->request->add(['appointment_pending', true]);
         }
@@ -238,6 +275,8 @@ class ServiceManagement
         $service = Service::create($this->request->all());
 
         if ($service->appointment_start != null && $service->status == "Μη Ολοκληρωμένο") Calendar::create(["name" => "service", "type" => "services", "service_id" => $service->id]);
+
+        //TechMail::sendToTechs($service, "σέρβις", "new");
 
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"], 200);
     }
@@ -317,9 +356,12 @@ class ServiceManagement
             $this->input['appointment_pending'] = false;
         }
 
-
-
         $this->service->update($this->input);
+
+        $service = Service::find($this->service['id']);
+        //TechMail::sendToTechs($service, "σέρβις", "new");
+
+
 
 
         //Calendar Events
@@ -365,11 +407,12 @@ class ServiceManagement
                     "supplement_pending" => $status == 1 ? false : $this->request->supplement_pending,
                     "completed_no_transaction" => $status == 1 ? false : $this->request->completed_no_transaction,
                     "service_completed" => $status == 1 ? false : true,
+                    "marks" => $this->insertMarks(),
                     "client_id" => $this->request->client_id,
-                    "device_id" => $this->request->device_id,
+                    //"device_id" => $this->request->device_id,
                     "comments" => $this->request->comments,
-                    "manufacturer_id" => $this->request->manufacturer_id,
-                    "mark_id" => $this->request->mark_id,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
                     "supplements" => $this->request->supplements,
                     "appointment_start" => $newDate,
                     "appointment_end" => $this->request->appointment_end,
@@ -397,15 +440,16 @@ class ServiceManagement
                     "completed_no_transaction" => true,
                     "service_completed" => false,
                     "client_id" => $this->request->client_id,
-                    "device_id" => $this->request->device_id,
+                    //"device_id" => $this->request->device_id,
                     "comments" => $this->request->comments,
-                    "manufacturer_id" => $this->request->manufacturer_id,
-                    "mark_id" => $this->request->mark_id,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
                     "supplements" => $this->request->supplements,
                     "appointment_start" => $this->request->appointment_start,
                     "appointment_end" => $this->request->appointment_end,
                     // "user_id" => $this->request->user_id,
                     "techs" => $this->insertTechs(),
+                    "marks" => $this->insertMarks(),
                     "repeatable" => $this->request->repeatable,
                     "frequency" => $this->request->frequency,
                     "manager_payment" => $this->request->manager_payment
@@ -428,14 +472,16 @@ class ServiceManagement
                     "completed_no_transaction" => $this->request->completed_no_transaction,
                     "service_completed" => false,
                     "client_id" => $this->request->client_id,
-                    "device_id" => $this->request->device_id,
+                    //"device_id" => $this->request->device_id,
                     "comments" => $this->request->comments,
-                    "manufacturer_id" => $this->request->manufacturer_id,
-                    "mark_id" => $this->request->mark_id,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
+                    "marks" => $this->insertMarks(),
+                    "techs" => $this->insertTechs(),
                     "supplements" => $this->request->supplements,
                     "appointment_start" => $this->request->appointment_start,
                     "appointment_end" => $this->request->appointment_end,
-                    "user_id" => $this->request->user_id,
+                    //"user_id" => $this->request->user_id,
                     "repeatable" => $this->request->repeatable,
                     "frequency" => $this->request->frequency,
                     "manager_payment" => $this->request->manager_payment

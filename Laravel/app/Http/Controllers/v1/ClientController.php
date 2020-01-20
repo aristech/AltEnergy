@@ -22,17 +22,19 @@ class ClientController extends Controller
      */
     public function index(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
+
         // $mail = new SendMail();
         // //return $mail->checktime('2019-10-17T18:39:00.000Z');
         // $mail->getDamages();
         // $mail->getEvents();
         // $mail->createMessage();
         // $mail->sendMail();
-        if ($role_id < 4) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
         //return $mail->message;
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
+
 
         return ClientResource::collection(Client::all());
     }
@@ -55,19 +57,19 @@ class ClientController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
+        // $role_id = $request->user()->role()->first()->id;
 
-        //return $role_id;
+        // //return $role_id;
 
-        if ($role_id < 4) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
+        // if ($role_id < 4) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
 
         $validator = Validator::make(
             $request->all(),
             [
-                'lastname' => 'required|string',
-                'firstname' => 'required|string',
+                'lastname' => 'nullable|string',
+                'firstname' => 'nullable|string',
                 'afm' => 'nullable|string',
                 'doy' => 'nullable|string',
                 'arithmos_gnostopoihshs' => 'nullable|string',
@@ -82,24 +84,24 @@ class ClientController extends Controller
                 'telephone' => 'nullable|string',
                 'telephone2' => 'nullable|string',
                 'mobile' => 'nullable|string',
-                'address' => 'required|string',
-                'zipcode' => 'required|string',
-                'location' => 'required|string',
-                'level' => 'required|string',
+                'address' => 'nullable|string',
+                'zipcode' => 'nullable|string',
+                'location' => 'nullable|string',
+                'level' => 'nullable|string',
                 'manager_id' => 'nullable|integer',
                 'email' => 'nullable|string|email'
 
             ]
         );
 
-        if ($validator->fails()) {
-            $failedRules = $validator->errors()->first(); //todo for future: na allaksw
-            return response()->json(["message" => $failedRules], 422);
-        }
+        // if ($validator->fails()) {
+        //     $failedRules = $validator->errors()->first(); //todo for future: na allaksw
+        //     return response()->json(["message" => $failedRules], 422);
+        // }
 
-        if ($request->telephone == null && $request->telephone2 == null && $request->mobile == null) {
-            return response()->json(["message" => "Τουλάχιστον έαν τηλέφωνο είναι υποχρεωτικό!"], 422);
-        }
+        // if ($request->telephone == null && $request->telephone2 == null && $request->mobile == null) {
+        //     return response()->json(["message" => "Τουλάχιστον έαν τηλέφωνο είναι υποχρεωτικό!"], 422);
+        // }
 
         if ($request->email != null) {
             $client = Client::where('email', $request->email)->first();
@@ -127,7 +129,7 @@ class ClientController extends Controller
 
 
         //mkdir(storage_path()."/Clients/".$client->foldername);
-        if (!$folder_created = mkdir(storage_path() . "/Clients/" . $client->foldername)) {
+        if (!$folder_created = mkdir(storage_path() . "/Clients/" . $client['foldername'])) {
             return response()->json(["message" => "Δεν μπόρεσε να δημιουργηθεί φάκελος για τον πελάτη " . $request->lastname . " " . $request->firstname], 500);
         }
 
@@ -142,10 +144,10 @@ class ClientController extends Controller
      */
     public function show(Request $request, $client)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4 || $request->user()->active == false) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4 || $request->user()->active == false) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
 
         $client = Client::find($client);
 
@@ -176,17 +178,17 @@ class ClientController extends Controller
      */
     public function update(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4 || $request->user()->active == false) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4 || $request->user()->active == false) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
 
         $validator = Validator::make(
             $request->all(),
             [
                 'id' => 'required|integer',
-                'lastname' => 'required|string',
-                'firstname' => 'required|string',
+                'lastname' => 'nullable|string',
+                'firstname' => 'nullable|string',
                 'afm' => 'nullable|string',
                 'doy' => 'nullable|string',
                 'arithmos_gnostopoihshs' => 'nullable|string',
@@ -201,41 +203,50 @@ class ClientController extends Controller
                 'telephone' => 'nullable|string',
                 'telephone2' => 'nullable|string',
                 'mobile' => 'nullable|string',
-                'address' => 'required|string',
-                'zipcode' => 'required|string',
-                'location' => 'required|string',
-                'level' => 'required|string',
+                'address' => 'nullable|string',
+                'zipcode' => 'nullable|string',
+                'location' => 'nulable|string',
+                'level' => 'nullable|string',
                 'manager_id' => 'nullable|integer'
             ]
         );
 
-        if ($validator->fails()) {
-            $failedRules = $validator->errors()->first(); //todo for future: na allaksw
-            return response()->json(["message" => $failedRules], 422);
-        }
+        // if ($validator->fails()) {
+        //     $failedRules = $validator->errors()->first(); //todo for future: na allaksw
+        //     return response()->json(["message" => $failedRules], 422);
+        // }
 
-        if ($request->telephone == null && $request->telephone2 == null && $request->mobile == null) {
-            return response()->json(["message" => "Τουλάχιστον ένα τηλέφωνο είναι υποχρεωτικό!"], 422);
-        }
+        // if ($request->telephone == null && $request->telephone2 == null && $request->mobile == null) {
+        //     return response()->json(["message" => "Τουλάχιστον ένα τηλέφωνο είναι υποχρεωτικό!"], 422);
+        // }
 
         if ($request->manager_id != null) {
             $manager = Manager::find($request->manager_id);
             if (!$manager) {
-                return response()->json(["message" => "Ο συγκεκριμένος διαχειριστής δεν είναι καταψχωρημένος στο σύστημα"], 404);
+                return response()->json(["message" => "Ο συγκεκριμένος διαχειριστής δεν είναι καταχωρημένος στο σύστημα"], 404);
             }
         }
 
         $client = Client::where('id', $request->id)->first();
         if (!$client) {
-            return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος πελάτης με κωδικό " . $request->id], 404);
+            return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος πελάτης στο σύστημα"], 404);
         }
 
         if ($request->email != null) {
             $email = Client::where('email', $request->email)->where('id', "!=", $request->id)->first();
 
             if ($email) {
-                return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο χρήστη"], 422);
+                return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο πελάτη"], 422);
             }
+        }
+
+        if ($request->firstname != $client['firstname'] || $request->lastname != $client['lastname']) {
+            $lastClient = Client::latest()->first();
+            $foldername = $request->lastname . "_" . $request->firstname . "_" . ($lastClient['id']);
+            $foldernameOld = $client['foldername'];
+            $foldernameNew = Greeklish::remove_accent($foldername); //conversion to greeklish
+            rename(storage_path() . "/Clients/" . $foldernameOld, storage_path() . "/Clients/" . $foldernameNew);
+            $request->request->add(["foldername" => $foldernameNew]);
         }
 
         $client->update($request->except(['id']));
@@ -251,10 +262,10 @@ class ClientController extends Controller
      */
     public function destroy(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4 || $request->user()->active == false) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4 || $request->user()->active == false) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
 
         $validator = Validator::make(
             $request->all(),

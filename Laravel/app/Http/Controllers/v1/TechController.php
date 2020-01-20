@@ -11,9 +11,9 @@ class TechController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->user()->role()->first()->id < 2) {
-            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
-        }
+        // if ($request->user()->role()->first()->id < 2) {
+        //     return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
+        // }
 
         return TechResource::collection(User::whereHas('role', function ($q) {
             $q->where('title', 'Τεχνικός');

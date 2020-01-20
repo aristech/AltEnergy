@@ -55,10 +55,10 @@ class AuthController extends Controller
 
     public function createUser(Request $request)
     {
-        $user_role = $request->user()->role()->first()->id;
-        if ($user_role < 4) {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
-        }
+        // $user_role = $request->user()->role()->first()->id;
+        // if ($user_role < 4) {
+        //     return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
+        // }
         //
 
         $validator = Validator::make($request->all(), [
@@ -201,20 +201,23 @@ class AuthController extends Controller
 
     public function allUsers(Request $request)
     {
-        $user_role = $request->user()->role()->first()->id;
-        if ($user_role < 4) {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
-        }
+        // $user_role = $request->user()->role()->first()->id;
+        // if ($user_role < 4) {
+        //     return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
+        // }
 
         return UserResource::collection(User::all());
     }
 
     public function editUser(Request $request)
     {
-        $user_role = $request->user()->role()->first()->id;
-        if ($user_role < 4) {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
-        }
+        //return response()->json(["message" => "Στην Demo έκδοση δεν μπορέιτε να κάνετε edit τα στοιχεία των χρηστών!"], 401);
+        //#ΤODO -> Change to production
+
+        // $user_role = $request->user()->role()->first()->id;
+        // if ($user_role < 4) {
+        //     return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
+        // }
         //
 
         $user = User::find($request->id);
@@ -299,10 +302,10 @@ class AuthController extends Controller
 
     public function deleteUser(Request $request)
     {
-        $user_role = $request->user()->role()->first()->id;
-        if ($user_role < 4) {
-            return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
-        }
+        // $user_role = $request->user()->role()->first()->id;
+        // if ($user_role < 4) {
+        //     return response()->json(["message" => "Ο χρήστης με ρόλο " . $request->user()->role()->first()->title . " δεν μπορεί να πραγματοποιήσει την ενέργεια αυτή"], 401);
+        // }
         //
 
         $user = User::find($request->id);

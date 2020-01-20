@@ -19,23 +19,20 @@ class MarkController extends Controller
      */
     public function index(Request $request, $manufacturer)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3)
-        {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if($role_id < 3)
+        // {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        // }
 
         $manu_id = $manufacturer;
 
-        $marks = Mark::whereHas('manufacturer', function($query) use ($manu_id)
-        {
-            $query->where('id',$manu_id);
-
+        $marks = Mark::whereHas('manufacturer', function ($query) use ($manu_id) {
+            $query->where('id', $manu_id);
         })
-        ->get();
+            ->get();
 
         return MarkResource::collection($marks);
-
     }
 
     /**
@@ -56,32 +53,32 @@ class MarkController extends Controller
      */
     public function store(Request $request, $manufacturer)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3)
-        {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if($role_id < 3)
+        // {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        // }
 
-        $validator = Validator::make($request->all(),
-        [
-            "name" => "required|string"
-        ]);
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "name" => "required|string"
+            ]
+        );
 
-        if($validator->fails())
-        {
-            return response()->json(["message" => $validator->errors()->first()],422);
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors()->first()], 422);
         }
 
         $manufacturer = Manufacturer::find($manufacturer);
-        if(!$manufacturer)
-        {
-            return response()->json(["message" => "Ο κατασκευαστής αυτος δεν βρέθηκε!"],404);
+        if (!$manufacturer) {
+            return response()->json(["message" => "Ο κατασκευαστής αυτος δεν βρέθηκε!"], 404);
         }
 
         $input = array("name" => $request->name, "manufacturer_id" => $manufacturer->id);
 
         Mark::create($input);
-        return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"], 200);
     }
 
     /**
@@ -92,7 +89,6 @@ class MarkController extends Controller
      */
     public function show(Request $request, $manufacturer)
     {
-
     }
 
     /**
@@ -126,34 +122,33 @@ class MarkController extends Controller
      */
     public function destroy(Request $request, $manufacturer)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if($role_id < 3)
-        {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        // $role_id = $request->user()->role()->first()->id;
+        // if($role_id < 3)
+        // {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"],401);
+        // }
+
+        $validator = Validator::make(
+            $request->all(),
+            [
+                "id" => "required"
+            ]
+        );
+
+        if ($validator->fails()) {
+            return response()->json(["message" => $validator->errors()->first()], 422);
         }
 
-        $validator = Validator::make($request->all(),
-        [
-            "id" => "required"
-        ]);
-
-        if($validator->fails())
-        {
-            return response()->json(["message" => $validator->errors()->first()],422);
-        }
-
-        $mark = Mark::whereHas('manufacturer',function($query) use ($manufacturer)
-        {
-            $query->where('id',$manufacturer);
+        $mark = Mark::whereHas('manufacturer', function ($query) use ($manufacturer) {
+            $query->where('id', $manufacturer);
         })
-        ->find($request->id);
+            ->find($request->id);
 
-        if(!$mark)
-        {
-            return response()->json(["message" => "Δεν υπάρχει το συγκεκριμένο μοντέλο!"],404);
+        if (!$mark) {
+            return response()->json(["message" => "Δεν υπάρχει το συγκεκριμένο μοντέλο!"], 404);
         }
 
         $mark->delete();
-        return response()->json(["message" => "Tο μοντελο διαγράφηκε επιτυχώς!"],200);
+        return response()->json(["message" => "Tο μοντελο διαγράφηκε επιτυχώς!"], 200);
     }
 }

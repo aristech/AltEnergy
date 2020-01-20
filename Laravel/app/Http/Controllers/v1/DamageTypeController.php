@@ -19,9 +19,9 @@ class DamageTypeController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->user()->role()->first()->id < 3) {
-            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
-        }
+        // if ($request->user()->role()->first()->id < 3) {
+        //     return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
+        // }
 
         return DamageTypeResource::collection(DamageType::all());
     }
@@ -44,9 +44,9 @@ class DamageTypeController extends Controller
      */
     public function store(Request $request)
     {
-        if ($request->user()->role()->first()->id < 3) {
-            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
-        }
+        // if ($request->user()->role()->first()->id < 3) {
+        //     return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
+        // }
 
         $validator = Validator::make(
             $request->all(),
@@ -94,9 +94,9 @@ class DamageTypeController extends Controller
      */
     public function update(Request $request, $damagetype)
     {
-        if ($request->user()->role()->first()->id < 3) {
-            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
-        }
+        // if ($request->user()->role()->first()->id < 3) {
+        //     return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
+        // }
 
         $damagetype = DamageType::find($damagetype);
         if (!$damagetype) {
@@ -126,9 +126,9 @@ class DamageTypeController extends Controller
      */
     public function destroy(Request $request)
     {
-        if ($request->user()->role()->first()->id < 3) {
-            return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
-        }
+        // if ($request->user()->role()->first()->id < 3) {
+        //     return response()->json(["message" => "Ο συγκεκριμένος χρήστης δεν έχει πρόσβαση στο πεδία αυτό"], 401);
+        // }
 
         $damage_type_id = $request->id;
         $damage_type = DamageType::where('id', $damage_type_id)->first();

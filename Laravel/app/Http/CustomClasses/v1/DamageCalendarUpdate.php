@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\CustomClasses\v1;
+
 use App\Damage;
 use Validator;
 use App\Device;
@@ -11,6 +12,7 @@ use App\DamageType;
 use App\Eventt;
 use App\UsersRoles;
 use App\Calendar;
+use App\Mark;
 
 class DamageCalendarUpdate
 {
@@ -37,136 +39,162 @@ class DamageCalendarUpdate
 
     public function insertTechs()
     {
-        if(count($this->request->techs) != 0)
-        {
+        if (count($this->request->techs) != 0) {
             $tech_array = array();
-            foreach($this->request->techs as $technician)
-            {
-                array_push($tech_array,$technician['tech_id']);//if all goes south $technician['tech_id]
+            foreach ($this->request->techs as $technician) {
+                array_push($tech_array, $technician['tech_id']); //if all goes south $technician['tech_id]
             }
-            $techs = implode(',',$tech_array);
+            $techs = implode(',', $tech_array);
 
             return $techs;
-        }
-        else
-        {
+        } else {
             return null;
         }
     }
 
+    public function insertMarks()
+    {
+        if (count($this->request->marks) != 0) {
+            $mark_array = array();
+            foreach ($this->request->marks as $mark) {
+                if ($this->damage_id !== null) {
+                    array_push($mark_array, $mark['id']); //if all goes south $technician['tech_id]
+                } else {
+                    array_push($mark_array, $mark); //if all goes south $technician['tech_id]
+                }
+            }
+            $marks = implode(',', $mark_array);
+
+            return $marks;
+        } else {
+            return null;
+        }
+
+        $marks = implode(',', $this->request->marks);
+        $this->request->merge(['marks' => $marks]);
+    }
+
     public static function getDamagesHistory()
     {
-        $damages = DamageResource::collection(Damage::where('status','Ολοκληρώθηκε')->orWhere('status','Ακυρώθηκε')->orderBy('created_at','DESC')->get());
+        $damages = DamageResource::collection(Damage::where('status', 'Ολοκληρώθηκε')->orWhere('status', 'Ακυρώθηκε')->orderBy('created_at', 'DESC')->get());
         return $damages;
     }
 
     private function checkDamageType()
     {
-        $damageType = DamageType::where('id',$this->request->damage_type_id)->first();
-        if(!$damageType)
-        {
+        $damageType = DamageType::where('id', $this->request->damage_type_id)->first();
+        if (!$damageType) {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος βλάβης!"],404);
+            $this->error = response()->json(["message" => "Δεν βρέθηκε ο συγκεκριμένος τύπος βλάβης!"], 404);
         }
     }
 
     protected function validatorCreate()
     {
-        $validator = Validator::make($this->request->all(),
-        [
-            'damage_type_id' => 'required|integer',
-            'damage_comments' => 'nullable',
-            'cost' => 'nullable|numeric|between:0.00,999999.99',
-            'guarantee' => 'required|boolean',
-            'status' => 'required|string',
-            'client_id' => 'required|integer',
-            'device_id' => 'required|integer',
-            'comments' => 'nullable',
-            'manufacturer_id' => 'required|integer',
-            'mark_id' => 'required|integer',
-            'appointment_start' => 'nullable|string',
-            'appointment_end' => 'nullable|string'
-            // 'user_id' => 'nullable|integer'
+        $validator = Validator::make(
+            $this->request->all(),
+            [
+                'damage_type_id' => 'required|integer',
+                'damage_comments' => 'nullable',
+                'cost' => 'nullable|numeric|between:0.00,999999.99',
+                'guarantee' => 'required|boolean',
+                //'status' => 'required|string',
+                'client_id' => 'required|integer',
+                //'device_id' => 'required|integer',
+                'comments' => 'nullable',
+                //'manufacturer_id' => 'required|integer',
+                //'mark_id' => 'required|integer',
+                'appointment_start' => 'nullable|string',
+                'appointment_end' => 'nullable|string'
+                // 'user_id' => 'nullable|integer'
 
-        ]);
+            ]
+        );
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             $this->hasError = true;
-            $this->error = response()->json(["message" => $validator->errors()->first()],422);
-            return response()->json(["message" => $validator->errors()->first()],422);
+            $this->error = response()->json(["message" => $validator->errors()->first()], 422);
+            return response()->json(["message" => $validator->errors()->first()], 422);
         }
-
     }
 
     protected function validatorUpdate()
     {
-        $validator = Validator::make($this->request->all(),
-        [
-            'damage_type_id' => 'required|integer',
-            'damage_comments' => 'nullable',
-            'cost' => 'nullable|numeric|between:0.00,999999.99',
-            'guarantee' => 'required|boolean',
-            'status' => 'required|string',
-            'appointment_pending' => 'required|boolean',
-            'technician_left' => 'required|boolean',
-            'technician_arrived' => 'required|boolean',
-            'appointment_completed' => 'required|boolean',
-            'appointment_needed' => 'required|boolean',
-            'supplement_pending' => 'required|boolean',
-            'damage_fixed' => 'required|boolean',
-            'completed_no_transaction' => 'required|boolean',
-            'client_id' => 'required|integer',
-            'device_id' => 'required|integer',
-            'comments' => 'nullable',
-            'manufacturer_id' => 'required|integer',
-            'mark_id' => 'required|integer',
-            'supplement' => 'nullable|string',
-            'appointment_start' => 'nullable|string',
-            'appointment_end' => 'nullable|string',
-            // 'user_id' => 'nullable|integer'
-        ]);
+        $validator = Validator::make(
+            $this->request->all(),
+            [
+                'damage_type_id' => 'required|integer',
+                'damage_comments' => 'nullable',
+                'cost' => 'nullable|numeric|between:0.00,999999.99',
+                'guarantee' => 'required|boolean',
+                'status' => 'required|string',
+                'appointment_pending' => 'required|boolean',
+                'technician_left' => 'required|boolean',
+                'technician_arrived' => 'required|boolean',
+                'appointment_completed' => 'required|boolean',
+                'appointment_needed' => 'required|boolean',
+                'supplement_pending' => 'required|boolean',
+                'damage_fixed' => 'required|boolean',
+                'completed_no_transaction' => 'required|boolean',
+                'client_id' => 'required|integer',
+                //'device_id' => 'required|integer',
+                'comments' => 'nullable',
+                //'manufacturer_id' => 'required|integer',
+                //'mark_id' => 'required|integer',
+                'supplement' => 'nullable|string',
+                'appointment_start' => 'nullable|string',
+                'appointment_end' => 'nullable|string',
+                // 'user_id' => 'nullable|integer'
+            ]
+        );
 
-        if($validator->fails())
-        {
+        if ($validator->fails()) {
             $this->hasError = true;
-            $this->error = response()->json(["message" => $validator->errors()->first()],422);
+            $this->error = response()->json(["message" => $validator->errors()->first()], 422);
         }
     }
 
     public function checkDevice()
     {
-        $manufacturer_id = $this->request->manufacturer_id;
-        $mark_id = $this->request->mark_id;
-        $device_id = $this->request->device_id;
+        // $manufacturer_id = $this->request->manufacturer_id;
+        // $mark_id = $this->request->mark_id;
+        // $device_id = $this->request->device_id;
 
-        $device = Device::whereHas('mark', function($query) use($mark_id)
-        {
-            $query->where('id',$mark_id);
+        // $device = Device::whereHas('mark', function ($query) use ($mark_id) {
+        //     $query->where('id', $mark_id);
+        // })
+        //     ->whereHas('mark.manufacturer', function ($query) use ($manufacturer_id) {
+        //         $query->where('id', $manufacturer_id);
+        //     })
+        //     ->where('id', $device_id)->first();
 
-        })
-        ->whereHas('mark.manufacturer', function($query) use ($manufacturer_id)
-        {
-            $query->where('id',$manufacturer_id);
-        })
-        ->where('id',$device_id)->first();
+        // if (!$device) {
+        //     $this->hasErrors = true;
+        //     $this->error = response()->json(["message" => "Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"], 404);
+        // }
 
-        if(!$device)
-        {
-            $this->hasErrors = true;
-            $this->error = response()->json(["message"=>"Η συσκευή που εισάγατε δεν υπάρχει στο σύστημα. Βεβαιωθείτε ότι τα στοιχεία της συσκευης είναι σωστά!"],404);
+        $marks = $this->request->marks;
+        foreach ($marks as $mark) {
+            if ($this->damage_id !== null) {
+                $check_mark = Mark::where('id', $mark['id'])->first();
+            } else {
+                $check_mark = Mark::where('id', $mark['id'])->first();
+            }
+
+            if (!$check_mark) {
+                $this->hasError = true;
+                $this->error = response()->json(["message" => "Μια ή περισσότερες επισκευές δεν υπάρχουν στο σύστημα"], 404);
+            }
         }
-
     }
 
     public function checkClient()
     {
-        $client = Client::where('id',$this->request->client_id)->first();
-        if(!$client)
-        {
+        $client = Client::where('id', $this->request->client_id)->first();
+        if (!$client) {
             $this->hasErrors = true;
-            $this->error = response()->json(["message"=>"Ο πελάτης αυτός δεν υπάρχει στο σύστημα!"],404);
-            return response()->json(["message"=>"Ο πελάτης αυτός δεν υπάρχει στο σύστημα!"],404);
+            $this->error = response()->json(["message" => "Ο πελάτης αυτός δεν υπάρχει στο σύστημα!"], 404);
+            return response()->json(["message" => "Ο πελάτης αυτός δεν υπάρχει στο σύστημα!"], 404);
         }
     }
 
@@ -209,15 +237,12 @@ class DamageCalendarUpdate
 
     public function checkTechnician()
     {
-        if(count($this->request->techs) != 0)
-        {
-            foreach($this->request->techs as $techn)
-            {
-                $tech = UsersRoles::where('user_id',$techn['tech_id'])->where('role_id','3')->first();
-                if(!$tech)
-                {
+        if (count($this->request->techs) != 0) {
+            foreach ($this->request->techs as $techn) {
+                $tech = UsersRoles::where('user_id', $techn['tech_id'])->where('role_id', '3')->first();
+                if (!$tech) {
                     $this->hasError = true;
-                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό ".$techn." δεν είναι τεχνικός!"],405);
+                    $this->error = response()->json(["message" => "Το πρόσωπο με κωδικό " . $techn . " δεν είναι τεχνικός!"], 405);
                     break;
                 }
             }
@@ -228,24 +253,20 @@ class DamageCalendarUpdate
     {
         //return $this->insertTechs();
         $this->validatorCreate();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         $this->checkDamageType();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         $this->checkDevice();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         $this->checkClient();
 
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         // $this->checkDate();
@@ -256,30 +277,31 @@ class DamageCalendarUpdate
         // }
 
         $this->checkTechnician();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
 
-        if($this->request->cost == null)
-        {
+        if ($this->request->cost == null) {
 
             $this->request->merge(['cost' => 0.00]);
         }
 
         $techs = $this->insertTechs();
-        $this->request->merge(['techs'=>$techs]);
+        $this->request->merge(['techs' => $techs]);
+        $this->request->request->add(['status' => 'Μη Ολοκληρωμένη']);
+
+        $marks = implode(',', $this->request->marks);
+        $this->request->merge(['marks' => $marks]);
 
         //if not appointment then set pending date
-        if($this->request->appointment_start == null && $this->request->status == "Μη Ολοκληρωμένη")
-        {
+        if ($this->request->appointment_start == null && $this->request->status == "Μη Ολοκληρωμένη") {
             $this->request->request->add(['appointment_pending' => true]);
             $this->request->appointment_start = null;
         }
 
         $damage = Damage::create($this->request->all());
         //Calendar Management
-        if($damage->status == "Μη Ολοκληρωμένη")Calendar::create(['name'=>'βλάβη','type'=>'damages','damage_id'=>$damage->id]);//inserted change if entry is not null
+        if ($damage->status == "Μη Ολοκληρωμένη") Calendar::create(['name' => 'βλάβη', 'type' => 'damages', 'damage_id' => $damage->id]); //inserted change if entry is not null
         //End Calendar management
 
         // if($this->request->appointment_start != null)
@@ -289,19 +311,16 @@ class DamageCalendarUpdate
         // }
 
 
-        return response()->json(["message" => "Η βλάβη του πελάτη καταχωρήθηκε επιτυχως!"],200);
+        return response()->json(["message" => "Η βλάβη του πελάτη καταχωρήθηκε επιτυχως!"], 200);
     }
 
     public function checkDamage()
     {
-        $damage = Damage::where('id',$this->damage_id)->first();
-        if(!$damage)
-        {
+        $damage = Damage::where('id', $this->damage_id)->first();
+        if (!$damage) {
             $this->hasError = true;
-            $this->error = response()->json(["message" => "Η βλάβη αυτή δεν είναι περασμένη στο σύστημα!"],404);
-        }
-        else
-        {
+            $this->error = response()->json(["message" => "Η βλάβη αυτή δεν είναι περασμένη στο σύστημα!"], 404);
+        } else {
             $this->damage = $damage;
         }
     }
@@ -309,54 +328,44 @@ class DamageCalendarUpdate
     public function updateDamage()
     {
         $this->validatorUpdate();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         $this->checkDamageType();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
-        $this->checkDevice();
-        if($this->hasError == true)
-        {
-            return $this->error;
-        }
+        // $this->checkDevice();
+        // if($this->hasError == true)
+        // {
+        //     return $this->error;
+        // }
         $this->checkClient();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         $this->checkDamage();
 
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         $this->checkTechnician();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
         $this->createUpdateInput();
-        if($this->hasError == true)
-        {
+        if ($this->hasError == true) {
             return $this->error;
         }
 
-        if($this->input['cost'] == null)
-        {
+        if ($this->input['cost'] == null) {
             $this->input['cost'] = 0.00;
         }
 
-        if($this->input['appointment_start'] == null && $this->input['status'] == "Μη Ολοκληρωμένη" )
-        {
+        if ($this->input['appointment_start'] == null && $this->input['status'] == "Μη Ολοκληρωμένη") {
             $this->input['appointment_pending'] = true;
             $this->input['appointment_end'] = null;
-        }
-        else
-        {
+        } else {
             $this->input['appointment_pending'] = false;
         }
 
@@ -364,130 +373,115 @@ class DamageCalendarUpdate
 
         $this->damage->update($this->input);
         //Calendar for update
-        $calendar = Calendar::where('damage_id',$this->damage->id)->first();
+        $calendar = Calendar::where('damage_id', $this->damage->id)->first();
 
-        if($this->damage->status != "Μη Ολοκληρωμένη" && $calendar)
-        {
+        if ($this->damage->status != "Μη Ολοκληρωμένη" && $calendar) {
             $calendar->delete();
         }
-        if($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar)
-        {
-            Calendar::create(['type'=>'damages','name'=>'βλάβη','damage_id'=>$this->damage->id]);
+        if ($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar) {
+            Calendar::create(['type' => 'damages', 'name' => 'βλάβη', 'damage_id' => $this->damage->id]);
         }
         //End Calendar update process
-        return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό ".$this->request->id." ενημερώθηκαν επιτυχώς!"],200);
+        return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό " . $this->request->id . " ενημερώθηκαν επιτυχώς!"], 200);
     }
 
     public function createUpdateInput()
     {
-        if($this->request->completed_no_transaction == true && $this->request->damage_fixed == true)
-        {
+        if ($this->request->completed_no_transaction == true && $this->request->damage_fixed == true) {
             $this->hasError = true;
-            $this->error = request()->json(["message" => "Η συναλλαγή δεν μπορεί να έιναι ακυρωμένη και επιδιορθωμένη!"],200);
-        }
-        elseif($this->request->damage_fixed == true) // in case of problems insert  || $this->request->status == "Ολοκληρωμένη" in if statement
+            $this->error = request()->json(["message" => "Η συναλλαγή δεν μπορεί να έιναι ακυρωμένη και επιδιορθωμένη!"], 200);
+        } elseif ($this->request->damage_fixed == true) // in case of problems insert  || $this->request->status == "Ολοκληρωμένη" in if statement
         {
             $this->input = array();
             $this->input =
-            [
-                "damage_type" => $this->request->damage_type,
-                "damage_comments" => $this->request->damage_comments,
-                "cost" => $this->request->cost,
-                "guarantee" => $this->request->guarantee,
-                "status" => "Ολοκληρώθηκε",
-                "appointment_pending" => false,
-                "technician_left" => true,
-                "technician_arrived" => true,
-                "appointment_completed" => true,
-                "appointment_needed" => false,
-                "supplement_pending" => false,
-                "completed_no_transaction" => false,
-                "damage_fixed" => true,
-                "client_id" => $this->request->client_id,
-                "device_id" => $this->request->device_id,
-                "comments" => $this->request->comments,
-                "manufacturer_id" => $this->request->manufacturer_id,
-                "mark_id" => $this->request->mark_id,
-                "supplement" => $this->request->supplement,
-                "appointment_start" => $this->request->appointment_start,
-                "appointment_end" => $this->request->appointment_end,
-                //"user_id" => $this->request->user_id,
-                "techs" => $this->insertTechs()
-            ];
-        }
-        elseif($this->request->completed_no_transaction == true) // || $this->request->status == "Ακυρώθηκε" insert that in if statement if problems occur
+                [
+                    "damage_type" => $this->request->damage_type,
+                    "damage_comments" => $this->request->damage_comments,
+                    "cost" => $this->request->cost,
+                    "guarantee" => $this->request->guarantee,
+                    "status" => "Ολοκληρώθηκε",
+                    "appointment_pending" => false,
+                    "technician_left" => true,
+                    "technician_arrived" => true,
+                    "appointment_completed" => true,
+                    "appointment_needed" => false,
+                    "supplement_pending" => false,
+                    "completed_no_transaction" => false,
+                    "damage_fixed" => true,
+                    "client_id" => $this->request->client_id,
+                    //"device_id" => $this->request->device_id,
+                    "comments" => $this->request->comments,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
+                    "supplement" => $this->request->supplement,
+                    "appointment_start" => $this->request->appointment_start,
+                    "appointment_end" => $this->request->appointment_end,
+                    //"user_id" => $this->request->user_id,
+                    "techs" => $this->insertTechs(),
+                    "marks" => $this->insertMarks(),
+                    "manager_payment" => $this->request->manager_payment
+                ];
+        } elseif ($this->request->completed_no_transaction == true) // || $this->request->status == "Ακυρώθηκε" insert that in if statement if problems occur
         {
             $this->input = array();
             $this->input =
-            [
-                "damage_type" => $this->request->damage_type,
-                "damage_comments" => $this->request->damage_comments,
-                "cost" => $this->request->cost,
-                "guarantee" => $this->request->guarantee,
-                "status" => "Ακυρώθηκε",
-                "appointment_pending" => $this->request->appointment_pending,
-                "technician_left" => $this->request->technician_left,
-                "technician_arrived" => $this->request->technician_arrived,
-                "appointment_completed" => $this->request->appointment_completed,
-                "appointment_needed" => $this->request->appointment_needed,
-                "supplement_pending" => $this->request->supplement_pending,
-                "completed_no_transaction" => true,
-                "damage_fixed" => false,
-                "client_id" => $this->request->client_id,
-                "device_id" => $this->request->device_id,
-                "comments" => $this->request->comments,
-                "manufacturer_id" => $this->request->manufacturer_id,
-                "mark_id" => $this->request->mark_id,
-                "supplement" => $this->request->supplement,
-                "appointment_start" => $this->request->appointment_start,
-                "appointment_end" => $this->request->appointment_end,
-                //"user_id" => $this->request->user_id,
-                "techs" => $this->insertTechs()
-            ];
-
-        }
-        else
-        {
+                [
+                    "damage_type" => $this->request->damage_type,
+                    "damage_comments" => $this->request->damage_comments,
+                    "cost" => $this->request->cost,
+                    "guarantee" => $this->request->guarantee,
+                    "status" => "Ακυρώθηκε",
+                    "appointment_pending" => $this->request->appointment_pending,
+                    "technician_left" => $this->request->technician_left,
+                    "technician_arrived" => $this->request->technician_arrived,
+                    "appointment_completed" => $this->request->appointment_completed,
+                    "appointment_needed" => $this->request->appointment_needed,
+                    "supplement_pending" => $this->request->supplement_pending,
+                    "completed_no_transaction" => true,
+                    "damage_fixed" => false,
+                    "client_id" => $this->request->client_id,
+                    //"device_id" => $this->request->device_id,
+                    "comments" => $this->request->comments,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
+                    "supplement" => $this->request->supplement,
+                    "appointment_start" => $this->request->appointment_start,
+                    "appointment_end" => $this->request->appointment_end,
+                    //"user_id" => $this->request->user_id,
+                    "techs" => $this->insertTechs(),
+                    "marks" => $this->insertMarks(),
+                    "manager_payment" => $this->request->manager_payment
+                ];
+        } else {
             $this->input = array();
             $this->input =
-            [
-                "damage_type" => $this->request->damage_type,
-                "damage_comments" => $this->request->damage_comments,
-                "cost" => $this->request->cost,
-                "guarantee" => (int)$this->request->guarantee,
-                "status" => $this->request->status,
-                "appointment_pending" => (int)$this->request->appointment_pending,
-                "technician_left" => (int)$this->request->technician_left,
-                "technician_arrived" => (int)$this->request->technician_arrived,
-                "appointment_completed" => (int)$this->request->appointment_completed,
-                "appointment_needed" => (int)$this->request->appointment_needed,
-                "supplement_pending" => (int)$this->request->supplement_pending,
-                "completed_no_transaction" => (int)$this->request->completed_no_transaction,
-                "damage_fixed" => false,
-                "client_id" => $this->request->client_id,
-                "device_id" => $this->request->device_id,
-                "comments" => $this->request->comments,
-                "manufacturer_id" => $this->request->manufacturer_id,
-                "mark_id" => $this->request->mark_id,
-                "supplement" => $this->request->supplement,
-                "appointment_start" => $this->request->appointment_start,
-                "appointment_end" => $this->request->appointment_end,
-                //"user_id" => $this->request->user_id,
-                "techs" => $this->insertTechs()
-            ];
+                [
+                    "damage_type" => $this->request->damage_type,
+                    "damage_comments" => $this->request->damage_comments,
+                    "cost" => $this->request->cost,
+                    "guarantee" => (int) $this->request->guarantee,
+                    "status" => $this->request->status,
+                    "appointment_pending" => (int) $this->request->appointment_pending,
+                    "technician_left" => (int) $this->request->technician_left,
+                    "technician_arrived" => (int) $this->request->technician_arrived,
+                    "appointment_completed" => (int) $this->request->appointment_completed,
+                    "appointment_needed" => (int) $this->request->appointment_needed,
+                    "supplement_pending" => (int) $this->request->supplement_pending,
+                    "completed_no_transaction" => (int) $this->request->completed_no_transaction,
+                    "damage_fixed" => false,
+                    "client_id" => $this->request->client_id,
+                    //"device_id" => $this->request->device_id,
+                    "comments" => $this->request->comments,
+                    //"manufacturer_id" => $this->request->manufacturer_id,
+                    //"mark_id" => $this->request->mark_id,
+                    "supplement" => $this->request->supplement,
+                    "appointment_start" => $this->request->appointment_start,
+                    "appointment_end" => $this->request->appointment_end,
+                    //"user_id" => $this->request->user_id,
+                    "techs" => $this->insertTechs(),
+                    "marks" => $this->insertMarks(),
+                    "manager_payment" => $this->request->manager_payment
+                ];
         }
     }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-

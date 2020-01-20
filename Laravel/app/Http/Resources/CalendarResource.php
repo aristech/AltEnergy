@@ -8,6 +8,10 @@ use App\Eventt;
 use App\Service;
 //use App\Http\CustomClasses\v1\CalendarClass;
 use App\Note;
+use App\Device;
+use App\DamageType;
+use App\User;
+use App\Mark;
 
 class CalendarResource extends JsonResource
 {
@@ -130,13 +134,60 @@ class CalendarResource extends JsonResource
                     if ($this->damage_id != null) {
                         $current_damage = Damage::where('id', $this->damage_id)->first();
                         $current_client = $current_damage['client'];
-                        return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['address'];
                     }
 
                     if ($this->service_id != null) {
                         $current_service = Service::where('id', $this->service_id)->first();
                         $current_client = $current_service['client'];
-                        return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['address'];
+                    }
+                }),
+                "client_location" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+                        $current_client = $current_damage['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['location'];
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+                        $current_client = $current_service['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['location'];
+                    }
+                }),
+                "client_level" =>   $this->when($this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+                        $current_client = $current_damage['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['level'];
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+                        $current_client = $current_service['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['level'];
+                    }
+                }),
+                "client_zipcode" =>   $this->when($this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+                        $current_client = $current_damage['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['zipcode'];
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+                        $current_client = $current_service['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['zipcode'];
                     }
                 }),
                 "client_telephone" => $this->when($this->damage_id != null || $this->service_id != null, function () {
@@ -183,6 +234,141 @@ class CalendarResource extends JsonResource
                         return $phone_numbers;
                     }
                 }),
+                "status" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+
+                        //$information = new \stdClass();
+                        return  $current_damage["status"];
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+
+                        //$information = new \stdClass();
+                        return  $current_service["status"];
+                    }
+                }),
+                "appointment_pending" => $this->when($this->damage_id || $this->service_id, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+
+                        //$information = new \stdClass();
+                        return  $current_damage["appointment_pending"];
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+
+                        //$information = new \stdClass();
+                        return  $current_service["appointment_pending"];
+                    }
+                }),
+                "event_type" => $this->when($this->damage_id || $this->service_id, function () {
+                    if ($this->damage_id != null) {
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
+
+                        //$information = new \stdClass();
+                        return  DamageType::where("id", $current_damage["damage_type_id"])->first()["name"];
+                    }
+
+                    if ($this->service_id != null) {
+                        $current_service = Service::where('id', $this->service_id)->first();
+
+                        //$information = new \stdClass();
+                        //return  $current_service["appointment_pending"];
+                        return  DamageType::where("id", $current_service["service_type_id2"])->first()["name"];
+                    }
+                }),
+                "techs" => $this->when($this->damage_id || $this->service_id, function () {
+                    if ($this->damage_id != null) {
+                        $current = Damage::where('id', $this->damage_id)->first();
+                    } else {
+                        $current = Service::where('id', $this->service_id)->first();
+                    }
+
+                    if (!$current["techs"]) {
+                        return "";
+                    }
+                    $techs = explode(",", $current["techs"]);
+                    $technician_array = array();
+
+                    foreach ($techs as $tech) {
+                        $technician = User::where("id", $tech)->first();
+                        array_push($technician_array, $technician['firstname'] . " " . $technician["lastname"]);
+                    }
+                    return implode(", ", $technician_array);
+                    //$information = new \stdClass();
+
+                }),
+                "devices" =>  $this->when($this->damage_id || $this->service_id, function () {
+                    if ($this->damage_id != null) {
+                        $current = Damage::where('id', $this->damage_id)->first();
+                    } else {
+                        $current = Service::where('id', $this->service_id)->first();
+                    }
+
+                    if (!$current["marks"]) {
+                        return "";
+                    }
+                    $devices = explode(",", $current["marks"]);
+                    $device_array = array();
+
+                    foreach ($devices as $device) {
+                        $dev = Mark::where("id", $device)->first();
+                        array_push($device_array, $dev['manufacturer']['name'] . "/" . $dev["name"]);
+                    }
+                    return implode(", ", $device_array);
+                    //$information = new \stdClass();
+
+                }),
+                "appointment_pending" => $this->when($this->damage_id || $this->service_id, function () {
+                    if ($this->damage_id) {
+                        $current = Damage::where('id', $this->damage_id)->first();
+                    } else {
+                        $current = Service::where('id', $this->service_id)->first();
+                    }
+
+                    $appointment_pending = $current["appointment_pending"] == true ? "ΝΑΙ" : "ΟΧΙ";
+                    return $appointment_pending;
+                }),
+                // $information->appointment_pending = $current_damage["appointment_pending"] == true ? "ΝΑΙ" : "ΟΧΙ";
+                // //$information->device = Device::where("id", $current_damage["device_id"])->first()['name'];
+                // $information->comments = $current_damage['damage_comments'] != null ? $current_damage['damage_comments'] : "";
+                "task_comments" => $this->when($this->damage_id || $this->service_id, function () {
+                    if ($this->damage_id) {
+                        $current = Damage::where('id', $this->damage_id)->first();
+                        $response =  $current["damage_comments"];
+                    } else {
+                        $current = Service::where('id', $this->service_id)->first();
+                        $response =  $current["service_comments"];
+                    }
+
+                    if ($response) {
+                        return $response;
+                    } else {
+                        return "";
+                    }
+                }),
+
+                //         //return $information;
+                //     }
+
+                //     if ($this->service_id != null) {
+                //         $current_service = Damage::where('id', $this->service_id)->first();
+
+                //         $information = new \stdClass();
+                //         $information->status = $current_service["status"];
+                //         $information->appointment_pending = $current_service["appointment_pending"] == true ? "ΝΑΙ" : "ΟΧΙ";
+                //         //$information->device = Device::where("id", $current_damage["device_id"])->first()['name'];
+                //         $information->comments = $current_service['service_comments'] != null ? $current_service['service_comments'] : "";
+                //         $information->general_comments = $current_service['comments'] != null ? $current_service["comments"] : "";
+
+                //         return $information;
+                //     }
+                // }),
+                // "comments" => $this->when()
+
 
                 // "startRecur" => $this->when($this->service_id != null, function()
                 // {

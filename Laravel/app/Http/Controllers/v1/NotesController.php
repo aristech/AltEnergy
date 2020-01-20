@@ -39,10 +39,10 @@ class NotesController extends Controller
      */
     public function store(Request $request)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-            return response()->json(["message" => "Ο χρήστης αυτός δεν έχει πρόσβαση!"],401);
-        }
+        // if($request->user()->role()->first()->id < 3)
+        // {
+        //     return response()->json(["message" => "Ο χρήστης αυτός δεν έχει πρόσβαση!"],401);
+        // }
 
         $note = new NotesManagement($request);
         return $note->storeNote();
@@ -56,15 +56,14 @@ class NotesController extends Controller
      */
     public function show(Request $request, $note)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-            return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να έχει πρόσβαση!"],401);
-        }
+        // if($request->user()->role()->first()->id < 3)
+        // {
+        //     return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να έχει πρόσβαση!"],401);
+        // }
 
         $note = Note::find($note);
-        if(!$note)
-        {
-            return response()->json(["message" => "Δεν βρέθηκε η σημείωση"],404);
+        if (!$note) {
+            return response()->json(["message" => "Δεν βρέθηκε η σημείωση"], 404);
         }
 
         return NoteResource::make($note);
@@ -90,10 +89,10 @@ class NotesController extends Controller
      */
     public function update(Request $request, $note)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-            return response()->json(["message" => "Ο χρήστης αυτός δεν έχει πρόσβαση!"],401);
-        }
+        // if($request->user()->role()->first()->id < 3)
+        // {
+        //     return response()->json(["message" => "Ο χρήστης αυτός δεν έχει πρόσβαση!"],401);
+        // }
 
         $noteObj = new NotesManagement($request);
         $noteObj->id = $note;
@@ -108,29 +107,25 @@ class NotesController extends Controller
      */
     public function destroy(Request $request, $note)
     {
-        if($request->user()->role()->first()->id < 3)
-        {
-            return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να έχει πρόσβαση!"],401);
-        }
+        // if($request->user()->role()->first()->id < 3)
+        // {
+        //     return response()->json(["message" => "Ο χρήστης αυτός δεν μπορεί να έχει πρόσβαση!"],401);
+        // }
 
         $noteMod = Note::find($note);
-        if(!$noteMod)
-        {
-            return response()->json(["message" => "Δεν βρέθηκε η σημείωση"],404);
+        if (!$noteMod) {
+            return response()->json(["message" => "Δεν βρέθηκε η σημείωση"], 404);
         }
 
-       //$note->delete();
-        $calendar = Calendar::where("type", "notes")->where('note_id',$note)->first();
-        if($calendar && $noteMod)
-        {
+        //$note->delete();
+        $calendar = Calendar::where("type", "notes")->where('note_id', $note)->first();
+        if ($calendar && $noteMod) {
             $calendar->delete();
             $noteMod->delete();
 
-            return response()->json(["message" => "Η σημείωση διαγράφηκε επιτυχώς"],200);
+            return response()->json(["message" => "Η σημείωση διαγράφηκε επιτυχώς"], 200);
         }
 
-        return response()->json(["message" => "Παρακαλώ βεβαιωθείτε οτι υπάρχει η σημείωση που επιθυμείτε να διαγράψετε"],404);
-
-
+        return response()->json(["message" => "Παρακαλώ βεβαιωθείτε οτι υπάρχει η σημείωση που επιθυμείτε να διαγράψετε"], 404);
     }
 }

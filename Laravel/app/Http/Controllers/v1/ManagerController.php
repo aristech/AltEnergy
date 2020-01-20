@@ -18,10 +18,10 @@ class ManagerController extends Controller
      */
     public function index(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4) {
-            return response()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4) {
+        //     return response()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"], 401);
+        // }
         return ManagerResource::collection(Manager::all());
     }
 
@@ -43,10 +43,10 @@ class ManagerController extends Controller
      */
     public function store(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4 || $request->user()->active == false) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4 || $request->user()->active == false) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
 
         $validator = Validator::make(
             $request->all(),
@@ -90,10 +90,10 @@ class ManagerController extends Controller
      */
     public function show(Request $request, $manager)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4) {
-            return response()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4) {
+        //     return response()->json(["message" => "Δεν επιτρέπεται η εμφάνιση των διαχειριστών!"], 401);
+        // }
 
         $manager = Manager::find($manager);
 
@@ -123,10 +123,10 @@ class ManagerController extends Controller
      */
     public function update(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4 || $request->user()->active == false) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4 || $request->user()->active == false) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
 
         $validator = Validator::make(
             $request->all(),
@@ -173,10 +173,10 @@ class ManagerController extends Controller
      */
     public function destroy(Request $request)
     {
-        $role_id = $request->user()->role()->first()->id;
-        if ($role_id < 4 || $request->user()->active == false) {
-            return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
-        }
+        // $role_id = $request->user()->role()->first()->id;
+        // if ($role_id < 4 || $request->user()->active == false) {
+        //     return response()->json(["message" => "Δεν έχετε δικαίωμα να εκτελέσετε την συγκεκριμένη ενέργεια!"], 401);
+        // }
 
         $validator = Validator::make(
             $request->all(),

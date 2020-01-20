@@ -54,6 +54,9 @@ class Kernel extends HttpKernel
         'admin-only' => [
             \App\Http\Middleware\AdminOnlyMiddleware::class,
         ],
+        'admin-and-techs' => [
+            \App\Http\Middleware\AdminAndTechsMiddleware::class,
+        ],
     ];
 
     /**

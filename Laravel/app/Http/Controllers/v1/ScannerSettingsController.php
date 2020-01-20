@@ -18,7 +18,7 @@ class ScannerSettingsController extends Controller
      */
     public function index()
     {
-        return response()->json(['data' => ScannerSettingsResource::collection(ScannerSettings::all())]);
+        return response()->json(["data" => ScannerSettingsResource::collection(ScannerSettings::all())]);
     }
 
     /**

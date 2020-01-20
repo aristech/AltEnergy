@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use App\Client;
 use App\Device;
 use App\User;
+use App\Mark;
 use App\DamageType;
 
 class Damage extends Model
 {
     protected $table = 'damages';
 
-    protected $fillable = ['damage_type_id', 'damage_comments', 'cost', 'manager_payment', 'guarantee', 'status', 'appointment_pending', 'technician_left', 'technician_arrived', 'appointment_completed', 'appointment_needed', 'supplement_pending', 'damage_fixed', 'completed_no_transaction', 'client_id', 'manufacturer_id', 'mark_id', 'device_id', 'user_id', 'techs', 'supplement', 'comments',  'appointment_start', 'appointment_end'];
+    protected $fillable = ['damage_type_id', 'damage_comments', 'cost', 'manager_payment', 'guarantee', 'status', 'appointment_pending', 'technician_left', 'technician_arrived', 'appointment_completed', 'appointment_needed', 'supplement_pending', 'damage_fixed', 'completed_no_transaction', 'client_id', 'manufacturer_id', 'mark_id', 'device_id', 'marks', 'user_id', 'techs', 'supplement', 'comments',  'appointment_start', 'appointment_end'];
 
     protected $hidden = ['created_at', 'updated_at'];
 
@@ -29,6 +30,11 @@ class Damage extends Model
     public function device()
     {
         return $this->belongsTo(Device::class, 'device_id');
+    }
+
+    public function mark()
+    {
+        return $this->belongsTo(Mark::class, 'mark_id');
     }
 
     public function type()

@@ -105,17 +105,17 @@ class SearchController extends Controller
 
     public function searchMarks(Request $request)
     {
-        $marks = Mark::where('name', 'like', $request->name . '%')
-            ->orWhere('name', 'like', '%' . $request->name . '%')
-            ->orWhere('name', 'like', '%' . $request->name)
-            ->orderBy('name')
-            ->get();
+        // $marks = Mark::where('name', 'like', $request->name . '%')
+        //     ->orWhere('name', 'like', '%' . $request->name . '%')
+        //     ->orWhere('name', 'like', '%' . $request->name)
+        //     ->orderBy('name')
+        //     ->get();
 
-        if (!count($marks)) {
-            return response()->json(["message" => "Δεν βρέθηκαν αποτελέσματα"], 404);
-        }
+        // if (!count($marks)) {
+        //     return response()->json(["message" => "Δεν βρέθηκαν αποτελέσματα"], 404);
+        // }
 
-        return MarkResource::collection($marks);
+        return MarkResource::collection(Mark::all());
     }
 
     public function searchDevices(Request $request)

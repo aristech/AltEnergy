@@ -13,12 +13,10 @@ class UpdateClientsTable extends Migration
      */
     public function up()
     {
-        Schema::table('clients', function($table)
-        {
-            $table->string('foldername')->after('levitas');
+        Schema::table('clients', function ($table) {
+            $table->string('foldername')->nullable()->after('levitas');
             $table->string('doy')->nullable()->change();
             $table->string('afm')->nullable()->change();
-
         });
     }
 
@@ -29,12 +27,10 @@ class UpdateClientsTable extends Migration
      */
     public function down()
     {
-        Schema::table('clients', function($table)
-        {
+        Schema::table('clients', function ($table) {
             $table->dropColumn('foldername');
             $table->string('doy')->change();
             $table->string('afm')->change();
-
         });
     }
 }
