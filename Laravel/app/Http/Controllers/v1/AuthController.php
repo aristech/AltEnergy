@@ -253,9 +253,15 @@ class AuthController extends Controller
             return response()->json(["message" => "To email " . $request->email . " είναι σε χρήση από αλλόν χρήστη"], 422);
         }
 
-        $role = Role::where('id', $request->role_id)->first();
-        if (!$role) {
-            return response()->json(['message' => 'Ο ρόλος χρήστη δεν είναι διαθέσιμος'], 404);
+        // $role = Role::where('id', $request->role_id)->first();
+        // if (!$role) {
+        //     return response()->json(['message' => 'Ο ρόλος χρήστη δεν είναι διαθέσιμος'], 404);
+        // }
+        foreach ($request->roles as $role) {
+            $checkRole = Role::where('id', $role['id'])->first();
+            if (!$checkRole) {
+                return response()->json(["message" => "Ενας ή παραπάνω ρολοι δεν είναι καταχωρημένοι στο σύστημα"], 404);
+            }
         }
 
         if ($request->telephone == null && $request->telephone2 == null && $request->mobile == null) {
@@ -273,8 +279,14 @@ class AuthController extends Controller
                 'mobile' => $request->mobile
             ]);
 
-            UsersRoles::where('user_id', $request->id)->first()->update(["role_id" => $request->role_id]);
-            $role_name = Role::where("id", $request->role_id)->first();
+            UsersRoles::where('user_id', $request->id)->where('role_id', '!=', 5)->delete();
+            foreach ($request->roles as $role) {
+                if ($role['checked'] == true) {
+                    UsersRoles::create(["user_id" => $request->id, "role_id" => $role['id']]);
+                }
+            }
+            // UsersRoles::where('user_id', $request->id)->first()->update(["role_id" => $request->role_id]);
+            // $role_name = Role::where("id", $request->role_id)->first();
             return response()->json(["message" => "Τα στοιχεία του χρήστη με κωδικό " . $request->id . " άλλαξαν επιτυχώς!", UserResource::make($user)], 200);
         }
 
@@ -282,8 +294,14 @@ class AuthController extends Controller
             return response()->json(["message" => "Ο κωδικός και η επαλήθευση του δεν ταιριάζουν!"], 200);
         }
 
-        UsersRoles::where('user_id', $request->id)->first()->update(["role_id" => $request->role_id]);
-        $role_name = Role::where("id", $request->role_id)->first();
+        // UsersRoles::where('user_id', $request->id)->first()->update(["role_id" => $request->role_id]);
+        // $role_name = Role::where("id", $request->role_id)->first();
+        UsersRoles::where('user_id', $request->id)->where('role_id', '!=', 5)->delete();
+        foreach ($request->roles as $role) {
+            if ($role['checked'] == true) {
+                UsersRoles::create(["user_id" => $request->id, "role_id" => $role['id']]);
+            }
+        }
 
         $user->update([
             "lastname" => $request->lastname,
