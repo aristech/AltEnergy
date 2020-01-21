@@ -15,6 +15,7 @@ use App\Note;
 use Carbon\Carbon;
 use App\Http\Resources\DamageResource;
 use App\Http\Resources\ServiceResource;
+use App\Http\CustomClasses\v1\AuthorityClass;
 
 class DashboardController extends Controller
 {
@@ -25,6 +26,10 @@ class DashboardController extends Controller
      */
     public function index(Request $request)
     {
+        $highest_role = AuthorityClass::getAuthorityLevel($request);
+        if ($highest_role < 3) {
+            return;
+        }
 
         // $openDamages = Damage::where('status', 'Μη Ολοκληρωμένη')->get()->count();
         // $fixedDamages = Damage::where('status', 'Ολοκληρώθηκε')->get()->count();

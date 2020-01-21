@@ -8,6 +8,9 @@ use App\Http\Resources\CalendarResource;
 use App\Calendar;
 use App\Damage;
 use App\Service;
+use App\User;
+use App\Mark;
+use App\Http\CustomClasses\v1\AuthorityClass;
 
 class CalendarController extends Controller
 {
@@ -18,9 +21,17 @@ class CalendarController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->user()->role()->first()->id >= 3) {
+        $highest_role = AuthorityClass::getAuthorityLevel($request);
+        //if ($request->user()->role()->first()->id >= 3) {
+        if ($highest_role >= 3) {
             return CalendarResource::collection(Calendar::all());
-        } elseif ($request->user()->role()->first()->id == 2) {
+        } elseif ($highest_role == 2) {
+
+
+
+
+
+            //} elseif ($request->user()->role()->first()->id == 2) {
             //return response()->json(array(2, 3);
             $calendar = Calendar::where('id', '!=', null)->get();
             $calendar_array = array();
@@ -44,7 +55,11 @@ class CalendarController extends Controller
                         $manager_obj->start = $damage['appointment_start'];
                         $manager_obj->end = $damage['appointment_end'];
                         $manager_obj->client_name = $damage['client']['firstname'] . " " . $damage['client']['lastname'];
-                        $manager_obj->client_address = $damage['client']['address'] . "," . $damage['client']['location'] . "," . $damage['client']['level'] . "ος Όροφος";
+                        //$manager_obj->client_address = $damage['client']['address'] . "," . $damage['client']['location'] . "," . $damage['client']['level'] . "ος Όροφος";
+                        $manager_obj->client_address = $damage['client']['address'];
+                        $manager_obj->client_location = $damage['client']['location'];
+                        $manager_obj->client_level = $damage['client']['level'];
+                        $manager_obj->client_zipcode = $damage['client']['zipcode'];
 
                         $tel_array = array();
                         if ($damage['client']['telephone'] != null || $damage['client']['telephone'] != "") {
@@ -61,8 +76,37 @@ class CalendarController extends Controller
 
                         $phone_numbers = implode(", ", $tel_array);
 
+                        $temp_techs = $damage['techs'];
+                        $temp_tech_array = explode(',', $temp_techs);
+                        $tech_array = array();
+                        foreach ($temp_tech_array as $temp_tech) {
+                            $technician = User::where('id', $temp_tech)->first();
+                            array_push($tech_array, $technician['firstname'] . " " . $technician['lastname']);
+                        }
+                        $manager_obj->techs = implode(', ', $tech_array);
+                        $manager_obj->appointment_pending = $damage['appointment_pending'] == true ? "NAI" : "OXI";
+                        $manager_obj->task_comments = $damage['damage_comments'] != null ? $damage['damage_comments'] : "";
+
                         $manager_obj->client_telephone = $phone_numbers;
                         $manager_obj->color = "#5d5fea";
+
+                        $manager_obj->status = $damage['status'];
+
+                        $temp_devices = $damage['marks'];
+                        if ($temp_devices) {
+                            $temp_device_array = explode(',', $temp_devices);
+                            $device_array = array();
+                            foreach ($temp_device_array as $device) {
+                                $dev = Mark::where('id', $device)->first();
+                                array_push($device_array, $dev['manufacturer']['name'] . "/" . $dev['name']);
+                            }
+                            $manager_obj->devices = implode(',', $device_array);
+                        } else {
+                            $manager_obj->devices = "";
+                        }
+
+
+
 
                         array_push($calendar_array, $manager_obj);
                     }
@@ -84,7 +128,11 @@ class CalendarController extends Controller
                         $manager_obj->start = $service['appointment_start'];
                         $manager_obj->end = $service['appointment_end'];
                         $manager_obj->client_name = $service['client']['firstname'] . " " . $service['client']['lastname'];
-                        $manager_obj->client_address = $service['client']['address'] . "," . $service['client']['location'] . "," . $service['client']['level'] . "ος Όροφος";
+                        //$manager_obj->client_address = $service['client']['address'] . "," . $service['client']['location'] . "," . $service['client']['level'] . "ος Όροφος";
+                        $manager_obj->client_address = $service['client']['address'];
+                        $manager_obj->client_location = $service['client']['location'];
+                        $manager_obj->client_zipcode = $service['client']['zipcode'];
+
 
                         $tel_array = array();
                         if ($service['client']['telephone'] != null || $service['client']['telephone'] != "") {
@@ -102,6 +150,38 @@ class CalendarController extends Controller
                         $phone_numbers = implode(", ", $tel_array);
 
                         $manager_obj->client_telephone = $phone_numbers;
+
+                        $temp_techs = $service['techs'];
+                        if ($temp_techs) {
+                            $tech_array = array();
+                            $temp_tech_array = explode(',', $temp_techs);
+                            foreach ($temp_tech_array  as $tech) {
+                                $technician = User::where('id', $tech)->first();
+                                array_push($tech_array, $technician['firstname'] . " " . $technician['lastname']);
+                            }
+                            $manager_obj->techs = implode(', ', $tech_array);
+                        } else {
+                            $manager_obj->techs = "";
+                        }
+
+                        $temp_devices = $service['marks'];
+                        if ($temp_devices) {
+                            $tech_array = array();
+                            $temp_tech_array = explode(',', $temp_techs);
+                            foreach ($temp_tech_array as $tech) {
+                                $technician = User::where('id', $tech)->first();
+                                array_push($tech_array, $technician['firstname'] . " " . $technician['lastname']);
+                            }
+                            $manager_obj->techs = implode(', ', $tech_array);
+                        } else {
+                            $manager_obj->techs = "";
+                        }
+
+                        $manager_obj->status = $service['status'];
+                        $manager_obj->appointment_pending = $service['appointment_pending'] == true ? "NAI" : "OXI";
+                        $manager_obj->task_comments = $service['service_comments'] != null ? $service['service_comments'] : "";
+
+
                         $manager_obj->color = "#bd391b";
 
                         array_push($calendar_array, $manager_obj);

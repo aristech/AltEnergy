@@ -115,6 +115,8 @@ class SearchController extends Controller
         //     return response()->json(["message" => "Δεν βρέθηκαν αποτελέσματα"], 404);
         // }
 
+
+        //$marks = Mark::with('manufacturer')->orderBy('')->get();
         return MarkResource::collection(Mark::all());
     }
 
