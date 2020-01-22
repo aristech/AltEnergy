@@ -21,8 +21,8 @@ class ReminderController extends Controller
         $reminder->getNotes();
         $reminder->getServices();
 
-        // $reminder->createMessage();
-        // $reminder->sendMails();
+        $reminder->createMessage();
+        $reminder->sendMails();
 
 
 
