@@ -54,14 +54,49 @@ class CalendarResource extends JsonResource
                 "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null || $this->note_id != null, function () {
                     if ($this->damage_id != null) {
                         $damage = Damage::where('id', $this->damage_id)->first();
-                        if ($damage['client']['telephone'] != null) {
-                            $phone = $damage['client']['telephone'];
-                        } elseif ($damage['client']['telephone2'] != null) {
-                            $phone = $damage['client']['telephone2'];
+                        // if ($damage['client']['telephone'] != null) {
+                        if ($damage['techs']) {
+                            $techs = explode(",", $damage['techs']);
+                            $technician_array = array();
+                            foreach ($techs as $tech) {
+                                $technician = User::where('id', $tech)->first();
+                                array_push($technician_array, $technician['lastname']);
+                            }
+
+                            $technicians = implode(", ", $technician_array);
                         } else {
-                            $phone = $damage['client']['mobile'];
+                            $technicians = "Ν/Α";
                         }
-                        return $damage['type']['name'] . " - " . $damage['client']['firstname'] . " " . $damage['client']['lastname'] . " - " . $phone;
+
+                        if ($damage['appointment_start']) {
+                            $date_array = explode(".", $damage['appointment_start']);
+                            $newDateFormat = str_replace("T", " ", $date_array[0]);
+                            $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                        } else {
+                            $time_start = "?";
+                        }
+
+                        if ($damage['appointment_end']) {
+                            $date_array_end = explode(".", $damage['appointment_end']);
+                            $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
+                            $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                        } else {
+                            $time_end = "?";
+                        }
+
+                        //     $phone = $damage['client']['telephone'];
+                        // } elseif ($damage['client']['telephone2'] != null) {
+                        //     $phone = $damage['client']['telephone2'];
+                        // } else {
+                        //     $phone = $damage['client']['mobile'];
+                        $client = $damage['client']['lastname'] !== null ? $damage['client']['lastname'] : "Ν/Α";
+                        $location = $damage['location'] !== null ? $damage['location'] : "Ν/Α";
+                        // }
+                        return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
+                        //                         texnikos - epwnumo
+                        // p[erixh
+                        // epitheto pelath
+
                     }
 
                     if ($this->event_id != null) {
@@ -70,14 +105,46 @@ class CalendarResource extends JsonResource
 
                     if ($this->service_id != null) {
                         $service = Service::where('id', $this->service_id)->first();
-                        if ($service['client']['telephone'] != null) {
-                            $phone = $service['client']['telephone'];
-                        } elseif ($service['client']['telephone2'] != null) {
-                            $phone = $service['client']['telephone2'];
+                        // if ($service['client']['telephone'] != null) {
+                        //     $phone = $service['client']['telephone'];
+                        // } elseif ($service['client']['telephone2'] != null) {
+                        //     $phone = $service['client']['telephone2'];
+                        // } else {
+                        //     $phone = $service['client']['mobile'];
+                        // }
+                        if ($service['techs']) {
+                            $techs = explode(",", $service['techs']);
+                            $technician_array = array();
+                            foreach ($techs as $tech) {
+                                $technician = User::where('id', $tech)->first();
+                                array_push($technician_array, $technician['lastname']);
+                            }
+
+                            $technicians = implode(", ", $technician_array);
                         } else {
-                            $phone = $service['client']['mobile'];
+                            $technicians = "Ν/Α";
                         }
-                        return $service['type']['name'] . " - " . $service['client']['firstname'] . " " . $service['client']['lastname'] . " - " . $phone;
+
+                        if ($service['appointment_start']) {
+                            $date_array = explode(".", $service['appointment_start']);
+                            $newDateFormat = str_replace("T", " ", $date_array[0]);
+                            $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                        } else {
+                            $time_start = "?";
+                        }
+
+                        if ($service['appointment_end']) {
+                            $date_array_end = explode(".", $service['appointment_end']);
+                            $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
+                            $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                        } else {
+                            $time_end = "?";
+                        }
+
+                        $client = $service['client']['lastname'] !== null ? $service['client']['lastname'] : "Ν/Α";
+                        $location = $service['location'] !== null ? $service['location'] : "Ν/Α";
+
+                        return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
                     }
 
                     if ($this->note_id != null) {
