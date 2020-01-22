@@ -311,7 +311,8 @@ class DamageCalendarUpdate
         //     // Eventt::create(["event_type" => "damage", "event_id" => $damage->id]);
         // }
 
-        //TechMail::sendToTechs($damage, "βλάβη", "new");
+        $dmg = Damage::find($damage->id);
+        TechMail::sendToTechs($dmg, "βλάβη", "new");
         return response()->json(["message" => "Η βλάβη του πελάτη καταχωρήθηκε επιτυχως!"], 200);
     }
 
@@ -382,7 +383,7 @@ class DamageCalendarUpdate
         if ($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar) {
             Calendar::create(['type' => 'damages', 'name' => 'βλάβη', 'damage_id' => $this->damage->id]);
         }
-        //TechMail::sendToTechs($this->damage, "βλάβη", "update");
+        TechMail::sendToTechs($this->damage, "βλάβη", "update");
         //End Calendar update process
         return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό " . $this->request->id . " ενημερώθηκαν επιτυχώς!"], 200);
     }

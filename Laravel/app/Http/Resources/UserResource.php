@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\UsersRoles;
 use App\Role;
-use stdClass;
+
 
 class UserResource extends JsonResource
 {
@@ -27,7 +27,16 @@ class UserResource extends JsonResource
                 "telephone2" => $this->telephone2,
                 "mobile" => $this->mobile,
                 "active" => $this->active,
-                "role_id" => $this->role()->first()->id,
+                "role_id" => $this->when(true, function () {
+                    $role_array = [];
+                    $user_roles = UsersRoles::where('user_id', $this->id)->get();
+                    foreach ($user_roles as $role) {
+                        array_push($role_array, $role['role_id']);
+                    }
+                    rsort($role_array);
+                    $highest_role = $role_array[0];
+                    return $highest_role;
+                }),
                 "roles" => $this->when(true, function () {
                     $user_roles_before = $this->role;
                     $users_roles = array();
@@ -51,7 +60,21 @@ class UserResource extends JsonResource
 
                     return $roles;
                 }),
-                "role_title" => $this->role()->first()->title,
+                "role_title" => $this->when(true, function () {
+                    $role_array = [];
+                    $user_roles = UsersRoles::where('user_id', $this->id)->get();
+                    foreach ($user_roles as $role) {
+                        array_push($role_array, $role['role_id']);
+                    }
+                    rsort($role_array);
+                    $title_array = array();
+                    foreach ($role_array as $role) {
+                        $title = Role::where('id', $role)->first()['title'];
+                        array_push($title_array, $title);
+                    }
+                    //$highest_role = $role_array[0];
+                    return implode(", ", $title_array);
+                }),
                 "manager_id" => $this->manager_id,
                 "client_id" => $this->client_id
             ];

@@ -50,20 +50,26 @@ class TechMail
     public static function sendToTechs($object, $type, $state)
     {
         //set receivers
-        $tech_ids = explode(",", $object->techs);
-        $techmails = array();
-        foreach ($tech_ids as $id) {
-            $mail = User::where("id", $id)->first()["email"];
-            array_push($techmails, $mail);
+        if ($object->techs) {
+            $tech_ids = explode(",", $object->techs);
+            $techmails = array();
+            foreach ($tech_ids as $id) {
+                $mail = User::where("id", $id)->first()["email"];
+                array_push($techmails, $mail);
+            }
+            $to = implode(",", $techmails);
+        } else {
+            $to = "";
         }
 
-        $to = implode(",", $techmails);
+
+
         //end set receivers
 
         if ($state == "new") {
-            $subject = "[ΝΕΑ ΚΑΤΑΧΩΡΗΣΗ - " . $type . "]";
+            $subject = "[ΝΕΑ ΚΑΤΑΧΩΡΗΣΗ - " . strtoupper($type) . "]";
         } else {
-            $subject = "[ΕΝΗΜΕΡΩΣΗ ΥΠΑΡΧΟΥΣΑΣ -" . $type . "]";
+            $subject = "[ΕΝΗΜΕΡΩΣΗ ΥΠΑΡΧΟΥΣΑΣ ΕΡΓΑΣΙΑΣ -" . strtoupper($type) . "]";
         }
 
 
@@ -85,13 +91,19 @@ class TechMail
         $message .= "<b>Κατηγορία:</b> " . $type . "<br>";
         $message .= "<b>Ειδος:</b> " . $object->type->name . "<br>";
 
-        $devices_array = explode(',', $object->marks);
-        $devices_second_array = array();
-        foreach ($devices_array as $dev_id) {
-            $dev = Mark::where('id', $dev_id)->first();
-            array_push($devices, $dev["manufacturer"]['name'] . "/" . $dev["name"]);
+        if ($object->marks) {
+            $devices_array = explode(',', $object->marks);
+
+            $devices_second_array = array();
+            foreach ($devices_array as $dev_id) {
+                $dev = Mark::where('id', $dev_id)->first();
+                array_push($devices_second_array, $dev["manufacturer"]['name'] . "/" . $dev["name"]);
+            }
             $devices = implode(" , ", $devices_second_array);
+        } else {
+            $devices = "";
         }
+
         //$message .= "<b>Συσκευες:</b> " . $object->mark->manufacturer->name . "," . $object->mark->name . "<br>";
         $message .= "<b>Συσκευες:</b> " . $devices . "<br>";
 

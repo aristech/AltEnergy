@@ -273,7 +273,7 @@ class ServiceCalendarUpdate
 
         if ($service->appointment_start != null && $service->status == "Μη Ολοκληρωμένο") Calendar::create(["name" => "service", "type" => "services", "service_id" => $service->id]);
 
-        //TechMail::sendToTechs($service, "σέρβις", "new");
+        TechMail::sendToTechs($service, "σέρβις", "new");
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"], 200);
     }
 
@@ -364,6 +364,10 @@ class ServiceCalendarUpdate
         //if($this->service->status != "Ολοκληρωμένο" && $this->repeatable->status == false && $calendar)$calendar->delete();
         if ($this->service->status == "Μη Ολοκληρωμένο" && !$calendar && $this->repeatable == true) Calendar::create(['name' => 'service', 'type' => 'services', 'service_id' => $this->service->id]);
         //TechMail::sendToTechs($service, "σέρβις", "update");
+
+        $service = Service::find($this->service['id']);
+        TechMail::sendToTechs($service, "σέρβις", "update");
+
         return response()->json(["message" => "Τα στοίχεια του service με κωδικό " . $this->request->id . " ενημερώθηκαν επιτυχώς!"], 200);
     }
 

@@ -276,8 +276,7 @@ class ServiceManagement
 
         if ($service->appointment_start != null && $service->status == "Μη Ολοκληρωμένο") Calendar::create(["name" => "service", "type" => "services", "service_id" => $service->id]);
 
-        //TechMail::sendToTechs($service, "σέρβις", "new");
-
+        TechMail::sendToTechs($service, "σέρβις", "new");
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"], 200);
     }
 
@@ -359,7 +358,7 @@ class ServiceManagement
         $this->service->update($this->input);
 
         $service = Service::find($this->service['id']);
-        //TechMail::sendToTechs($service, "σέρβις", "new");
+        TechMail::sendToTechs($service, "σέρβις", "update");
 
 
 
