@@ -31,6 +31,13 @@ class DamageResource extends JsonResource
                 "guarantee" => $this->guarantee,
                 "status" => $this->status,
                 "appointment_pending" => $this->appointment_pending,
+                "appointment_pending_text" => $this->when(true, function () {
+                    if ($this->appointment_pending == 1) {
+                        return "ναι";
+                    } else {
+                        return "οχι";
+                    }
+                }),
                 "technician_left" => $this->technician_left,
                 "technician_arrived" => $this->technician_arrived,
                 "appointment_completed" => $this->appointment_completed,
