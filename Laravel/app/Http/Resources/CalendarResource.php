@@ -185,7 +185,7 @@ class CalendarResource extends JsonResource
                         $html = "<div>";
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
 
-                        $html .= $note['title'] == "" ? "" : "<b>Πελάτης: </b>" . $note['title'] . "<br>";
+                        $html .= $note['title'] == "" ? "" : "<b>Σημείωση: </b>" . $note['title'] . "<br>";
                         $html .= "</div>";
 
                         return $html;
