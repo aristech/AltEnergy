@@ -92,7 +92,14 @@ class CalendarResource extends JsonResource
                         $client = $damage['client']['lastname'] !== null ? $damage['client']['lastname'] : "Ν/Α";
                         $location = $damage['location'] !== null ? $damage['location'] : "Ν/Α";
                         // }
-                        return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
+                        $html = "<div>";
+                        $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
+
+                        $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
+                        $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
+                        $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
+                        $html .= "</div>";
+                        return $html;
                         //                         texnikos - epwnumo
                         // p[erixh
                         // epitheto pelath
@@ -144,11 +151,44 @@ class CalendarResource extends JsonResource
                         $client = $service['client']['lastname'] !== null ? $service['client']['lastname'] : "Ν/Α";
                         $location = $service['location'] !== null ? $service['location'] : "Ν/Α";
 
-                        return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
+                        $html = "<div>";
+                        $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
+
+                        $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
+                        $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
+                        $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
+                        $html .= "</div>";
+
+                        //return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
                     }
 
                     if ($this->note_id != null) {
-                        return Note::where('id', $this->note_id)->first()['title'];
+                        $note = Note::where('id', $this->note_id)->first();
+                        //return Note::where('id', $this->note_id)->first()['title'];
+                        if ($note['dateTime_start']) {
+                            $date_array = explode(".", $note['dateTime_start']);
+                            $newDateFormat = str_replace("T", " ", $date_array[0]);
+                            $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                        } else {
+                            $time_start = "?";
+                        }
+
+                        if ($note['dateTime_end']) {
+                            $date_array_end = explode(".", $note['dateTime_end']);
+                            $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
+                            $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                        } else {
+                            $time_end = "?";
+                        }
+
+
+                        $html = "<div>";
+                        $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
+
+                        $html .= $note['title'] == "" ? "" : "<b>Πελάτης: </b>" . $note['title'] . "<br>";
+                        $html .= "</div>";
+
+                        return $html;
                     }
                 }),
                 "start" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null || $this->service_id != null, function () {
