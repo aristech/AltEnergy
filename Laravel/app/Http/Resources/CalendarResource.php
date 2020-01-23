@@ -90,13 +90,15 @@ class CalendarResource extends JsonResource
                         // } else {
                         //     $phone = $damage['client']['mobile'];
                         $client = $damage['client']['lastname'] !== null ? $damage['client']['lastname'] : "Ν/Α";
-                        $location = $damage['location'] !== null ? $damage['location'] : "Ν/Α";
+                        $address = $damage['client']['address'] !== null ? $damage['client']['address'] : "N/A";
+                        $location = $damage['client']['location'] !== null ? $damage['client']['location'] : "Ν/Α";
                         // }
                         $html = "<div>";
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
 
                         $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
                         $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
+                        $html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";
                         $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
                         $html .= "</div>";
                         return $html;
@@ -149,15 +151,20 @@ class CalendarResource extends JsonResource
                         }
 
                         $client = $service['client']['lastname'] !== null ? $service['client']['lastname'] : "Ν/Α";
-                        $location = $service['location'] !== null ? $service['location'] : "Ν/Α";
+                        $address = $service['client']['address'] !== null ? $service['client']['address'] : "N/A";
+                        $location = $service['client']['location'] !== null ? $service['client']['location'] : "Ν/Α";
+
 
                         $html = "<div>";
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
 
                         $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
                         $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
+                        $html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";
                         $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
                         $html .= "</div>";
+
+                        return $html;
 
                         //return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
                     }
