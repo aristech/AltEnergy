@@ -10,6 +10,7 @@ use App\Role;
 use App\Damage;
 use App\UsersRoles;
 use App\Note;
+use App\FreeAppointment;
 
 class User extends Authenticatable
 {
@@ -55,6 +56,8 @@ class User extends Authenticatable
     // {
     //     return $this->hasMany(Damage::class);
     // }
-
-
+    public function free_appointments()
+    {
+        return $this->belongsToMany(FreeAppointment::class);
+    }
 }

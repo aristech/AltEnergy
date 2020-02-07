@@ -383,9 +383,9 @@ class DamageSuperAdmin
         //Calendar for update
         $calendar = Calendar::where('damage_id', $this->damage->id)->first();
 
-        if ($this->damage->status != "Μη Ολοκληρωμένη" && $calendar) {
-            $calendar->delete();
-        }
+        // if ($this->damage->status != "Μη Ολοκληρωμένη" && $calendar) {
+        //     $calendar->delete();
+        // }
         if ($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar) {
             Calendar::create(['type' => 'damages', 'name' => 'βλάβη', 'damage_id' => $this->damage->id]);
         }

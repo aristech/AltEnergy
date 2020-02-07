@@ -366,7 +366,7 @@ class ServiceManagement
         //Calendar Events
         $calendar = Calendar::where('service_id', $this->service->id)->first();
 
-        if ($this->service->status != "Μη Ολοκληρωμένο" && $calendar && $this->service->repeatable == false) $calendar->delete();
+        //if ($this->service->status != "Μη Ολοκληρωμένο" && $calendar && $this->service->repeatable == false) $calendar->delete(); -> if all goes wrong uncomment
         //if($this->service->status != "Ολοκληρωμένο" && $this->repeatable->status == false && $calendar)$calendar->delete();
         if ($this->service->status == "Μη Ολοκληρωμένο" && !$calendar && $this->service->repeatable == true) Calendar::create(['name' => 'service', 'type' => 'services', 'service_id' => $this->service->id]);
 

@@ -209,6 +209,7 @@ class SendMail
                     $obj = new \stdClass();
                     $obj->type = $note["title"];
                     $obj->importance = $note["importance"];
+                    $obj->location = $note['location'] != null ? "<a href='http://maps.google.com/?q=" . $note["location"] . "'>" . $note['location'] . "</a>" : "";
                     $appointment = explode('T', $note["dateTime_start"]);
                     $appointment = explode('.', $appointment[1]);
                     $obj->date = $appointment[0];
@@ -262,7 +263,7 @@ class SendMail
             if (count($this->reminderNt) != 0) {
                 $this->message .= "<h4>Λοιπές Δραστηριότητες</h4>";
                 $this->message .= "<table border='2' >";
-                $this->message .= "<tr><th>Δραστηριότητα</th><th>Σημαντικότητα</th><th>Ωρα Ραντεβού</th></tr>";
+                $this->message .= "<tr><th>Δραστηριότητα</th><th>Σημαντικότητα</th><th>Περιοχή</th><th>Ωρα Ραντεβού</th></tr>";
 
                 foreach ($this->reminderNt as $evt) {
 
@@ -281,7 +282,7 @@ class SendMail
                             $importance = "Χαμηλή";
                     }
 
-                    $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $importance . "</td><td>" . $time . "</td></tr>";
+                    $this->message .= "<tr><td>" . $evt->type . "</td><td>" . $importance . "</td><td>" . $evt->location . "</td><td>" . $time . "</td></tr>";
                 }
 
                 $this->message .= "</table><br><br>";

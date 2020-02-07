@@ -25,6 +25,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
     Route::post('/signup', 'AuthController@signup');
 
     Route::group(['middleware' => 'auth:api'], function () {
+        Route::get('/appointment', 'FreeAppointmentController@index');
         Route::get('/test', 'TestController@test');
         Route::get('/user', 'AuthController@user');
         Route::get('/logout', 'AuthController@logout');
@@ -166,6 +167,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::get('/calendar', 'CalendarController@index');
 
 
+            Route::get('/appointmentCalendar', 'FreeAppointmentController@indexTwo');
+            Route::get('/appointments', 'FreeAppointmentController@index');
+            Route::get('/appointments/{appointment}', 'FreeAppointmentController@show');
+            Route::post('/appointments', 'FreeAppointmentController@store');
+            Route::put('/appointments', 'FreeAppointmentController@edit');
+            Route::put('/appointments/{appointment}', 'FreeAppointmentController@update');
+            Route::delete('/appointments/{appointment}', 'FreeAppointmentController@destroy');
 
 
             // Route::group(['middleware' => 'admin-only'], function () {

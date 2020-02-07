@@ -31,6 +31,7 @@ class NoteResource extends JsonResource
                 'description' => $this->description,
                 'importance' => $this->importance,
                 'all_day' => $this->all_day,
+                'location' => $this->location,
                 'dateTime_start' => $this->dateTime_start,
                 'dateTime_end'  => $this->dateTime_end,
                 "editable" => array([
@@ -39,13 +40,14 @@ class NoteResource extends JsonResource
                     "info" => [
                         "client_lastname" => "NA",
                         "client_firstname" => "NA",
-                        "client_address" => "NA",
+                        "client_address" => $this->location,
                         "client_phone" =>  "NA"
                     ],
                     "title" =>  ["roles" => array(5, 4, 3), "field" => "title", "type" => "text", "title" => "Τίτλος Σημείωσης", "value" => $this->title, "required" => true],
                     "description" =>  ["roles" => array(5, 4, 3), "field" => "description", "type" => "text", "title" => "Σημείωση", "value" => $this->description, "required" => true],
                     "importance" => ["roles" => array(5, 4, 3), "field" => "importance", "value" => $this->importance, "type" => "boolean", "title" => "Σημαντικότητα", "radioItems" => [["id" => 0, "title" => "Υψηλή"], ["id" => 1, "title" => "Μεσαία"], ["id" => 2, "title" => "Χαμηλή"]], "required" => true],
                     "all_day" => ["roles" => array(5, 4, 3), "field" => "all_day", "value" => $this->all_day, "type" => "boolean", "title" => "Όλη μέρα", "radioItems" => [["id" => 1, "title" => "Ναι"], ["id" => 0, "title" => "Όχι"]], "required" => true],
+                    "location" => ["roles" => array(5, 4, 3), "field" => "location", "value" => $this->location, "type" => "text", "title" => "Περιοχή", "required" => false],
                     "dateTime_start" => ["roles" => array(5, 4, 3), "field" => "dateTime_start", "title" => "Έναρξη", "type" => "datetime", "value" => $this->dateTime_start, "required" => true],
                     "dateTime_end" => ["roles" => array(5, 4, 3), "field" => "dateTime_end", "title" => "Λήξη", "type" => "datetime", "value" => $this->dateTime_end, "required" => true]
                 ])

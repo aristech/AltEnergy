@@ -92,12 +92,14 @@ class CalendarResource extends JsonResource
                         $client = $damage['client']['lastname'] !== null ? $damage['client']['lastname'] : "Ν/Α";
                         $address = $damage['client']['address'] !== null ? $damage['client']['address'] : "N/A";
                         $location = $damage['client']['location'] !== null ? $damage['client']['location'] : "Ν/Α";
+                        $status = $damage['status'];
                         // }
                         $html = "<div>";
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
-
+                        $html .= "<b>Τύπος: </b>Βλάβη" . "<br>";
                         $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
                         $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
+                        $html .= "<b>Κατάσταση:</b> " . $status . '<br>';
                         $html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";
                         $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
                         $html .= "</div>";
@@ -153,13 +155,15 @@ class CalendarResource extends JsonResource
                         $client = $service['client']['lastname'] !== null ? $service['client']['lastname'] : "Ν/Α";
                         $address = $service['client']['address'] !== null ? $service['client']['address'] : "N/A";
                         $location = $service['client']['location'] !== null ? $service['client']['location'] : "Ν/Α";
+                        $status = $service['status'];
 
 
                         $html = "<div>";
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
-
+                        $html .= "<b>Τύπος: </b>Σέρβις" . "<br>";
                         $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
                         $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
+                        $html .= "<b>Κατάσταση: </b>" . $service['status'] . "<br>";
                         $html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";
                         $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
                         $html .= "</div>";
@@ -193,6 +197,7 @@ class CalendarResource extends JsonResource
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
 
                         $html .= $note['title'] == "" ? "" : "<b>Σημείωση: </b>" . $note['title'] . "<br>";
+                        $html .= $note['location'] == "" ? "" : "<b>Περιοχή: </b>" . $note['location'] . "<br>";
                         $html .= "</div>";
 
                         return $html;
@@ -497,6 +502,24 @@ class CalendarResource extends JsonResource
                 //     $service = Service::where('repeatable',true)->get()->first();
                 //     return $service['frequency'];
                 // })
+                "textColor" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
+                    if ($this->damage_id != null) {
+                        $dmg = Damage::find($this->damage_id);
+                        if ($dmg->status != "Μη Ολοκληρωμένη") {
+                            return "#ff0000";
+                        } else {
+                            return "#ffffff";
+                        }
+                    }
+                    if ($this->service_id != null) {
+                        $service = Service::find($this->service_id);
+                        if ($service->status != "Μη Ολοκληρωμένο") {
+                            return "#ff0000";
+                        } else {
+                            return "#ffffff";
+                        }
+                    }
+                }),
                 "color" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
                     if ($this->note_id != null) {
                         $importance = Note::where('id', $this->note_id)->first()["importance"];
@@ -516,10 +539,28 @@ class CalendarResource extends JsonResource
                         }
                     }
                     if ($this->damage_id != null) {
-                        return "#5d5fea";
+                        $dmg = Damage::find($this->damage_id);
+                        $appointment_start  = $dmg->appointment_start;
+                        $app_start_array = explode('.', $appointment_start);
+                        $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
+                        $date_to_compare = strtotime($formatted_appointment) + 2 * 60 * 60;
+                        if (time() - $date_to_compare > 0 && $dmg->status != "Ολοκληρώθηκε") {
+                            return "#ff0000";
+                        } else {
+                            return "#5d5fea";
+                        }
                     }
                     if ($this->service_id != null) {
-                        return "#bd391b";
+                        $dmg = Service::find($this->service_id);
+                        $appointment_start  = $dmg->appointment_start;
+                        $app_start_array = explode('.', $appointment_start);
+                        $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
+                        $date_to_compare = strtotime($formatted_appointment) + 2 * 60 * 60;
+                        if (time() - $date_to_compare > 0 && $dmg->status != "Ολοκληρώθηκε") {
+                            return "#ff0000";
+                        } else {
+                            return "#bd391b";
+                        }
                     }
                 })
             ];
