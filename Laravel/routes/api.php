@@ -146,7 +146,6 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/searchmanagers', 'SearchController@searchManagers');
             Route::post('/searchmanu', 'SearchController@searchManufacturers');
             Route::get('/searchmarks', 'SearchController@searchMarks');
-            Route::get('/searchClientMarks', 'SearchController@searchMarks');
             Route::post('/searchdevices', 'SearchController@searchDevices');
             Route::post('/searchdamagetypes', 'SearchController@searchDamageTypes');
             Route::post('/searchservicetypes', 'SearchController@searchServiceTypes');
