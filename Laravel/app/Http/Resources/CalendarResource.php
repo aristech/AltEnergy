@@ -504,16 +504,16 @@ class CalendarResource extends JsonResource
                 // })
                 "textColor" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $dmg = Damage::find($this->damage_id);
-                        if ($dmg->status != "Μη Ολοκληρωμένη") {
+                        $dmg = Damage::where('id', $this->damage_id)->first();
+                        if ($dmg['status'] != "Μη Ολοκληρωμένη") {
                             return "#ff0000";
                         } else {
                             return "#ffffff";
                         }
                     }
                     if ($this->service_id != null) {
-                        $service = Service::find($this->service_id);
-                        if ($service->status != "Μη Ολοκληρωμένο") {
+                        $service = Service::where('id', $this->service_id)->first();
+                        if ($service['status'] != "Μη Ολοκληρωμένο") {
                             return "#ff0000";
                         } else {
                             return "#ffffff";
@@ -539,24 +539,24 @@ class CalendarResource extends JsonResource
                         }
                     }
                     if ($this->damage_id != null) {
-                        $dmg = Damage::find($this->damage_id);
-                        $appointment_start  = $dmg->appointment_start;
+                        $dmg = Damage::where('id', $this->damage_id)->first();
+                        $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
                         $date_to_compare = strtotime($formatted_appointment) + 2 * 60 * 60;
-                        if (time() - $date_to_compare > 0 && $dmg->status != "Ολοκληρώθηκε") {
+                        if (time() - $date_to_compare > 0 && $dmg['status'] != "Ολοκληρώθηκε") {
                             return "#ff0000";
                         } else {
                             return "#5d5fea";
                         }
                     }
                     if ($this->service_id != null) {
-                        $dmg = Service::find($this->service_id);
-                        $appointment_start  = $dmg->appointment_start;
+                        $dmg = Service::where('id', $this->service_id)->first();
+                        $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
                         $date_to_compare = strtotime($formatted_appointment) + 2 * 60 * 60;
-                        if (time() - $date_to_compare > 0 && $dmg->status != "Ολοκληρώθηκε") {
+                        if (time() - $date_to_compare > 0 && $dmg['status'] != "Ολοκληρώθηκε") {
                             return "#ff0000";
                         } else {
                             return "#bd391b";
