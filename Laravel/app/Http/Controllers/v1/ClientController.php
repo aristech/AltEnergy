@@ -11,6 +11,8 @@ use App\Manager;
 use App\Http\Resources\ClientResource;
 use App\Http\CustomClasses\v1\Greeklish;
 use App\Http\CustomClasses\v1\SendMail;
+use App\Mark;
+use App\ClientMark;
 
 
 class ClientController extends Controller
@@ -118,7 +120,6 @@ class ClientController extends Controller
             }
         }
 
-
         $lastClient = Client::latest()->first();
 
         $foldername = $request->lastname . "_" . $request->firstname . "_" . ($lastClient['id'] + 1);
@@ -127,6 +128,15 @@ class ClientController extends Controller
 
         $client = Client::create($request->all());
 
+        //link marks with clients
+        if (count($request->marks) > 0) {
+            foreach ($request->marks as $mark_id) {
+                $mark = Mark::find($mark_id);
+                if ($mark) {
+                    ClientMark::insert(['client_id' => $client->id, 'mark_id' => $mark_id]);
+                }
+            }
+        }
 
         //mkdir(storage_path()."/Clients/".$client->foldername);
         if (!$folder_created = mkdir(storage_path() . "/Clients/" . $client['foldername'])) {
@@ -237,6 +247,16 @@ class ClientController extends Controller
 
             if ($email) {
                 return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο πελάτη"], 422);
+            }
+        }
+
+        ClientMark::where('client_id', $request->id)->delete();
+        if (count($request->marks) > 0) {
+            foreach ($request->marks as $mark_id) {
+                $mark = Mark::find($mark_id);
+                if ($mark) {
+                    ClientMark::insert(['client_id' => $client->id, 'mark_id' => $mark_id]);
+                }
             }
         }
 

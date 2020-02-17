@@ -120,6 +120,14 @@ class SearchController extends Controller
         return MarkResource::collection(Mark::all());
     }
 
+    public function searchClientMarks(Request $request, $client_id)
+    {
+        $marks = Mark::whereHas('clients', function ($q) use ($client_id) {
+            $q->where('clients.id', $client_id);
+        })->get();
+        return MarkResource::collection($marks);
+    }
+
     public function searchDevices(Request $request)
     {
         $devices = Device::where('name', 'like', $request->name . '%')

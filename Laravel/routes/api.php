@@ -23,10 +23,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
 
     Route::post('/login', 'AuthController@login');
     Route::post('/signup', 'AuthController@signup');
+    Route::get('/test', 'TestController@test');
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/appointment', 'FreeAppointmentController@index');
-        Route::get('/test', 'TestController@test');
+
         Route::get('/user', 'AuthController@user');
         Route::get('/logout', 'AuthController@logout');
 
@@ -76,6 +77,17 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::post('/settings/scanner', 'ScannerSettingsController@store');
                 Route::put('/settings/scanner/{id}', 'ScannerSettingsController@update');
                 Route::delete('/settings/scanner/{id}', 'ScannerSettingsController@destroy');
+
+                Route::get('/settings/bullets', 'BulletController@index');
+                Route::get('/settings/bullets/{bullet}', 'BulletController@show');
+                Route::post('/settings/bullets', 'BulletController@store');
+                Route::put('/settings/bullets/{bullet}', 'BulletController@update');
+                Route::delete('/settings/bullets/{bullet}', 'BulletController@destroy');
+
+                Route::get('/offers', 'OfferController@index');
+                Route::post('/offers', 'OfferController@store');
+                // Route::get('/offers/{offer}/{status}', 'OfferController@edit');
+                Route::get('/offers-file/{offer}', 'OfferController@file');
             });
 
 
@@ -149,6 +161,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
             Route::post('/searchdevices', 'SearchController@searchDevices');
             Route::post('/searchdamagetypes', 'SearchController@searchDamageTypes');
             Route::post('/searchservicetypes', 'SearchController@searchServiceTypes');
+
+            Route::get('/searchclientmarks/{client_id}', 'SearchController@searchClientMarks');
 
             // Route::get('/events','EventController@index');
             // Route::get('/eventhistory','EventController@history');

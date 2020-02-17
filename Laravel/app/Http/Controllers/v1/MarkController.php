@@ -8,6 +8,7 @@ use App\Mark;
 use App\Manufacturer;
 use App\Http\Resources\MarkResource;
 use Validator;
+use App\Bullet;
 
 
 class MarkController extends Controller
@@ -77,7 +78,11 @@ class MarkController extends Controller
 
         $input = array("name" => $request->name, "manufacturer_id" => $manufacturer->id);
 
-        Mark::create($input);
+        $mark = Mark::create($input);
+        //create bullet
+        Bullet::create(["description" => $mark->manufacturer->name . ", " . $mark->name, "mark_id" => $mark->id]);
+
+
         return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"], 200);
     }
 
@@ -149,6 +154,8 @@ class MarkController extends Controller
         }
 
         $mark->delete();
+        //Delete related bullet
+        Bullet::where('mark_id', $request->id)->delete();
         return response()->json(["message" => "Tο μοντελο διαγράφηκε επιτυχώς!"], 200);
     }
 }

@@ -97,9 +97,9 @@ class FileController extends Controller
                 $n = count($filename);
                 $name = $filename[$n - 1];
 
-                $file =
+                //$file =
 
-                    $contents = file_get_contents($file);
+                $contents = file_get_contents($file);
                 $contents = "data:image/png;base64," . base64_encode($contents);
                 $class->file = $contents;
                 $class->type = "png";

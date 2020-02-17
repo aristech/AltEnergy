@@ -5,7 +5,9 @@ namespace App\Http\Controllers\v1;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\ScannerSettings;
+use App\Bullet;
 use App\Http\Resources\ScannerSettingsResource;
+use App\Http\Resources\BulletResource;
 
 class SettingsController extends Controller
 {
@@ -29,6 +31,13 @@ class SettingsController extends Controller
         $settings_type->name = "Χρώματα";
         $settings_type->url = "colors";
         $settings_type->data = array();
+
+        array_push($settings, $settings_type);
+
+        $settings_type = new \stdClass();
+        $settings_type->name = "Κείμενα Προσφορών";
+        $settings_type->url = "bullets";
+        $settings_type->data = BulletResource::collection(Bullet::all());
 
         array_push($settings, $settings_type);
 

@@ -171,9 +171,9 @@ class ServiceResource extends JsonResource
                                 }
                             }
 
-                            $markes = ["roles" => array(5, 4, 3), "title" => "ΣΥΣΚΕΥΕΣ", "field" => "marks", "type" => "searchtechs", "page" => "searchmarks", "value" => $markes_ids, "holder" => $markes, "required" => false];
+                            $markes = ["roles" => array(5, 4, 3), "title" => "ΣΥΣΚΕΥΕΣ", "field" => "marks", "type" => "searchtechs", "page" => "searchclientmarks/" . $this->client_id, "value" => $markes_ids, "holder" => $markes, "required" => false];
                         } else {
-                            $markes = ["roles" => array(5, 4, 3), "title" => "ΣΥΣΚΕΥΕΣ", "field" => "marks", "type" => "searchtechs", "page" => "searchmarks", "value" => array(), "holder" => array(), "required" => false];
+                            $markes = ["roles" => array(5, 4, 3), "title" => "ΣΥΣΚΕΥΕΣ", "field" => "marks", "type" => "searchtechs", "page" => "searchclientmarks/" . $this->client_id, "value" => array(), "holder" => array(), "required" => false];
                         }
                         return $markes;
                     }),

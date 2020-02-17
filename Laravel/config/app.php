@@ -176,6 +176,8 @@ return [
         App\Providers\RouteServiceProvider::class,
         Barryvdh\Cors\ServiceProvider::class,
         Codedge\Fpdf\FpdfServiceProvider::class,
+        Barryvdh\DomPDF\ServiceProvider::class,
+
 
     ],
 
@@ -228,6 +230,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
         'Fpdf' => Codedge\Fpdf\Facades\Fpdf::class,
+        'PDF' => Barryvdh\DomPDF\Facade::class
 
     ],
 

@@ -9,6 +9,7 @@ use Laravel\Passport\HasApiTokens;
 use App\Role;
 use App\Damage;
 use App\UsersRoles;
+use App\Marks;
 use App\Note;
 use App\FreeAppointment;
 
@@ -59,5 +60,10 @@ class User extends Authenticatable
     public function free_appointments()
     {
         return $this->belongsToMany(FreeAppointment::class);
+    }
+
+    public function marks()
+    {
+        $this->belongsToMany(Mark::class);
     }
 }
