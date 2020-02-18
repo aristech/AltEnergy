@@ -9,7 +9,7 @@ class Bullet extends Model
 {
     protected $table = 'bullets';
 
-    protected $fillable = ['description', 'mark_id'];
+    protected $fillable = ['description', 'mark_id','price'];
 
     public function offers()
     {

@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers\v1;
 
+require '../vendor/autoload.php';
+
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Offer;
 use App\Bullet;
+use App\BulletOffer;
 use App\Client;
 use App\Http\Resources\OfferResource;
 use Validator;
 use Response;
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
+use ConvertApi\ConvertApi;
+use App\Http\CustomClasses\v1\Greeklish;
 
 class OfferController extends Controller
 {
@@ -60,6 +65,7 @@ class OfferController extends Controller
             );
         }
 
+        $filename = $selected_offer['offer_filename'];
         // if ($extension == "jpeg") {
         //     $headers = array(
         //         'Content-Type: image/jpeg',
@@ -89,9 +95,33 @@ class OfferController extends Controller
      */
     public function store(Request $request)
     {
+        //mandatory -> client_id & bullets[] array
         $client = Client::where('id', $request->client_id)->first();
         if (!$client) {
             return response()->json(["message" => "Δεν υπάρχει ο πελατης καταχωρημένος στο σύστημα"], 404);
+        }
+
+        if(!$client['firstname'] || !$client['lastname'] || !$client['address'] || !$client['location'])
+        {
+            return response()->json(["message" => "Για να σταλεί προσφορά πρέπει να υπάρχουν το ον/μο πελάτη, διεύθυνση και περιοχή"],422);
+        }
+
+        if(!$client['telephone1'] && !$client['telephone2'] && !$client['mobile'] )
+        {
+            return response()->json(["message" => "Θα πρέπει να υπάρχει τουλάχιστον ένα νουμερο για τον πελάτη"],422);
+        }
+
+        if($client['telephone1'])
+        {
+            $phone = $client['telephone1'];
+        }
+        elseif($client['telephone2'])
+        {
+            $phone = $client['telephone2'];
+        }
+        else
+        {
+            $phone = $client['mobile'];
         }
 
         if (!$client['email']) {
@@ -104,10 +134,61 @@ class OfferController extends Controller
                 return response()->json(["message" => "Παρακαλώ ελέγξτε πάλι τις εγγραφές σας για την προσφορά"], 422);
             }
         }
+        //create offer pdf start
+        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path() . '/test.docx');
 
         $offers = Offer::where('created_at', 'like', '%' . date('Y') . '%')->count();
-        $offer = Offer::create(['client_id' => $request->client_id, "status_id" => 1, "number" => $offers + 1]);
 
+        $bullet_id_array = array();
+        $bullet_id_array = $request->bullets;
+
+        $templateProcessor->setValue('client_name', $client['lastname']." ".$client['firstname']);
+        $templateProcessor->setValue('client_address', $client['address']);
+        $templateProcessor->setValue('client_location', $client['location']);
+        $templateProcessor->setValue('client_phone', $phone);
+        $templateProcessor->setValue('offer_number', $offers + 1);
+        $templateProcessor->setValue('date', date('d / m / Y'));
+        $amount = 0.00;
+        foreach ($request->bullets as $bullet_id) {
+            $bullet = Bullet::where('id', $bullet_id)->first();
+            $amount += $bullet['price'];
+            }
+
+        $templateProcessor->setValue('total', $amount);
+
+        $templateProcessor->cloneRow('value', count($request->bullets));
+        for ($i = 1; $i <= count($request->bullets); $i++) {
+            $templateProcessor->setValue('value#' . $i, Bullet::where('id',$bullet_id_array[$i - 1])->first()['description']);
+        }
+
+        $templateProcessor->saveAs(public_path() . '/xx.docx');
+        $current_offer = $offers + 1;
+
+        $offer_filename = Greeklish::remove_accent($client['lastname']).'_'.Greeklish::remove_accent($client['firstname']).'-'.'prosfora_'.$current_offer.'-'.date('Y-m-d').'.pdf';
+
+        ConvertApi::setApiSecret('cqbWK6STXKAFVUVD');
+
+        $result = ConvertApi::convert('pdf', ['File' => public_path() . '/xx.docx']);
+        # save to file
+        $result->getFile()->save(public_path() . '/'.$offer_filename);
+        //end pdf
+
+        copy(public_path().'/'.$offer_filename, storage_path()."/Clients/".$client['foldername'].'/'.$offer_filename);
+
+        //mail public directory with phpmailer
+
+        unlink(public_path() . '/xx.docx');
+        unlink(public_path().'/'.$offer_filename);
+
+
+
+
+        $offer = Offer::create(['client_id' => $request->client_id, "offer_number" => $offers + 1,"offer_filename"=>$offer_filename]);
+
+        foreach($request->bullets as $bullet_id)
+        {
+            BulletOffer::create(['bullet_id'=>$bullet_id,'offer_id'=>$offer->id]);
+        }
         //pending mail and pdf generation
         return response()->json(['message' => 'Η προσφορά δημιουργήθηκε και εστάλη επιτυχώς'], 200);
     }

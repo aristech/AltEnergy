@@ -26,9 +26,10 @@ class OfferResource extends JsonResource
                 if ($this->client['mobile'] != null) return $this->client['mobile'];
             }),
             "offer_filename" => $this->offer_filename,
-            "status_id" => $this->status_id,
-            "status" => $this->status->names,
+            // "status_id" => $this->status_id,
+            // "status" => $this->status->names,
             "bullets" => $this->bullets,
+            //"url" => url("api/v1/offers-file/" . $this->id)
             "url" => "offers-file/" . $this->id
         ];
     }

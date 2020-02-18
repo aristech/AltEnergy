@@ -80,7 +80,7 @@ class MarkController extends Controller
 
         $mark = Mark::create($input);
         //create bullet
-        Bullet::create(["description" => $mark->manufacturer->name . ", " . $mark->name, "mark_id" => $mark->id]);
+        Bullet::create(["price"=>0.00,"description"=>$mark->manufacturer->name.', '.$mark->name,"mark_id"=>$mark->id]);
 
 
         return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"], 200);

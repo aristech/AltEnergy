@@ -79,7 +79,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::delete('/settings/scanner/{id}', 'ScannerSettingsController@destroy');
 
                 Route::get('/settings/bullets', 'BulletController@index');
-                Route::get('/settings/bullets/{bullet}', 'BulletController@show');
+                Route::get('/settings/bullets/{bult}', 'BulletController@show');
                 Route::post('/settings/bullets', 'BulletController@store');
                 Route::put('/settings/bullets/{bullet}', 'BulletController@update');
                 Route::delete('/settings/bullets/{bullet}', 'BulletController@destroy');

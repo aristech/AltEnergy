@@ -17,9 +17,12 @@ class BulletResource extends JsonResource
         return [
             "id" => $this->id,
             "description" => $this->description,
+            "price" =>$this->price,
             "mark_id" => $this->mark_id,
             "editable" => array([
-                "supplement" => ["field" => "description", "title" => "ΠΕΡΙΓΡΑΦΗ", "type" => "text", "value" => $this->description, "required" => true]
+                "description" => ["field" => "description", "title" => "ΠΕΡΙΓΡΑΦΗ", "type" => "text", "value" => $this->description, "required" => true],
+                "price" => ["field" => "price", "title" => "Τιμη", "type" => "float", "value" => $this->price, "required" => true],
+
             ])
 
         ];

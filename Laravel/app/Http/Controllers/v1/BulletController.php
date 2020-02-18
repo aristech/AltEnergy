@@ -56,8 +56,13 @@ class BulletController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Request $request, Bullet $bullet)
+    public function show(Request $request, $bult)
     {
+        $bullet = Bullet::where('id',$bult)->first();
+        if(!$bullet)
+        {
+            return response()->json(["message"=>"Δεν υπάρχει η εγγραφή στο σύστημα"],404);
+        }
         return BulletResource::make($bullet);
     }
 
@@ -110,6 +115,6 @@ class BulletController extends Controller
 
         $selected->delete();
 
-        return response()->json(["H εγγραφή διαγράφτηκε επιτυχώς"], 200);
+        return response()->json(["message" => "H εγγραφή διαγράφτηκε επιτυχώς"], 200);
     }
 }
