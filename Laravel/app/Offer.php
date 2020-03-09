@@ -10,7 +10,7 @@ use App\OfferStatus;
 class Offer extends Model
 {
     protected $table = 'offers';
-    protected $fillable = ['client_id', 'offer_filename', 'status_id', 'number','offer_number'];
+    protected $fillable = ['client_id', 'offer_filename', 'status_id', 'amount', 'number', 'offer_number'];
 
     public function client()
     {

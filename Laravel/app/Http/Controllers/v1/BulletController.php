@@ -41,9 +41,10 @@ class BulletController extends Controller
             return response()->json(["message" => "Η περιγραφή δεν πρέπει να είναι κενη"], 422);
         }
 
-        if (!$request->price || !is_float($request->price)) {
+        if ($request->price != null && !is_numeric($request->price)) {
             return response()->json(["message" => "Η τιμή πρέπει να είναι αριθμός"], 422);
         }
+
 
         Bullet::create(["description" => $request->description, "price" => round($request->price, 2)]);
 
@@ -58,10 +59,9 @@ class BulletController extends Controller
      */
     public function show(Request $request, $bult)
     {
-        $bullet = Bullet::where('id',$bult)->first();
-        if(!$bullet)
-        {
-            return response()->json(["message"=>"Δεν υπάρχει η εγγραφή στο σύστημα"],404);
+        $bullet = Bullet::where('id', $bult)->first();
+        if (!$bullet) {
+            return response()->json(["message" => "Δεν υπάρχει η εγγραφή στο σύστημα"], 404);
         }
         return BulletResource::make($bullet);
     }
@@ -91,13 +91,13 @@ class BulletController extends Controller
             return response()->json(["message" => "Δεν βρέθηκε η εγγραφή στο σύστημα"], 422);
         }
 
-        if (!$request->price || !is_float($request->price)) {
+        if ($request->price != null && !is_numeric($request->price)) {
             return response()->json(["message" => "Η τιμή πρέπει να είναι αριθμός"], 422);
         }
 
         $selected->update(["description" => $request->description, "price" => round($request->price, 2)]);
 
-        return response()->json(["message" => "Η εγγραφή ενημερώθηκε επιτυχώς"], 422);
+        return response()->json(["message" => "Η εγγραφή ενημερώθηκε επιτυχώς"], 200);
     }
 
     /**

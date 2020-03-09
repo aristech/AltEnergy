@@ -377,6 +377,9 @@ class FileController extends Controller
             return response()->json(["message" => "Δεν βρέθηκε ο χρήστης"], 404);
         }
 
+        if (strpos($filename, 'prosfora') !== false) {
+            return response()->json(["message" => "Οι προσφορές δεν μπορούν να διαγραφούν"], 422);
+        }
         //Url for stored files
         //$searchPath = explode('.',$filename);
         $mypath = storage_path() . '/Clients/' . $client->foldername . "/" . $filename;

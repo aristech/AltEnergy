@@ -95,37 +95,37 @@ class OfferController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$request->client_id) {
+            return response()->json(["message" => "Πρέπει να επιλέξετε πελάτη για να στείλετε την προσφορά"], 422);
+        }
         //mandatory -> client_id & bullets[] array
         $client = Client::where('id', $request->client_id)->first();
         if (!$client) {
             return response()->json(["message" => "Δεν υπάρχει ο πελατης καταχωρημένος στο σύστημα"], 404);
         }
 
-        if(!$client['firstname'] || !$client['lastname'] || !$client['address'] || !$client['location'])
-        {
-            return response()->json(["message" => "Για να σταλεί προσφορά πρέπει να υπάρχουν το ον/μο πελάτη, διεύθυνση και περιοχή"],422);
+        if (!$client['firstname'] || !$client['lastname'] || !$client['address'] || !$client['location']) {
+            return response()->json(["message" => "Για να σταλεί προσφορά πρέπει να υπάρχουν το ον/μο πελάτη, διεύθυνση και περιοχή"], 422);
         }
 
-        if(!$client['telephone1'] && !$client['telephone2'] && !$client['mobile'] )
-        {
-            return response()->json(["message" => "Θα πρέπει να υπάρχει τουλάχιστον ένα νουμερο για τον πελάτη"],422);
+        if (!$client['telephone1'] && !$client['telephone2'] && !$client['mobile']) {
+            return response()->json(["message" => "Θα πρέπει να υπάρχει τουλάχιστον ένα νουμερο για τον πελάτη"], 422);
         }
 
-        if($client['telephone1'])
-        {
+        if ($client['telephone1']) {
             $phone = $client['telephone1'];
-        }
-        elseif($client['telephone2'])
-        {
+        } elseif ($client['telephone2']) {
             $phone = $client['telephone2'];
-        }
-        else
-        {
+        } else {
             $phone = $client['mobile'];
         }
 
         if (!$client['email']) {
             return response()->json(["message" => "Δεν μπορεί να σταλεί προσφορά σε πελάτη που δεν εχει καταχωρημένη διεύθυνση email"], 422);
+        }
+
+        if (count($request->bullets) == 0) {
+            return response()->json(["message" => "Η προσφορά δεν μπορεί να είναι κενή"], 422);
         }
 
         foreach ($request->bullets as $bullet_id) {
@@ -142,7 +142,7 @@ class OfferController extends Controller
         $bullet_id_array = array();
         $bullet_id_array = $request->bullets;
 
-        $templateProcessor->setValue('client_name', $client['lastname']." ".$client['firstname']);
+        $templateProcessor->setValue('client_name', $client['lastname'] . " " . $client['firstname']);
         $templateProcessor->setValue('client_address', $client['address']);
         $templateProcessor->setValue('client_location', $client['location']);
         $templateProcessor->setValue('client_phone', $phone);
@@ -152,42 +152,72 @@ class OfferController extends Controller
         foreach ($request->bullets as $bullet_id) {
             $bullet = Bullet::where('id', $bullet_id)->first();
             $amount += $bullet['price'];
-            }
+        }
 
         $templateProcessor->setValue('total', $amount);
 
         $templateProcessor->cloneRow('value', count($request->bullets));
         for ($i = 1; $i <= count($request->bullets); $i++) {
-            $templateProcessor->setValue('value#' . $i, Bullet::where('id',$bullet_id_array[$i - 1])->first()['description']);
+            $templateProcessor->setValue('value#' . $i, Bullet::where('id', $bullet_id_array[$i - 1])->first()['description']);
         }
 
         $templateProcessor->saveAs(public_path() . '/xx.docx');
         $current_offer = $offers + 1;
 
-        $offer_filename = Greeklish::remove_accent($client['lastname']).'_'.Greeklish::remove_accent($client['firstname']).'-'.'prosfora_'.$current_offer.'-'.date('Y-m-d').'.pdf';
+        $offer_filename = Greeklish::remove_accent($client['lastname']) . '_' . Greeklish::remove_accent($client['firstname']) . '-' . 'prosfora_' . $current_offer . '-' . date('Y-m-d') . '.pdf';
 
         ConvertApi::setApiSecret('cqbWK6STXKAFVUVD');
 
         $result = ConvertApi::convert('pdf', ['File' => public_path() . '/xx.docx']);
         # save to file
-        $result->getFile()->save(public_path() . '/'.$offer_filename);
+        $result->getFile()->save(public_path() . '/' . $offer_filename);
         //end pdf
 
-        copy(public_path().'/'.$offer_filename, storage_path()."/Clients/".$client['foldername'].'/'.$offer_filename);
+        copy(public_path() . '/' . $offer_filename, storage_path() . "/Clients/" . $client['foldername'] . '/' . $offer_filename);
 
-        //mail public directory with phpmailer
+        $image = public_path() . "/imagesatlenergy_maillogo.jpg";
+        // Read image path, convert to base64 encoding
+        $imageData = base64_encode(file_get_contents($image));
+
+        // Format the image SRC:  data:{mime};base64,{data};
+        $src = 'data: ' . mime_content_type($image) . ';base64,' . $imageData;
+
+        /*
+        $email = new PHPMailer();
+        $email->CharSet = "UTF-8";
+        $email->SetFrom('support@atlenergy.gr', 'ATLEnergy'); //Name is optional
+        $email->Subject   = 'ATL energy - Προσφορά ' . $current_offer;
+        $email->Body      = '<p>Συνημμένη θα βρείτε την προσφορά μας.
+        </p><br><hr><br>
+        Με εκτίμηση<br>
+        Για την A.T.L. Energy<br>
+        Περικλής Π. Αθανασόπουλος<br>
+        Πτ. Μηχανολόγος Μηχανικός Τ.Ε.<br>' . '<img src="' . $src . '">' . '<br>'
+            . "<p>Kεντρικό: Κατάστημα Ν. Ελλάδος:<br>
+        Πλατεία Αγ. Ευσταθίου 9 Ν. Ιωνία Τ.Κ. 14233<br>
+        Τηλ.-Φαξ: +30 211 411 4030 ,Κιν.:+30 6938340219<br>
+        e-mail: pathanasopoulos@atlenergy.gr<br>
+        <a href='www.atlenergy,gr'>www.atlenergy.gr</a></p>";
+        $email->isHTML(true);
+        $email->AddAddress($request->email);
+
+        $file_to_attach = public_path() . '/' . $offer_filename;
+
+        $email->AddAttachment($file_to_attach, $offer_filename);
+
+        $email->Send();
+        */
 
         unlink(public_path() . '/xx.docx');
-        unlink(public_path().'/'.$offer_filename);
+        unlink(public_path() . '/' . $offer_filename);
 
 
 
 
-        $offer = Offer::create(['client_id' => $request->client_id, "offer_number" => $offers + 1,"offer_filename"=>$offer_filename]);
+        $offer = Offer::create(['client_id' => $request->client_id, "offer_number" => $offers + 1, "offer_filename" => $offer_filename, "amount" => $amount]);
 
-        foreach($request->bullets as $bullet_id)
-        {
-            BulletOffer::create(['bullet_id'=>$bullet_id,'offer_id'=>$offer->id]);
+        foreach ($request->bullets as $bullet_id) {
+            BulletOffer::create(['bullet_id' => $bullet_id, 'offer_id' => $offer->id]);
         }
         //pending mail and pdf generation
         return response()->json(['message' => 'Η προσφορά δημιουργήθηκε και εστάλη επιτυχώς'], 200);
