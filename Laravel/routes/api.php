@@ -25,9 +25,9 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
     Route::post('/signup', 'AuthController@signup');
     Route::get('/test', 'TestController@test');
 
-    Route::get('/download-docx', 'OfferController@downloadDOC');
-    Route::get('/download-default-docx', 'OfferController@downloadDefaultDOC');
-    Route::post('/upload-docx', 'OfferController@uploadDOC');
+    // Route::get('/download-docx', 'OfferController@downloadDOC');
+    // Route::get('/download-default-docx', 'OfferController@downloadDefaultDOC');
+    // Route::post('/upload-docx', 'OfferController@uploadDOC');
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/appointment', 'FreeAppointmentController@index');
@@ -94,6 +94,11 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::post('/offers', 'OfferController@store');
                 // Route::get('/offers/{offer}/{status}', 'OfferController@edit');
                 Route::get('/offers-file/{offer}', 'OfferController@file');
+
+                //move routes so as to be accessible only for admin
+                Route::get('/download-docx', 'OfferController@downloadDOC');
+                Route::get('/download-default-docx', 'OfferController@downloadDefaultDOC');
+                Route::post('/upload-docx', 'OfferController@uploadDOC');
             });
 
 
