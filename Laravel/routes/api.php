@@ -25,6 +25,10 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
     Route::post('/signup', 'AuthController@signup');
     Route::get('/test', 'TestController@test');
 
+    Route::get('/download-docx', 'OfferController@downloadDOC');
+    Route::get('/download-default-docx', 'OfferController@downloadDefaultDOC');
+    Route::post('/upload-docx', 'OfferController@uploadDOC');
+
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/appointment', 'FreeAppointmentController@index');
 
@@ -83,6 +87,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::post('/settings/bullets', 'BulletController@store');
                 Route::put('/settings/bullets/{bullet}', 'BulletController@update');
                 Route::delete('/settings/bullets/{bullet}', 'BulletController@destroy');
+
+
 
                 Route::get('/offers', 'OfferController@index');
                 Route::post('/offers', 'OfferController@store');

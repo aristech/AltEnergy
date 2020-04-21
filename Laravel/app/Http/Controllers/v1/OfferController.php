@@ -40,6 +40,46 @@ class OfferController extends Controller
         //
     }
 
+    public function downloadDefaultDOC()
+    {
+        $file = public_path().'/test.docx';
+        $filename = 'default_offer_doc.docx';
+        $headers = array(
+            'Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        );
+
+        return Response::download($file, $filename, $headers);
+    }
+
+    public function downloadDOC()
+    {
+        $file = public_path().'/editable.docx';
+        $filename = 'editable.docx';
+        $headers = array(
+            'Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        );
+
+        return Response::download($file, $filename, $headers);
+    }
+
+    public function uploadDOC(Request $request)
+    {
+        if ($request->File == null) {
+            return response()->json(["message" => "Θα πρέπει να υπάρχει αρχείο προς ανέβασμα"], 422);
+        }
+
+        $file =$request->File;
+
+            if($file->getMimeType() != 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+            {
+                 return response()->json(["message" => "Παρακαλώ εισάγετε έγγραφο word τύπου DOCX"],422);
+            }
+            unlink(public_path().'/editable.docx');
+            move_uploaded_file($file, public_path().'/editable.docx');
+            return response()->json(["message" => "Το τροποποιημένο αρχείο ενημερώθηκε επιτυχώς"],200);
+
+    }
+
     public function file(Request $request, $offer)
     {
         $selected_offer = Offer::where('id', $offer)->first();
@@ -95,6 +135,10 @@ class OfferController extends Controller
      */
     public function store(Request $request)
     {
+        if (!$request->subject) {
+            return response()->json(["message" => "Το πεδίο θέμα είναι υποχρεωτικό"], 422);
+        }
+
         if (!$request->client_id) {
             return response()->json(["message" => "Πρέπει να επιλέξετε πελάτη για να στείλετε την προσφορά"], 422);
         }
@@ -135,7 +179,15 @@ class OfferController extends Controller
             }
         }
         //create offer pdf start
-        $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path() . '/test.docx');
+        if($request->document == "default")
+        {
+            $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path() . '/test.docx');
+        }
+        else
+        {
+            $templateProcessor = new \PhpOffice\PhpWord\TemplateProcessor(public_path() . '/editable.docx');
+        }
+
 
         $offers = Offer::where('created_at', 'like', '%' . date('Y') . '%')->count();
 
@@ -148,6 +200,7 @@ class OfferController extends Controller
         $templateProcessor->setValue('client_phone', $phone);
         $templateProcessor->setValue('offer_number', $offers + 1);
         $templateProcessor->setValue('date', date('d / m / Y'));
+        $templateProcessor->setValue('subject', $request->subject);
         $amount = 0.00;
         foreach ($request->bullets as $bullet_id) {
             $bullet = Bullet::where('id', $bullet_id)->first();
@@ -209,9 +262,7 @@ class OfferController extends Controller
         */
 
         unlink(public_path() . '/xx.docx');
-        unlink(public_path() . '/' . $offer_filename);
-
-
+        //unlink(public_path() . '/' . $offer_filename);
 
 
         $offer = Offer::create(['client_id' => $request->client_id, "offer_number" => $offers + 1, "offer_filename" => $offer_filename, "amount" => $amount]);
