@@ -15,6 +15,7 @@ class FreeAppointmentResource extends JsonResource
      */
     public function toArray($request)
     {
+        date_default_timezone_set('Europe/Athens');
         return [
             "id" => $this->id,
             "event_id" => $this->id,
@@ -31,17 +32,23 @@ class FreeAppointmentResource extends JsonResource
                 }
 
                 if ($this->appointment_start) {
+                    /*
                     $date_array = explode(".", $this->appointment_start);
                     $newDateFormat = str_replace("T", " ", $date_array[0]);
                     $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                    */
+                    $time_start = date("H:i", strtotime($this->appointment_start));
                 } else {
                     $time_start = "?";
                 }
 
                 if ($this->appointment_end) {
+                    /*
                     $date_array_end = explode(".", $this->appointment_end);
                     $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
                     $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                    */
+                    $time_start = date("H:i", strtotime($this->appointment_end));
                 } else {
                     $time_end = "?";
                 }

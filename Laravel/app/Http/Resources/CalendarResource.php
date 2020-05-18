@@ -29,6 +29,7 @@ class CalendarResource extends JsonResource
      */
     public function toArray($request)
     {
+        date_default_timezone_set('Europe/Athens');
         return
             [
                 "id" => $this->id,
@@ -69,17 +70,23 @@ class CalendarResource extends JsonResource
                         }
 
                         if ($damage['appointment_start']) {
+                            $time_start = date("H:i", strtotime($damage['appointment_start']));
+                            /*
                             $date_array = explode(".", $damage['appointment_start']);
                             $newDateFormat = str_replace("T", " ", $date_array[0]);
                             $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                            */
                         } else {
                             $time_start = "?";
                         }
 
                         if ($damage['appointment_end']) {
+                            /*
                             $date_array_end = explode(".", $damage['appointment_end']);
                             $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
                             $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                            */
+                            $time_end = date("H:i", strtotime($damage['appointment_end']));
                         } else {
                             $time_end = "?";
                         }
@@ -137,17 +144,23 @@ class CalendarResource extends JsonResource
                         }
 
                         if ($service['appointment_start']) {
+                            /*
                             $date_array = explode(".", $service['appointment_start']);
                             $newDateFormat = str_replace("T", " ", $date_array[0]);
                             $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                            */
+                            $time_start = date("H:i", strtotime($service['appointment_start']));
                         } else {
                             $time_start = "?";
                         }
 
                         if ($service['appointment_end']) {
+                            /*
                             $date_array_end = explode(".", $service['appointment_end']);
                             $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
                             $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                            */
+                            $time_end = date("H:i", strtotime($service['appointment_end']));
                         } else {
                             $time_end = "?";
                         }
@@ -177,17 +190,23 @@ class CalendarResource extends JsonResource
                         $note = Note::where('id', $this->note_id)->first();
                         //return Note::where('id', $this->note_id)->first()['title'];
                         if ($note['dateTime_start']) {
+                            /*
                             $date_array = explode(".", $note['dateTime_start']);
                             $newDateFormat = str_replace("T", " ", $date_array[0]);
                             $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                            */
+                            $time_start = date("H:i", strtotime($note['dateTime_start']));
                         } else {
                             $time_start = "?";
                         }
 
                         if ($note['dateTime_end']) {
+                            /*
                             $date_array_end = explode(".", $note['dateTime_end']);
                             $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
                             $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                            */
+                            $time_end = date("H:i", strtotime($note['dateTime_end']));
                         } else {
                             $time_end = "?";
                         }
