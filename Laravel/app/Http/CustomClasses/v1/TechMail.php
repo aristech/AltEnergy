@@ -121,6 +121,7 @@ class TechMail
         if (!$object->appointment_start) {
             $message .= "<b>Αναμονή ραντεβού:</b> ΝΑΙ<br>";
         } else {
+            date_default_timezone_set("Europe/Athens");
             $time = strtotime($object->appointment_start);
             $message .= "<b>Ημερομηνία:</b> " . date('l jS  F Y h:i:s A', $time) . "<br>";
             //l jS \of F Y h:i:s A'
