@@ -524,15 +524,30 @@ class CalendarResource extends JsonResource
                 "textColor" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
                         $dmg = Damage::where('id', $this->damage_id)->first();
+                        /*commented out on 22052020
                         if ($dmg['status'] != "Μη Ολοκληρωμένη") {
+                            return "#ff0000";
+                        } else {
+                            return "#ffffff";
+                        }
+                        */
+                        if ($dmg['status'] == "Ολοκληρώθηκε") {
                             return "#ff0000";
                         } else {
                             return "#ffffff";
                         }
                     }
                     if ($this->service_id != null) {
+
                         $service = Service::where('id', $this->service_id)->first();
+                        /*commented out on 22052020
                         if ($service['status'] != "Μη Ολοκληρωμένο") {
+                            return "#ff0000";
+                        } else {
+                            return "#ffffff";
+                        }
+                        */
+                        if ($service['status'] == "Ολοκληρώθηκε") {
                             return "#ff0000";
                         } else {
                             return "#ffffff";

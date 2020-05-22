@@ -398,7 +398,7 @@ class DamageCalendarUpdate
             $this->input = array();
             $this->input =
                 [
-                    "damage_type" => $this->request->damage_type,
+                    "damage_type_id" => $this->request->damage_type_id,
                     "damage_comments" => $this->request->damage_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,
@@ -429,7 +429,7 @@ class DamageCalendarUpdate
             $this->input = array();
             $this->input =
                 [
-                    "damage_type" => $this->request->damage_type,
+                    "damage_type_id" => $this->request->damage_type_id,
                     "damage_comments" => $this->request->damage_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,
@@ -459,7 +459,7 @@ class DamageCalendarUpdate
             $this->input = array();
             $this->input =
                 [
-                    "damage_type" => $this->request->damage_type,
+                    "damage_type_id" => $this->request->damage_type_id,
                     "damage_comments" => $this->request->damage_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => (int) $this->request->guarantee,

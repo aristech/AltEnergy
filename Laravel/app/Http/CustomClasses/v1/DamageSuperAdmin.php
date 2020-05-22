@@ -436,7 +436,9 @@ class DamageSuperAdmin
             $this->input = array();
             $this->input =
                 [
-                    "damage_type" => $this->request->damage_type,
+
+                    //"damage_type" => $this->request->damage_type,commented out20052020 - fixed next line
+                    "damage_type_id" => $this->request->damage_type_id,
                     "damage_comments" => $this->request->damage_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => $this->request->guarantee,
@@ -466,7 +468,8 @@ class DamageSuperAdmin
             $this->input = array();
             $this->input =
                 [
-                    "damage_type" => $this->request->damage_type,
+                    //"damage_type" => $this->request->damage_type,commented out20052020 - fixed next line
+                    "damage_type_id" => $this->request->damage_type_id,
                     "damage_comments" => $this->request->damage_comments,
                     "cost" => $this->request->cost,
                     "guarantee" => (int) $this->request->guarantee,
