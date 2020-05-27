@@ -105,13 +105,14 @@ class ClientController extends Controller
         //     return response()->json(["message" => "Τουλάχιστον έαν τηλέφωνο είναι υποχρεωτικό!"], 422);
         // }
 
-        if ($request->email != null) {
-            $client = Client::where('email', $request->email)->first();
+        //commented out 27052020
+        // if ($request->email != null) {
+        //     $client = Client::where('email', $request->email)->first();
 
-            if ($client) {
-                return response()->json(["message" => "Υπάρχει ήδη πελάτης με το email " . $request->email], 422);
-            }
-        }
+        //     if ($client) {
+        //         return response()->json(["message" => "Υπάρχει ήδη πελάτης με το email " . $request->email], 422);
+        //     }
+        // }
 
         if ($request->manager_id != null) {
             $manager = Manager::find($request->manager_id);
@@ -242,13 +243,14 @@ class ClientController extends Controller
             return response()->json(["message" => "Δεν υπάρχει ο συγκεκριμένος πελάτης στο σύστημα"], 404);
         }
 
-        if ($request->email != null) {
-            $email = Client::where('email', $request->email)->where('id', "!=", $request->id)->first();
+        //commented out check client email
+        // if ($request->email != null) {
+        //     $email = Client::where('email', $request->email)->where('id', "!=", $request->id)->first();
 
-            if ($email) {
-                return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο πελάτη"], 422);
-            }
-        }
+        //     if ($email) {
+        //         return response()->json(["message" => "Το mail αυτο χρησιμοποιείται από άλλο πελάτη"], 422);
+        //     }
+        // }
 
         ClientMark::where('client_id', $request->id)->delete();
         if (count($request->marks) > 0) {
