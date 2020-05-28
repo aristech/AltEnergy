@@ -268,7 +268,7 @@ class AuthController extends Controller
             return response()->json(["message" => "τουλάχιστον ένα τηλέφωνο είναι υποχρεώτικο!"], 422);
         }
 
-        if (!$request->password && !$request->pasword_confirmation) {
+        if (!$request->password && !$request->password_confirmation) {
             $user->update([
                 "lastname" => $request->lastname,
                 "firstname" => $request->firstname,
@@ -314,7 +314,7 @@ class AuthController extends Controller
             'mobile' => $request->mobile
         ]);
 
-        return response()->json(['message' => 'Τα στοιχεία του χρήστη με κωδικό ' . $request->id . ' ενημερώθηκαν επιτυχώς. Ο χρήστης ' . $request->lastname . " " . $request->firstname . " καταχωρήθηκε επιτυχώς με ρόλο " . $role_name->role_title . "!Νέα στοιχεία εισόδου χρήστη: Email: " . $user->email . " Password: " . $request->password, UserResource::make($user)], 201, ['charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
+        return response()->json(['message' => 'Τα στοιχεία του χρήστη με κωδικό ' . $request->id . ' ενημερώθηκαν επιτυχώς. Ο χρήστης ' . $request->lastname . " " . $request->firstname . " καταχωρήθηκε επιτυχώς!Νέα στοιχεία εισόδου χρήστη: Email: " . $user->email . " Password: " . $request->password, UserResource::make($user)], 201, ['charset' => 'utf-8'], JSON_UNESCAPED_UNICODE);
         //return response()->json(["message" => "Τα στοιχεία του χρήστη άλλαξαν επιτυχώς!", UserResource::make($user)],200);
     }
 

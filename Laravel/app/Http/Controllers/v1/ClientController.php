@@ -13,6 +13,7 @@ use App\Http\CustomClasses\v1\Greeklish;
 use App\Http\CustomClasses\v1\SendMail;
 use App\Mark;
 use App\ClientMark;
+use DB;
 
 
 class ClientController extends Controller
@@ -121,9 +122,16 @@ class ClientController extends Controller
             }
         }
 
+        /*
         $lastClient = Client::latest()->first();
 
         $foldername = $request->lastname . "_" . $request->firstname . "_" . ($lastClient['id'] + 1);
+        $foldername = Greeklish::remove_accent($foldername); //conversion to greeklish
+        */
+        $statement = DB::select("SHOW TABLE STATUS LIKE 'clients'");
+        $nextId = $statement[0]->Auto_increment;
+
+        $foldername = $request->lastname . "_" . $request->firstname . "_" . $nextId;
         $foldername = Greeklish::remove_accent($foldername); //conversion to greeklish
         $request->request->add(["foldername" => $foldername]);
 
