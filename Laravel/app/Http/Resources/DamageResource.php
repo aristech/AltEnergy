@@ -29,6 +29,27 @@ class DamageResource extends JsonResource
 
         return $add;
     }
+
+    public function client_fullname()
+    {
+        if ($this->client['firstname'] && $this->client['lastname']) {
+            $fullname = $this->client['firstname'] . " " . $this->client['lastname'];
+        }
+
+        if (!$this->client['firstname'] && !$this->client['lastname']) {
+            $fullname = "";
+        }
+
+        if (!$this->client['firstname'] && $this->client['lastname']) {
+            $fullname = $this->client['lastname'];
+        }
+
+        if ($this->client['firstname'] && !$this->client['lastname']) {
+            $fullname = $this->client['firstname'];
+        }
+
+        return $fullname;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -67,6 +88,7 @@ class DamageResource extends JsonResource
                 "damage_fixed" => $this->damage_fixed,
                 "completed_no_transaction" => $this->completed_no_transaction,
                 "client_id" => $this->client_id,
+                "client_fullname" => $this->client_fullname(),
                 "client_lastname" => $this->client['lastname'],
                 "client_firstname" => $this->client['firstname'],
                 "client_address" => $this->fixedAddress(),

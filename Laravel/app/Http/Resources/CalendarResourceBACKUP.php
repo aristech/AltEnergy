@@ -17,23 +17,6 @@ class CalendarResource extends JsonResource
 {
     public $calendar;
 
-    public $calendarEntity;
-
-    public function fetchCalendarEntity()
-    {
-        if ($this->damage_id != null) {
-            $this->calendarEntity = Damage::where('id', $this->damage_id)->first();
-        }
-
-        if ($this->service_id != null) {
-            $this->calendarEntity = Service::where('id', $this->service_id)->first();
-        }
-
-        if ($this->note_id != null) {
-            $this->calendarEntity = Note::where('id', $this->note_id)->first();
-        }
-    }
-
     // public function __construct()
     // {
     //     $this->calendar = new CalendarClass($this->id, $this->damage_id, $this->service_id, $this->offer_id);
@@ -47,9 +30,6 @@ class CalendarResource extends JsonResource
     public function toArray($request)
     {
         date_default_timezone_set('Europe/Athens');
-
-        $this->fetchCalendarEntity();
-
         return
             [
                 "id" => $this->id,
@@ -74,7 +54,7 @@ class CalendarResource extends JsonResource
                 }),
                 "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null || $this->note_id != null, function () {
                     if ($this->damage_id != null) {
-                        $damage = $this->calendarEntity;
+                        $damage = Damage::where('id', $this->damage_id)->first();
                         // if ($damage['client']['telephone'] != null) {
                         if ($damage['techs']) {
                             $techs = explode(",", $damage['techs']);
@@ -138,11 +118,11 @@ class CalendarResource extends JsonResource
                     }
 
                     if ($this->event_id != null) {
-                        return $this->calendarEntity['title'];
+                        return Eventt::where('id', $this->event_id)->first()['title'];
                     }
 
                     if ($this->service_id != null) {
-                        $service = $this->calendarEntity;
+                        $service = Service::where('id', $this->service_id)->first();
                         // if ($service['client']['telephone'] != null) {
                         //     $phone = $service['client']['telephone'];
                         // } elseif ($service['client']['telephone2'] != null) {
@@ -207,7 +187,7 @@ class CalendarResource extends JsonResource
                     }
 
                     if ($this->note_id != null) {
-                        $note = $this->calendarEntity;
+                        $note = Note::where('id', $this->note_id)->first();
                         //return Note::where('id', $this->note_id)->first()['title'];
                         if ($note['dateTime_start']) {
                             /*
@@ -244,60 +224,60 @@ class CalendarResource extends JsonResource
                 }),
                 "start" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        return $this->calendarEntity['appointment_start'];
+                        return Damage::where('id', $this->damage_id)->first()['appointment_start'];
                     }
 
                     if ($this->event_id != null) {
-                        return $this->calendarEntity["event_start"];
+                        return Eventt::where('id', $this->event_id)->first()["event_start"];
                     }
                     if ($this->note_id != null) {
-                        return $this->calendarEntity["dateTime_start"];
+                        return Note::where('id', $this->note_id)->first()["dateTime_start"];
                     }
                     if ($this->service_id != null) {
-                        return $this->calendarEntity["appointment_start"];
+                        return Service::where('id', $this->service_id)->first()["appointment_start"];
                     }
                 }),
                 "end" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null, function () {
                     if ($this->damage_id != null) {
-                        return $this->calendarEntity['appointment_end'];
+                        return Damage::where('id', $this->damage_id)->first()['appointment_end'];
                     }
 
                     if ($this->event_id != null) {
-                        return $this->calendarEntity["event_end"];
+                        return Eventt::where('id', $this->event_id)->first()["event_end"];
                     }
                     if ($this->note_id != null) {
-                        return $this->calendarEntity["dateTime_end"];
+                        return Note::where('id', $this->note_id)->first()["dateTime_end"];
                     }
                     if ($this->service_id != null) {
-                        return $this->calendarEntity["appointment_end"];
+                        return Service::where('id', $this->service_id)->first()["appointment_end"];
                     }
                 }),
                 "all_day" => $this->when($this->note_id != null, function () {
-                    return $this->calendarEntity["all_day"];
+                    return Note::where('id', $this->note_id)->first()["all_day"];
                 }),
                 "client_name" => $this->when($this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
                         $current_client = $current_damage['client'];
                         return $current_client['firstname'] . " " . $current_client['lastname'];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
                         $current_client = $current_service['client'];
                         return $current_client['firstname'] . " " . $current_client['lastname'];
                     }
                 }),
                 "client_address" => $this->when($this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
                         $current_client = $current_damage['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['address'];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
                         $current_client = $current_service['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['address'];
@@ -305,14 +285,14 @@ class CalendarResource extends JsonResource
                 }),
                 "client_location" => $this->when($this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
                         $current_client = $current_damage['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['location'];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
                         $current_client = $current_service['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['location'];
@@ -320,14 +300,14 @@ class CalendarResource extends JsonResource
                 }),
                 "client_level" =>   $this->when($this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
                         $current_client = $current_damage['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['level'];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
                         $current_client = $current_service['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['level'];
@@ -335,14 +315,14 @@ class CalendarResource extends JsonResource
                 }),
                 "client_zipcode" =>   $this->when($this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
                         $current_client = $current_damage['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['zipcode'];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
                         $current_client = $current_service['client'];
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['zipcode'];
@@ -350,7 +330,7 @@ class CalendarResource extends JsonResource
                 }),
                 "client_telephone" => $this->when($this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
                         $current_client = $current_damage['client'];
                         $tel_array = array();
                         if ($current_client['telephone'] != null || $current_client['telephone'] != "") {
@@ -372,7 +352,7 @@ class CalendarResource extends JsonResource
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
                         $current_client = $current_service['client'];
                         $tel_array = array();
                         if ($current_client['telephone'] != null || $current_client['telephone'] != "") {
@@ -394,14 +374,14 @@ class CalendarResource extends JsonResource
                 }),
                 "status" => $this->when($this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
 
                         //$information = new \stdClass();
                         return  $current_damage["status"];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
 
                         //$information = new \stdClass();
                         return  $current_service["status"];
@@ -409,14 +389,14 @@ class CalendarResource extends JsonResource
                 }),
                 "appointment_pending" => $this->when($this->damage_id || $this->service_id, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
 
                         //$information = new \stdClass();
                         return  $current_damage["appointment_pending"];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
 
                         //$information = new \stdClass();
                         return  $current_service["appointment_pending"];
@@ -424,14 +404,14 @@ class CalendarResource extends JsonResource
                 }),
                 "event_type" => $this->when($this->damage_id || $this->service_id, function () {
                     if ($this->damage_id != null) {
-                        $current_damage = $this->calendarEntity;
+                        $current_damage = Damage::where('id', $this->damage_id)->first();
 
                         //$information = new \stdClass();
                         return  DamageType::where("id", $current_damage["damage_type_id"])->first()["name"];
                     }
 
                     if ($this->service_id != null) {
-                        $current_service = $this->calendarEntity;
+                        $current_service = Service::where('id', $this->service_id)->first();
 
                         //$information = new \stdClass();
                         //return  $current_service["appointment_pending"];
@@ -440,9 +420,9 @@ class CalendarResource extends JsonResource
                 }),
                 "techs" => $this->when($this->damage_id || $this->service_id, function () {
                     if ($this->damage_id != null) {
-                        $current = $this->calendarEntity;
+                        $current = Damage::where('id', $this->damage_id)->first();
                     } else {
-                        $current = $this->calendarEntity;
+                        $current = Service::where('id', $this->service_id)->first();
                     }
 
                     if (!$current["techs"]) {
@@ -461,9 +441,9 @@ class CalendarResource extends JsonResource
                 }),
                 "devices" =>  $this->when($this->damage_id || $this->service_id, function () {
                     if ($this->damage_id != null) {
-                        $current = $this->calendarEntity;
+                        $current = Damage::where('id', $this->damage_id)->first();
                     } else {
-                        $current = $this->calendarEntity;
+                        $current = Service::where('id', $this->service_id)->first();
                     }
 
                     if (!$current["marks"]) {
@@ -482,9 +462,9 @@ class CalendarResource extends JsonResource
                 }),
                 "appointment_pending" => $this->when($this->damage_id || $this->service_id, function () {
                     if ($this->damage_id) {
-                        $current = $this->calendarEntity;
+                        $current = Damage::where('id', $this->damage_id)->first();
                     } else {
-                        $current = $this->calendarEntity;
+                        $current = Service::where('id', $this->service_id)->first();
                     }
 
                     $appointment_pending = $current["appointment_pending"] == true ? "ΝΑΙ" : "ΟΧΙ";
@@ -495,10 +475,10 @@ class CalendarResource extends JsonResource
                 // $information->comments = $current_damage['damage_comments'] != null ? $current_damage['damage_comments'] : "";
                 "task_comments" => $this->when($this->damage_id || $this->service_id, function () {
                     if ($this->damage_id) {
-                        $current = $this->calendarEntity;
+                        $current = Damage::where('id', $this->damage_id)->first();
                         $response =  $current["damage_comments"];
                     } else {
-                        $current = $this->calendarEntity;
+                        $current = Service::where('id', $this->service_id)->first();
                         $response =  $current["service_comments"];
                     }
 
@@ -508,9 +488,42 @@ class CalendarResource extends JsonResource
                         return "";
                     }
                 }),
+
+                //         //return $information;
+                //     }
+
+                //     if ($this->service_id != null) {
+                //         $current_service = Damage::where('id', $this->service_id)->first();
+
+                //         $information = new \stdClass();
+                //         $information->status = $current_service["status"];
+                //         $information->appointment_pending = $current_service["appointment_pending"] == true ? "ΝΑΙ" : "ΟΧΙ";
+                //         //$information->device = Device::where("id", $current_damage["device_id"])->first()['name'];
+                //         $information->comments = $current_service['service_comments'] != null ? $current_service['service_comments'] : "";
+                //         $information->general_comments = $current_service['comments'] != null ? $current_service["comments"] : "";
+
+                //         return $information;
+                //     }
+                // }),
+                // "comments" => $this->when()
+
+
+                // "startRecur" => $this->when($this->service_id != null, function()
+                // {
+                //     return Service::where('id',$this->service_id)->first()['appointment_start'];
+                // }),
+                // "endRecur" => $this->when($this->service_id != null, function()
+                // {
+                //     return Service::where('id',$this->service_id)->first()['appointment_end'];
+                // }),
+                // "frequency" => $this->when($this->service_id != null , function()
+                // {
+                //     $service = Service::where('repeatable',true)->get()->first();
+                //     return $service['frequency'];
+                // })
                 "textColor" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
                     if ($this->damage_id != null) {
-                        $dmg = $this->calendarEntity;
+                        $dmg = Damage::where('id', $this->damage_id)->first();
                         /*commented out on 22052020
                         if ($dmg['status'] != "Μη Ολοκληρωμένη") {
                             return "#ff0000";
@@ -526,7 +539,7 @@ class CalendarResource extends JsonResource
                     }
                     if ($this->service_id != null) {
 
-                        $service = $this->calendarEntity;
+                        $service = Service::where('id', $this->service_id)->first();
                         /*commented out on 22052020
                         if ($service['status'] != "Μη Ολοκληρωμένο") {
                             return "#ff0000";
@@ -543,7 +556,7 @@ class CalendarResource extends JsonResource
                 }),
                 "color" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
                     if ($this->note_id != null) {
-                        $importance = $this->calendarEntity["importance"];
+                        $importance = Note::where('id', $this->note_id)->first()["importance"];
                         switch ($importance) {
                             case 0:
                                 return "#ff0000";
@@ -560,7 +573,7 @@ class CalendarResource extends JsonResource
                         }
                     }
                     if ($this->damage_id != null) {
-                        $dmg = $this->calendarEntity;
+                        $dmg = Damage::where('id', $this->damage_id)->first();
                         $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
@@ -572,7 +585,7 @@ class CalendarResource extends JsonResource
                         }
                     }
                     if ($this->service_id != null) {
-                        $dmg = $this->calendarEntity;
+                        $dmg = Service::where('id', $this->service_id)->first();
                         $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
