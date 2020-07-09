@@ -8,6 +8,27 @@ use App\Mark;
 
 class ServiceResource extends JsonResource
 {
+    public function fixedAddress()
+    {
+        $add = '';
+        if ($this->client['address']) {
+            $add .= $this->client['address'];
+        }
+
+        if ($this->client['location'] && $this->client['address']) {
+            $add .= ', ' . $this->client['location'];
+        } elseif ($this->client['location'] && !$this->client['address']) {
+            $add .=  $this->client['location'];
+        }
+
+        if ($this->client['zipcode'] && ($this->client['address'] || $this->client['location'])) {
+            $add .= ', ' . $this->client['zipcode'];
+        } elseif ($this->client['zipcode'] && (!$this->client['address'] && !$this->client['location'])) {
+            $add = $this->client['zipcode'];
+        }
+
+        return $add;
+    }
     /**
      * Transform the resource into an array.
      *
@@ -47,7 +68,7 @@ class ServiceResource extends JsonResource
                 "client_id" => $this->client_id,
                 "client_lastname" => $this->client['lastname'],
                 "client_firstname" => $this->client['firstname'],
-                "client_address" => $this->client['address'] . "," . $this->client['address'] . "," . $this->client['zipcode'],
+                "client_address" => $this->fixedAddress(),
                 "client_phone" =>  $this->when(true, function () {
                     if ($this->client['telephone'] != null) return $this->client['telephone'];
                     if ($this->client['telephone2'] != null) return $this->client['telephone2'];
@@ -67,8 +88,10 @@ class ServiceResource extends JsonResource
                     $devices_array = explode(',', $this->marks);
                     foreach ($devices_array as $d) {
                         $mark = Mark::where('id', $d)->first();
-                        $device = $mark['manufacturer']['name'] . "/" . $mark['name'];
-                        array_push($detailed_device_array, $device);
+                        if ($mark) {
+                            $device = $mark['manufacturer']['name'] . "/" . $mark['name'];
+                            array_push($detailed_device_array, $device);
+                        }
                     }
 
                     return implode(" , ", $detailed_device_array);

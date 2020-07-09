@@ -11,7 +11,7 @@ use App\Client;
 use App\DamageType;
 use App\UsersRoles;
 use App\Calendar;
-use App\Http\CustomClasses\v1\TechMail;
+//use App\Http\CustomClasses\v1\TechMail;
 //update for only two layers
 use App\Mark;
 
@@ -31,7 +31,10 @@ class ServiceManagement
 
     public static function getServices()
     {
-        $services = ServiceResource::collection(Service::orderBy('appointment_start', 'asc')->get());
+        // $services = ServiceResource::collection(Service::orderBy('appointment_start', 'asc')->get());
+        // return $services;
+        //orderByRaw("CASE WHEN status = 'Μη Ολοκληρωμένη' THEN 1  WHEN status = 'Ολοκληρώθηκε' THEN 2 ELSE 3 END ASC")
+        $services = ServiceResource::collection(Service::orderByRaw("CASE WHEN status = 'Μη Ολοκληρωμένο' THEN 1  WHEN status = 'Ολοκληρώθηκε' THEN 2 ELSE 3 END ASC")->get());
         return $services;
     }
 
@@ -276,7 +279,7 @@ class ServiceManagement
 
         if ($service->appointment_start != null && $service->status == "Μη Ολοκληρωμένο") Calendar::create(["name" => "service", "type" => "services", "service_id" => $service->id]);
 
-        TechMail::sendToTechs($service, "σέρβις", "new");
+        //TechMail::sendToTechs($service, "σέρβις", "new"); --> Removed 8/7/2020
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"], 200);
     }
 
@@ -358,7 +361,7 @@ class ServiceManagement
         $this->service->update($this->input);
 
         $service = Service::find($this->service['id']);
-        TechMail::sendToTechs($service, "σέρβις", "update");
+        //TechMail::sendToTechs($service, "σέρβις", "update"); --> Removed 8/7/2020
 
 
 

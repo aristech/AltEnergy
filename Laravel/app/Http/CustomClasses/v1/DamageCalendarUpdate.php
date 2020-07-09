@@ -13,7 +13,7 @@ use App\Eventt;
 use App\UsersRoles;
 use App\Calendar;
 use App\Mark;
-use App\Http\CustomClasses\v1\TechMail;
+//use App\Http\CustomClasses\v1\TechMail;
 
 class DamageCalendarUpdate
 {
@@ -312,7 +312,7 @@ class DamageCalendarUpdate
         // }
 
         $dmg = Damage::find($damage->id);
-        TechMail::sendToTechs($dmg, "βλάβη", "new");
+        //TechMail::sendToTechs($dmg, "βλάβη", "new"); Removed on 8/7/2020
         return response()->json(["message" => "Η βλάβη του πελάτη καταχωρήθηκε επιτυχως!"], 200);
     }
 
@@ -383,7 +383,7 @@ class DamageCalendarUpdate
         if ($this->damage->status == "Μη Ολοκληρωμένη" && !$calendar) {
             Calendar::create(['type' => 'damages', 'name' => 'βλάβη', 'damage_id' => $this->damage->id]);
         }
-        TechMail::sendToTechs($this->damage, "βλάβη", "update");
+        //TechMail::sendToTechs($this->damage, "βλάβη", "update"); -> Reoved 8/7/2020
         //End Calendar update process
         return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό " . $this->request->id . " ενημερώθηκαν επιτυχώς!"], 200);
     }

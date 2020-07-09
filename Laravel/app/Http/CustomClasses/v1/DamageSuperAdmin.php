@@ -12,7 +12,7 @@ use App\DamageType;
 use App\Eventt;
 use App\UsersRoles;
 use App\Calendar;
-use App\Http\CustomClasses\v1\TechMail;
+//use App\Http\CustomClasses\v1\TechMail;
 
 use App\Mark;
 
@@ -33,7 +33,11 @@ class DamageSuperAdmin
 
     public static function getDamages()
     {
+        /*commentedOut 8/7/2020
         $damages = DamageResource::collection(Damage::orderBy('appointment_start', 'asc')->get()); //Damage::where('status','Μη Ολοκληρωμένη')->get()
+        return $damages;*/
+        //->orderByRaw("CASE WHEN <CONDITION> THEN < > ELSE < > END DESC")
+        $damages = DamageResource::collection(Damage::orderByRaw("CASE WHEN status = 'Μη Ολοκληρωμένη' THEN 1  WHEN status = 'Ολοκληρώθηκε' THEN 2 ELSE 3 END ASC")->get()); //Damage::where('status','Μη Ολοκληρωμένη')->get()
         return $damages;
     }
 
@@ -314,7 +318,7 @@ class DamageSuperAdmin
         //     // Eventt::create(["event_type" => "damage", "event_id" => $damage->id]);
         // }
         $dmg = Damage::find($damage->id);
-        TechMail::sendToTechs($dmg, "βλάβη", "new");
+        //TechMail::sendToTechs($dmg, "βλάβη", "new"); -> Removed on 8/7/2020
 
         return response()->json(["message" => "Η βλάβη του πελάτη καταχωρήθηκε επιτυχως!"], 200);
     }
@@ -390,7 +394,7 @@ class DamageSuperAdmin
             Calendar::create(['type' => 'damages', 'name' => 'βλάβη', 'damage_id' => $this->damage->id]);
         }
 
-        TechMail::sendToTechs($this->damage, "βλάβη", "update");
+        //TechMail::sendToTechs($this->damage, "βλάβη", "update"); -> Removed from 8/7/2020
         //End Calendar update process
         return response()->json(["message" => "Τα στοίχεια της βλάβης με κωδικό " . $this->request->id . " ενημερώθηκαν επιτυχώς!"], 200);
     }

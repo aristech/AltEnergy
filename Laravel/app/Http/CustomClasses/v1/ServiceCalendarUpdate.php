@@ -12,7 +12,7 @@ use App\DamageType;
 use App\UsersRoles;
 use App\Calendar;
 use App\Mark;
-use App\Http\CustomClasses\v1\TechMail;
+//use App\Http\CustomClasses\v1\TechMail;
 
 class ServiceCalendarUpdate
 {
@@ -273,7 +273,7 @@ class ServiceCalendarUpdate
 
         if ($service->appointment_start != null && $service->status == "Μη Ολοκληρωμένο") Calendar::create(["name" => "service", "type" => "services", "service_id" => $service->id]);
 
-        TechMail::sendToTechs($service, "σέρβις", "new");
+        //TechMail::sendToTechs($service, "σέρβις", "new"); --> Removed 8/7/2020
         return response()->json(["message" => "Το service καταχωρήθηκε επιτυχως!"], 200);
     }
 
@@ -366,7 +366,7 @@ class ServiceCalendarUpdate
         //TechMail::sendToTechs($service, "σέρβις", "update");
 
         $service = Service::find($this->service['id']);
-        TechMail::sendToTechs($service, "σέρβις", "update");
+        //TechMail::sendToTechs($service, "σέρβις", "update"); --> 8/7/2020
 
         return response()->json(["message" => "Τα στοίχεια του service με κωδικό " . $this->request->id . " ενημερώθηκαν επιτυχώς!"], 200);
     }

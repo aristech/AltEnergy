@@ -97,17 +97,17 @@ class CalendarResource extends JsonResource
                         // } else {
                         //     $phone = $damage['client']['mobile'];
                         $client = $damage['client']['lastname'] !== null ? $damage['client']['lastname'] : "Ν/Α";
-                        $address = $damage['client']['address'] !== null ? $damage['client']['address'] : "N/A";
+                        //$address = $damage['client']['address'] !== null ? $damage['client']['address'] : "N/A"; ->Removed 08/07/2020
                         $location = $damage['client']['location'] !== null ? $damage['client']['location'] : "Ν/Α";
-                        $status = $damage['status'];
+                        //$status = $damage['status']; ->Removed 08/07/2020
                         // }
                         $html = "<div>";
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
-                        $html .= "<b>Τύπος: </b>Βλάβη" . "<br>";
+                        //$html .= "<b>Τύπος: </b>Βλάβη" . "<br>"; ->Removed 08/07/2020
                         $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
                         $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
-                        $html .= "<b>Κατάσταση:</b> " . $status . '<br>';
-                        $html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";
+                        //$html .= "<b>Κατάσταση:</b> " . $status . '<br>';  ->Removed 08/07/2020
+                        //$html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";  ->Removed 08/07/2020
                         $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
                         $html .= "</div>";
                         return $html;
@@ -166,18 +166,18 @@ class CalendarResource extends JsonResource
                         }
 
                         $client = $service['client']['lastname'] !== null ? $service['client']['lastname'] : "Ν/Α";
-                        $address = $service['client']['address'] !== null ? $service['client']['address'] : "N/A";
+                        //$address = $service['client']['address'] !== null ? $service['client']['address'] : "N/A";  --> Removed 08/07/2020
                         $location = $service['client']['location'] !== null ? $service['client']['location'] : "Ν/Α";
-                        $status = $service['status'];
+                        //$status = $service['status']; --> Removed 08/07/2020
 
 
                         $html = "<div>";
                         $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
-                        $html .= "<b>Τύπος: </b>Σέρβις" . "<br>";
+                        //$html .= "<b>Τύπος: </b>Σέρβις" . "<br>";  --> Removed 08/07/2020
                         $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
                         $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
-                        $html .= "<b>Κατάσταση: </b>" . $service['status'] . "<br>";
-                        $html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";
+                        //$html .= "<b>Κατάσταση: </b>" . $service['status'] . "<br>";  --> Removed 08/07/2020
+                        //$html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";  --> Removed 08/07/2020
                         $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
                         $html .= "</div>";
 
