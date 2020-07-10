@@ -63,7 +63,8 @@ class MarkController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                "name" => "required|string"
+                "name" => "required|string",
+                "guarantee_year" => "nullable|integer"
             ]
         );
 
@@ -76,11 +77,11 @@ class MarkController extends Controller
             return response()->json(["message" => "Ο κατασκευαστής αυτος δεν βρέθηκε!"], 404);
         }
 
-        $input = array("name" => $request->name, "manufacturer_id" => $manufacturer->id);
+        $input = array("name" => $request->name, "guarantee_years" => $request->guarantee_years, "manufacturer_id" => $manufacturer->id);
 
         $mark = Mark::create($input);
         //create bullet
-        Bullet::create(["price"=>0.00,"description"=>$mark->manufacturer->name.', '.$mark->name,"mark_id"=>$mark->id]);
+        Bullet::create(["price" => 0.00, "description" => $mark->manufacturer->name . ', ' . $mark->name, "mark_id" => $mark->id]);
 
 
         return response()->json(["message" => "Tο νέο μοντέλο καταχωρήθηκε επιτυχώς!"], 200);

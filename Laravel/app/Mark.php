@@ -12,7 +12,7 @@ class Mark extends Model
 {
     protected $table = 'marks';
 
-    protected $fillable = ['name', 'manufacturer_id'];
+    protected $fillable = ['name', 'guarantee_years', 'manufacturer_id'];
 
     protected $hidden = ['created_at', 'updated_at'];
 

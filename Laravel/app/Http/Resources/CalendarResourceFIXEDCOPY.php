@@ -518,10 +518,10 @@ class CalendarResource extends JsonResource
                             return "#ffffff";
                         }
                         */
-                        if ($dmg['status'] == "Ακυρώθηκε") {
-                            return "#ffffff";
+                        if ($dmg['status'] == "Ολοκληρώθηκε") {
+                            return "#ff0000";
                         } else {
-                            return "#000000";
+                            return "#ffffff";
                         }
                     }
                     if ($this->service_id != null) {
@@ -534,10 +534,10 @@ class CalendarResource extends JsonResource
                             return "#ffffff";
                         }
                         */
-                        if ($service['status'] == "Ακυρώθηκε") {
-                            return "#ffffff";
+                        if ($service['status'] == "Ολοκληρώθηκε") {
+                            return "#ff0000";
                         } else {
-                            return "#000000";
+                            return "#ffffff";
                         }
                     }
                 }),
@@ -561,7 +561,6 @@ class CalendarResource extends JsonResource
                     }
                     if ($this->damage_id != null) {
                         $dmg = $this->calendarEntity;
-                        /*
                         $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
@@ -570,22 +569,10 @@ class CalendarResource extends JsonResource
                             return "#ff0000";
                         } else {
                             return "#5d5fea";
-                        }*/
-                        if ($dmg['status'] == "Ολοκληρώθηκε") {
-                            return "#ff0000";
-                        }
-
-                        if ($dmg['status'] == "Μη Ολοκληρωμένη") {
-                            return "#3ee110";
-                        }
-
-                        if ($dmg['status'] == "Ακυρώθηκε") {
-                            return "#000000";
                         }
                     }
                     if ($this->service_id != null) {
                         $dmg = $this->calendarEntity;
-                        /*
                         $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
@@ -594,18 +581,6 @@ class CalendarResource extends JsonResource
                             return "#ff0000";
                         } else {
                             return "#bd391b";
-                        }
-                        */
-                        if ($dmg['status'] == "Ολοκληρώθηκε") {
-                            return "#ff0000";
-                        }
-
-                        if ($dmg['status'] == "Μη Ολοκληρωμένο") {
-                            return "#3ee110";
-                        }
-
-                        if ($dmg['status'] == "Ακυρώθηκε") {
-                            return "#000000";
                         }
                     }
                 })
