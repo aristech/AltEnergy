@@ -23,7 +23,7 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
 
     Route::post('/login', 'AuthController@login');
     Route::post('/signup', 'AuthController@signup');
-    Route::get('/test', 'TestController@test');
+    Route::post('/test', 'TestController@test');
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/appointment', 'FreeAppointmentController@index');

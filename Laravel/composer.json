@@ -16,6 +16,7 @@
         "convertapi/convertapi-php": "^1.1",
         "darkaonline/l5-swagger": "^6.0",
         "doctrine/dbal": "^2.9",
+        "elibyy/tcpdf-laravel": "^7.0",
         "fideloper/proxy": "^4.0",
         "fzaninotto/faker": "^1.8",
         "intervention/image": "^2.5",
