@@ -84,6 +84,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::put('/settings/bullets/{bullet}', 'BulletController@update');
                 Route::delete('/settings/bullets/{bullet}', 'BulletController@destroy');
 
+                //
+                Route::get('/offerTexts', 'OfferTextController@index');
+                Route::get('/offerTexts/{offerText}', 'OfferTextController@show');
+                Route::post('/offerTexts', 'OfferTextController@store');
+                Route::put('/offerTexts/{offerText}', 'OfferTextController@update');
+                Route::delete('/offerTexts', 'OfferTextController@destroy');
+                //
+
                 Route::get('/offers', 'OfferController@index');
                 Route::post('/offers', 'OfferController@store');
                 // Route::get('/offers/{offer}/{status}', 'OfferController@edit');

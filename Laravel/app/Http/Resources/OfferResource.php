@@ -34,7 +34,11 @@ class OfferResource extends JsonResource
             "offer_bullets" => $this->when(true, function () {
                 $bulletsArray = array();
                 foreach ($this->bullets as $bullet) {
-                    array_push($bulletsArray, $bullet['description']);
+                    if ($bullet['pivot']['quantity'] > 1) {
+                        array_push($bulletsArray, $bullet['description'] . " x " . $bullet['pivot']['quantity']);
+                    } else {
+                        array_push($bulletsArray, $bullet['description']);
+                    }
                 }
 
                 return implode(' | ', $bulletsArray);

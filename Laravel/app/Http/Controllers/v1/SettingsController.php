@@ -8,6 +8,7 @@ use App\ScannerSettings;
 use App\Bullet;
 use App\Http\Resources\ScannerSettingsResource;
 use App\Http\Resources\BulletResource;
+use App\OfferText;
 
 class SettingsController extends Controller
 {
@@ -35,12 +36,19 @@ class SettingsController extends Controller
         array_push($settings, $settings_type);
 
         $settings_type = new \stdClass();
-        $settings_type->name = "Κείμενα Προσφορών";
+        $settings_type->name = "Τμήματα Προσφορών";
         $settings_type->url = "bullets";
         $settings_type->data = BulletResource::collection(Bullet::all());
 
         array_push($settings, $settings_type);
+        //offer text entity
+        $settings_type = new \stdClass();
+        $settings_type->name = "Κείμενα Προσφορών";
+        $settings_type->url = "offer_texts";
+        $settings_type->data = OfferText::all();
 
+        array_push($settings, $settings_type);
+        //offer text entity end
         return response()->json(["data" => $settings], 200);
     }
 

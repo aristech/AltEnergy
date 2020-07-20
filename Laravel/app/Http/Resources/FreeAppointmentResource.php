@@ -48,7 +48,7 @@ class FreeAppointmentResource extends JsonResource
                     $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
                     $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
                     */
-                    $time_start = date("H:i", strtotime($this->appointment_end));
+                    $time_end = date("H:i", strtotime($this->appointment_end));
                 } else {
                     $time_end = "?";
                 }

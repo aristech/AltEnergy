@@ -8,5 +8,5 @@ class BulletOffer extends Model
 {
     protected $table = 'bullet_offer';
 
-    protected $fillable = ['bullet_id', 'offer_id'];
+    protected $fillable = ['bullet_id', 'offer_id', 'quantity'];
 }
