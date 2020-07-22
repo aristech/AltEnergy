@@ -11,7 +11,7 @@ use App\OfferText;
 class Offer extends Model
 {
     protected $table = 'offers';
-    protected $fillable = ['client_id', 'offer_filename', 'offer_text_id', 'status_id', 'amount', 'number', 'offer_number'];
+    protected $fillable = ['client_id', 'title_id', 'offer_filename', 'offer_text_id', 'status_id', 'amount', 'number', 'offer_number'];
 
     public function client()
     {

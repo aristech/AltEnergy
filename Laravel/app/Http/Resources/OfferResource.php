@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\DamageType;
 
 class OfferResource extends JsonResource
 {
@@ -17,6 +18,7 @@ class OfferResource extends JsonResource
     {
         return [
             "id" => $this->id,
+            "title" => DamageType::where('id', $this->title_id)->first()['name'],
             "client_id" => $this->client_id,
             "client_lastname" => $this->client['lastname'],
             "client_firstname" => $this->client['firstname'],

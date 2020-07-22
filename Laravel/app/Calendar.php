@@ -8,7 +8,5 @@ class Calendar extends Model
 {
     protected $table = "calendar";
 
-    protected $fillable = ["name","type", 'damage_id', 'service_id','offer_id', 'event_id', 'note_id'];
-
-
+    protected $fillable = ["name", "type", 'damage_id', 'service_id', 'offer_id', 'event_id', 'note_id', 'project_id'];
 }

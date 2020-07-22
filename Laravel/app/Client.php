@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Manager;
 use App\Mark;
 use App\Offer;
+use App\Project;
 
 class Client extends Model
 {
@@ -28,5 +29,10 @@ class Client extends Model
     public function offers()
     {
         return $this->hasMany(Offer::class);
+    }
+
+    public function projects()
+    {
+        return $this->hasMany(Project::class);
     }
 }

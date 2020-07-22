@@ -244,7 +244,8 @@ class ServiceResource extends JsonResource
                     "service_comments" => ["roles" => array(5, 4, 3), "field" => "service_comments", "value" => $this->service_comments, "type" => "text", "title" => "ΣΧΟΛΙΑ ΣΕΡΒΙΣ", "required" => false],
                     "comments" =>  ["roles" => array(5, 4, 3), "field" => "comments", "type" => "text", "title" => "ΓΕΝΙΚΑ ΣΧΟΛΙΑ", "value" => $this->comments, "required" => false],
                     "repeatable" => ["roles" => array(5, 4, 3), "field" => "repeatable", "value" => $this->repeatable, "type" => "boolean", "title" => "ΣΕΡΒΙΣ ΕΠΑΝΑΛΑΜΒΑΝΟΜΕΝΟ;", "radioItems" => [["id" => 1, "title" => "ΝΑΙ"], ["id" => 0, "title" => "ΟΧΙ"]], "required" => false],
-                    "frequency" => ["roles" => array(5, 4, 3), "field" => "frequency", "value" => $this->frequency, "type" => "boolean", "title" => "ΕΠΑΝΑΛΗΨΗ ΚΑΘΕ:", "radioItems" => [["id" => "+3 months", "title" => "ΤΡΙΜΗΝΟ"], ["id" => "+6 months", "title" => "ΕΞΑΜΗΝΟ"], ["id" => "+1 year", "title" => "ΕΤΟΣ"],  ["id" => "+3 years", "title" => "ΤΡΙΕΤΙΑ"]], "required" => false]
+                    "frequency" => ["roles" => array(5, 4, 3), "field" => "frequency", "value" => $this->frequency, "type" => "boolean", "title" => "ΕΠΑΝΑΛΗΨΗ ΚΑΘΕ:", "radioItems" => [["id" => "+3 months", "title" => "ΤΡΙΜΗΝΟ"], ["id" => "+6 months", "title" => "ΕΞΑΜΗΝΟ"], ["id" => "+1 year", "title" => "ΕΤΟΣ"],  ["id" => "+3 years", "title" => "ΤΡΙΕΤΙΑ"]], "required" => false],
+                    "guarantee_end_date" => ["roles" => array(5, 4, 3), "field" => "guarantee_end_date", "title" => "ΛΗΞΗ ΕΓΓΥΗΣΗΣ", "type" => "datetime", "value" => $this->guarantee_end_date, "required" => false],
                 ])
 
             ];

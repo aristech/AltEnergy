@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b42f2cef5575ca98df49d98b05b8db6a",
+    "content-hash": "64fabf4b701a5dc781d9ac3925f375c7",
     "packages": [
         {
             "name": "ashtokalo/php-translit",
@@ -2819,16 +2819,16 @@
         },
         {
             "name": "phpmailer/phpmailer",
-            "version": "v6.1.4",
+            "version": "v6.1.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPMailer/PHPMailer.git",
-                "reference": "c5e61d0729507049cec9673aa1a679f9adefd683"
+                "reference": "2c2370ba3df7034f9eb7b8f387c97b52b2ba5ad0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/c5e61d0729507049cec9673aa1a679f9adefd683",
-                "reference": "c5e61d0729507049cec9673aa1a679f9adefd683",
+                "url": "https://api.github.com/repos/PHPMailer/PHPMailer/zipball/2c2370ba3df7034f9eb7b8f387c97b52b2ba5ad0",
+                "reference": "2c2370ba3df7034f9eb7b8f387c97b52b2ba5ad0",
                 "shasum": ""
             },
             "require": {
@@ -2877,7 +2877,7 @@
                 }
             ],
             "description": "PHPMailer is a full-featured email creation and transfer class for PHP",
-            "time": "2019-12-10T11:17:38+00:00"
+            "time": "2020-07-14T18:50:27+00:00"
         },
         {
             "name": "phpoffice/common",

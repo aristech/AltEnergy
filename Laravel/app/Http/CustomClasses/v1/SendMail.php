@@ -9,6 +9,9 @@ use App\Http\Resources\NoteResource;
 use App\Service;
 use App\Http\Resources\ServiceResource;
 use DB;
+use App\Project;
+use App\Http\Resources\ProjectResource;
+use App\DamageType;
 
 //#TODO : Insert herefor services as well
 class SendMail
@@ -20,6 +23,10 @@ class SendMail
     private $reminderNt = array();
     public $test;
 
+    //#PROJECTS
+    private $reminderProject = array();
+    //
+
     public $notifications = array();
 
     public $message;
@@ -27,6 +34,10 @@ class SendMail
     public $dmgCount = 0;
     public $serviceCount = 0;
     public $noteCount = 0;
+
+    //#PROJECTS
+    public $projectCount = 0;
+    //
 
 
     public function checktime($diff)
@@ -63,18 +74,18 @@ class SendMail
             $first_tech = $tech_array[0];
 
             if (count($tech_array) > 1) {
-                //$receivers = 'sales@atlenergy.gr' . ',' . $technicians;
-                $receivers = 'manentis.gerasimos@outlook.com' . ',' . $technicians;
+                $receivers = 'sales@atlenergy.gr' . ',' . $technicians;
+                //$receivers = 'manentis.gerasimos@outlook.com' . ',' . $technicians;
             }
 
             if (count($tech_array) == 1) {
-                //$receivers = 'sales@atlenergy.gr' . ',' . $first_tech;
-                $receivers = 'manentis.gerasimos@outlook.com' . ',' . $first_tech;
+                $receivers = 'sales@atlenergy.gr' . ',' . $first_tech;
+                //$receivers = 'manentis.gerasimos@outlook.com' . ',' . $first_tech;
             }
 
             if (count($tech_array) == 0) {
-                //$receivers = 'sales@atlenergy.gr';
-                $receivers = 'manentis.gerasimos@outlook.com';
+                $receivers = 'sales@atlenergy.gr';
+                //$receivers = 'manentis.gerasimos@outlook.com';
             }
 
 
@@ -106,8 +117,8 @@ class SendMail
                 $last_timestamp = $last_mail_timestamp->last_timestamp;
                 $difference = ($timestamp_current - $last_timestamp) / 60;
                 if ($difference >= 30) {
-                    //$to = 'sales@atlenergy.gr';
-                    $to = 'manentis.gerasimos@outlook.com';
+                    $to = 'sales@atlenergy.gr';
+                    //$to = 'manentis.gerasimos@outlook.com';
 
                     $subject = 'Υπενθύμιση Ραντεβού εντός του διαστήματος της Μισης Ωρας(Αυτόματο μήνυμα)';
 
@@ -196,6 +207,45 @@ class SendMail
         }
     }
 
+    //#PROJECTS
+    public function getProjects()
+    {
+        $projects = Project::where("status", "Μη Ολοκληρωμένο")->where('appointment_start', '!=', null)->get();
+
+        if (count($projects) > 0) {
+            foreach ($projects as $project) {
+                $diff = $project["appointment_start"];
+
+                if ($this->checktime($diff) <= 30 && $this->checktime($diff) > 0) {
+                    array_push($this->notifications, ProjectResource::make($project));
+                    $this->projectCount = $this->projectCount + 1;
+                    $obj = new \stdClass();
+                    $obj->type = DamageType::where('id', $project["id"])->first()["name"];
+                    $obj->client = $project["client"]["firstname"] . " " . $project["client"]["lastname"];
+                    $obj->address = "<a href='http://maps.google.com/?q=" . $project["client"]["address"] . "," . $project["client"]["location"] . "," . $project["client"]["zipcode"] . "'>" . $project["client"]["address"] . "," . $project["client"]["location"] . "," . $project["client"]["zipcode"] . "</a>";
+
+                    if ($project['client']['telephone'] != null) {
+                        $obj->tel = "<a href='tel:" . $project['client']['telephone'] . "'>" . $project['client']['telephone'] . "</a>";
+                    } elseif ($project['client']['telephone2'] != null) {
+                        $obj->tel = "<a href='tel:" . $project['client']['telephone2'] . "'>" . $project['client']['telephone2'] . "</a>";
+                    } elseif ($project['client']['mobile'] != null) {
+                        $obj->tel = "<a href='tel:" . $project['client']['mobile'] . "'>" . $project['client']['mobile'] . "</a>";
+                    } else {
+                        $obj->tel = "N/A";
+                    }
+
+                    $appointment = explode('T', $project['appointment_start']);
+                    $appointment = explode('.', $appointment[1]);
+
+                    $obj->date = $appointment[0];
+                    array_push($this->reminderProject, $obj);
+                }
+            }
+        }
+    }
+
+    //
+
     public function getNotes()
     {
         $notes = Note::where('dateTime_start', '!=', null)->get();
@@ -259,6 +309,26 @@ class SendMail
 
                 $this->message .= "</table><br><br>";
             }
+
+            //#PROJECTS
+            if (count($this->reminderProject) != 0) {
+                $this->message .= "<h4>Ραντεβού για Εργα</h4>";
+                $this->message .= "<table border='2'>";
+                $this->message .= "<tr><th>Τυπος Εργου</th><th>Όνομα Πελάτη</th><th>Διεύθυνση</th><th>Τηλέφωνο Επικοινωνίας</th><th>Ωρα Ραντεβού</th></tr>";
+
+                foreach ($this->reminderProject as $proj) {
+
+                    $timestamp = strtotime($proj->date) + 2 * 60 * 60;
+
+                    $time = date('H:i', $timestamp);
+
+                    $this->message .= "<tr><td>" . $proj->type . "</td><td>" . $proj->client . "</td><td>" . $proj->address . "</td><td>" . $proj->tel . "</td><td>" . $time . "</td></tr>";
+                }
+
+                $this->message .= "</table><br><br>";
+            }
+
+            //
 
             if (count($this->reminderNt) != 0) {
                 $this->message .= "<h4>Λοιπές Δραστηριότητες</h4>";

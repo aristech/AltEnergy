@@ -23,7 +23,14 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
 
     Route::post('/login', 'AuthController@login');
     Route::post('/signup', 'AuthController@signup');
-    Route::post('/test', 'TestController@test');
+    // Route::post('/test', 'TestController@test');
+
+    Route::get('/projects', 'ProjectController@index');
+    Route::get('/projects/{projectId}', 'ProjectController@show');
+    Route::post('/projects', 'ProjectController@store');
+    Route::put('/projects', 'ProjectController@update');
+    Route::delete('/projects', 'ProjectController@destroy');
+    Route::delete('/projects/{projectId}', 'ProjectController@remove');
 
     Route::group(['middleware' => 'auth:api'], function () {
         Route::get('/appointment', 'FreeAppointmentController@index');
@@ -92,10 +99,12 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::delete('/offerTexts', 'OfferTextController@destroy');
                 //
 
-                Route::get('/offers', 'OfferController@index');
-                Route::post('/offers', 'OfferController@store');
+                Route::get('/offers', 'NewOfferController@index');
+                Route::post('/offers', 'NewOfferController@store');
                 // Route::get('/offers/{offer}/{status}', 'OfferController@edit');
-                Route::get('/offers-file/{offer}', 'OfferController@file');
+                Route::get('/offers-file/{offer}', 'NewOfferController@file');
+
+                Route::get('/convert-offer/{offerId}', 'NewOfferController@convertToProject');
             });
 
 
@@ -141,6 +150,13 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::delete('/servicetypes', 'ServiceTypeController@destroy');
 
 
+                Route::get('/projects', 'ProjectController@index');
+                Route::get('/projects/{projectId}', 'ProjectController@show');
+                Route::post('/projects', 'ProjectController@store');
+                Route::put('/projects', 'ProjectController@update');
+                Route::put('/projects/{projectId}', 'ProjectController@edit');
+                Route::delete('/projects', 'ProjectController@destroy');
+                Route::delete('/projects/{projectId}', 'ProjectController@remove');
 
 
                 Route::get('/supplements', 'SupplementController@index');

@@ -17,6 +17,10 @@ use App\Http\Resources\DamageResource;
 use App\Http\Resources\ServiceResource;
 use App\Http\CustomClasses\v1\AuthorityClass;
 
+use App\Project;
+use App\Http\Resources\ProjectResource;
+
+
 class DashboardController extends Controller
 {
     /**
@@ -112,6 +116,14 @@ class DashboardController extends Controller
             // $case->appointment_start = Carbon::createFromTimeStamp(strtotime($pending_service['appointment_start']))->format('Y-m-d h:i:sa');
             array_push($open_cases, $case);
         }
+
+        /*dashboard Projects*/
+        $pending_projects = Project::where('status', 'Μη Ολοκληρωμένo')->get();
+        foreach ($pending_projects as $pending_project) {
+            $case = ProjectResource::make($pending_project);
+            array_push($open_cases, $case);
+        }
+        /*end dashboard projects*/
 
         $dashboard->open_cases = $open_cases;
         /*end big table*/
