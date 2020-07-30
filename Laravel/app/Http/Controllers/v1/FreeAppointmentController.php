@@ -11,6 +11,8 @@ use App\Http\CustomClasses\v1\AuthorityClass;
 use App\Http\CustomClasses\v1\FreeAppointmentClass;
 use Validator;
 use App\User;
+use App\Calendar;
+use App\Http\Resources\CalendarResource;
 
 class FreeAppointmentController extends Controller
 {
@@ -37,10 +39,14 @@ class FreeAppointmentController extends Controller
         if ($highest_role < 3) {
             return;
         } elseif ($highest_role == 3) {
-            return FreeAppointmentResource::collection($request->user()->free_appointments()->where('appointment_start', '!=', null)->get());
+            $appointments = FreeAppointmentResource::collection($request->user()->free_appointments()->where('appointment_start', '!=', null)->get());
         } else {
-            return FreeAppointmentResource::collection(FreeAppointment::where("appointment_start", "!=", null)->get());
+            $appointments = FreeAppointmentResource::collection(FreeAppointment::where("appointment_start", "!=", null)->get());
         }
+
+        $calendar = CalendarResource::collection(Calendar::where('note_id', '!=', null)->get());
+        $result = $appointments->merge($calendar);
+        return $result;
     }
 
     /**

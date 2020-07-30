@@ -24,13 +24,11 @@ class CalendarController extends Controller
         $highest_role = AuthorityClass::getAuthorityLevel($request);
         //if ($request->user()->role()->first()->id >= 3) {
         if ($highest_role >= 3) {
-            return CalendarResource::collection(Calendar::all());
+            //return CalendarResource::collection(Calendar::all()); commented out for removing notes
+            $collection = CalendarResource::collection(Calendar::where('note_id', null)->get());
+            $calendar = collect($collection)->filter()->values()->all();
+            return response()->json(['data' => $calendar]);
         } elseif ($highest_role == 2) {
-
-
-
-
-
             //} elseif ($request->user()->role()->first()->id == 2) {
             //return response()->json(array(2, 3);
             $calendar = Calendar::where('id', '!=', null)->get();

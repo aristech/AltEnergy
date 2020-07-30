@@ -12,6 +12,7 @@ use App\Device;
 use App\DamageType;
 use App\User;
 use App\Mark;
+use App\Project;
 
 class CalendarResource extends JsonResource
 {
@@ -31,6 +32,10 @@ class CalendarResource extends JsonResource
 
         if ($this->note_id != null) {
             $this->calendarEntity = Note::where('id', $this->note_id)->first();
+        }
+
+        if ($this->project_id != null) {
+            $this->calendarEntity = Project::where('id', $this->project_id)->first();
         }
     }
 
@@ -55,7 +60,7 @@ class CalendarResource extends JsonResource
                 "id" => $this->id,
                 "type" => $this->type,
                 "name" => $this->name,
-                "event_id" => $this->when($this->damage_id != null || $this->service_id != null || $this->note_id != null, function () {
+                "event_id" => $this->when($this->damage_id != null || $this->service_id != null || $this->note_id != null || $this->project_id, function () {
                     if ($this->damage_id != null) {
                         return $this->damage_id;
                     }
@@ -71,8 +76,16 @@ class CalendarResource extends JsonResource
                     if ($this->note_id != null) {
                         return $this->note_id;
                     }
+
+                    if ($this->note_id != null) {
+                        return $this->note_id;
+                    }
+
+                    if ($this->project_id != null) {
+                        return $this->project_id;
+                    }
                 }),
-                "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->service_id != null || $this->note_id != null, function () {
+                "title" => $this->when($this->service_id != null || $this->damage_id != null || $this->project_id != null || $this->note_id != null, function () {
                     if ($this->damage_id != null) {
                         $damage = $this->calendarEntity;
                         // if ($damage['client']['telephone'] != null) {
@@ -206,6 +219,71 @@ class CalendarResource extends JsonResource
                         //return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
                     }
 
+                    if ($this->project_id != null) {
+                        $project = $this->calendarEntity;
+                        // if ($service['client']['telephone'] != null) {
+                        //     $phone = $service['client']['telephone'];
+                        // } elseif ($service['client']['telephone2'] != null) {
+                        //     $phone = $service['client']['telephone2'];
+                        // } else {
+                        //     $phone = $service['client']['mobile'];
+                        // }
+                        if ($project['techs']) {
+                            $techs = explode(",", $project['techs']);
+                            $technician_array = array();
+                            foreach ($techs as $tech) {
+                                $technician = User::where('id', $tech)->first();
+                                array_push($technician_array, $technician['lastname']);
+                            }
+
+                            $technicians = implode(", ", $technician_array);
+                        } else {
+                            $technicians = "Ν/Α";
+                        }
+
+                        if ($project['appointment_start']) {
+                            /*
+                            $date_array = explode(".", $service['appointment_start']);
+                            $newDateFormat = str_replace("T", " ", $date_array[0]);
+                            $time_start = date("H:i", strtotime('+2 hours', strtotime($newDateFormat)));
+                            */
+                            $time_start = date("H:i", strtotime($project['appointment_start']));
+                        } else {
+                            $time_start = "?";
+                        }
+
+                        if ($project['appointment_end']) {
+                            /*
+                            $date_array_end = explode(".", $service['appointment_end']);
+                            $newDateFormatEnd = str_replace("T", " ", $date_array_end[0]);
+                            $time_end = date("H:i", strtotime('+2 hours', strtotime($newDateFormatEnd)));
+                            */
+                            $time_end = date("H:i", strtotime($project['appointment_end']));
+                        } else {
+                            $time_end = "?";
+                        }
+
+                        $client = $project['client']['lastname'] !== null ? $project['client']['lastname'] : "Ν/Α";
+                        //$address = $service['client']['address'] !== null ? $service['client']['address'] : "N/A";  --> Removed 08/07/2020
+                        $location = $project['client']['location'] !== null ? $project['client']['location'] : "Ν/Α";
+                        //$status = $service['status']; --> Removed 08/07/2020
+
+
+                        $html = "<div>";
+                        $html .= "<b>Ωρα: </b>" . $time_start . " - " . $time_end . "<br>";
+                        //$html .= "<b>Τύπος: </b>Σέρβις" . "<br>";  --> Removed 08/07/2020
+                        $html .= $technicians == "" ? "" : "<b>Τεχνικοί: </b>" . $technicians . "<br>";
+                        $html .= $client == "" ? "" : "<b>Πελάτης: </b>" . $client . "<br>";
+                        //$html .= "<b>Κατάσταση: </b>" . $service['status'] . "<br>";  --> Removed 08/07/2020
+                        //$html .= $address == "" ? "" : "<b>Διεύθυνση: </b>" . $address . "<br>";  --> Removed 08/07/2020
+                        $html .= $location == "" ? "" : "<b>Περιοχή: </b>" . $location . "<br>";
+                        $html .= "</div>";
+
+                        return $html;
+
+                        //return "Ωρα: " . $time_start . "-" . $time_end . " - " . "Τεχνικοι: " . $technicians . " - Πελάτης: " . $client . " - " . "Περιοχη: " . $location;
+                    }
+
                     if ($this->note_id != null) {
                         $note = $this->calendarEntity;
                         //return Note::where('id', $this->note_id)->first()['title'];
@@ -242,7 +320,7 @@ class CalendarResource extends JsonResource
                         return $html;
                     }
                 }),
-                "start" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null || $this->service_id != null, function () {
+                "start" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null || $this->service_id != null || $this->project_id != null, function () {
                     if ($this->damage_id != null) {
                         return $this->calendarEntity['appointment_start'];
                     }
@@ -256,8 +334,11 @@ class CalendarResource extends JsonResource
                     if ($this->service_id != null) {
                         return $this->calendarEntity["appointment_start"];
                     }
+                    if ($this->project_id != null) {
+                        return $this->calendarEntity["appointment_start"];
+                    }
                 }),
-                "end" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null, function () {
+                "end" => $this->when($this->damage_id != null || $this->event_id != null || $this->note_id != null || $this->project_id != null, function () {
                     if ($this->damage_id != null) {
                         return $this->calendarEntity['appointment_end'];
                     }
@@ -271,11 +352,14 @@ class CalendarResource extends JsonResource
                     if ($this->service_id != null) {
                         return $this->calendarEntity["appointment_end"];
                     }
+                    if ($this->project_id != null) {
+                        return $this->calendarEntity["appointment_end"];
+                    }
                 }),
                 "all_day" => $this->when($this->note_id != null, function () {
                     return $this->calendarEntity["all_day"];
                 }),
-                "client_name" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                "client_name" => $this->when($this->damage_id != null || $this->service_id != null || $this->project_id != null, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
                         $current_client = $current_damage['client'];
@@ -287,8 +371,14 @@ class CalendarResource extends JsonResource
                         $current_client = $current_service['client'];
                         return $current_client['firstname'] . " " . $current_client['lastname'];
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+                        $current_client = $current_project['client'];
+                        return $current_client['firstname'] . " " . $current_client['lastname'];
+                    }
                 }),
-                "client_address" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                "client_address" => $this->when($this->damage_id != null || $this->service_id != null || $this->project_id != null, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
                         $current_client = $current_damage['client'];
@@ -302,8 +392,15 @@ class CalendarResource extends JsonResource
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['address'];
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+                        $current_client = $current_project['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['address'];
+                    }
                 }),
-                "client_location" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                "client_location" => $this->when($this->damage_id != null || $this->service_id != null || $this->project_id != null, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
                         $current_client = $current_damage['client'];
@@ -317,8 +414,15 @@ class CalendarResource extends JsonResource
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['location'];
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+                        $current_client = $current_project['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['location'];
+                    }
                 }),
-                "client_level" =>   $this->when($this->damage_id != null || $this->service_id != null, function () {
+                "client_level" =>   $this->when($this->damage_id != null || $this->service_id != null || $this->project_id != null, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
                         $current_client = $current_damage['client'];
@@ -332,8 +436,15 @@ class CalendarResource extends JsonResource
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['level'];
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+                        $current_client = $current_project['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['level'];
+                    }
                 }),
-                "client_zipcode" =>   $this->when($this->damage_id != null || $this->service_id != null, function () {
+                "client_zipcode" =>   $this->when($this->damage_id != null || $this->service_id != null || $this->project_id, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
                         $current_client = $current_damage['client'];
@@ -347,8 +458,15 @@ class CalendarResource extends JsonResource
                         //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
                         return $current_client['zipcode'];
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+                        $current_client = $current_project['client'];
+                        //return $current_client['address'] . "," . $current_client['location'] . "," . $current_client['level'] . "ος Όροφος";
+                        return $current_client['zipcode'];
+                    }
                 }),
-                "client_telephone" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                "client_telephone" => $this->when($this->damage_id != null || $this->service_id != null || $this->project_id, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
                         $current_client = $current_damage['client'];
@@ -391,8 +509,29 @@ class CalendarResource extends JsonResource
 
                         return $phone_numbers;
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+                        $current_client = $current_project['client'];
+                        $tel_array = array();
+                        if ($current_client['telephone'] != null || $current_client['telephone'] != "") {
+                            array_push($tel_array, $current_client['telephone']);
+                        }
+
+                        if ($current_client['telephone2'] != null || $current_client['telephone2'] != "") {
+                            array_push($tel_array, $current_client['telephone2']);
+                        }
+
+                        if ($current_client['mobile'] != null || $current_client['mobile'] != "") {
+                            array_push($tel_array, $current_client['mobile']);
+                        }
+
+                        $phone_numbers = implode(", ", $tel_array);
+
+                        return $phone_numbers;
+                    }
                 }),
-                "status" => $this->when($this->damage_id != null || $this->service_id != null, function () {
+                "status" => $this->when($this->damage_id != null || $this->service_id != null || $this->project_id, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
 
@@ -406,8 +545,15 @@ class CalendarResource extends JsonResource
                         //$information = new \stdClass();
                         return  $current_service["status"];
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+
+                        //$information = new \stdClass();
+                        return  $current_project["status"];
+                    }
                 }),
-                "appointment_pending" => $this->when($this->damage_id || $this->service_id, function () {
+                "appointment_pending" => $this->when($this->damage_id || $this->service_id || $this->project_id, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
 
@@ -421,8 +567,12 @@ class CalendarResource extends JsonResource
                         //$information = new \stdClass();
                         return  $current_service["appointment_pending"];
                     }
+
+                    if ($this->project_id != null) {
+                        return  false;
+                    }
                 }),
-                "event_type" => $this->when($this->damage_id || $this->service_id, function () {
+                "event_type" => $this->when($this->damage_id || $this->service_id || $this->project_id, function () {
                     if ($this->damage_id != null) {
                         $current_damage = $this->calendarEntity;
 
@@ -437,9 +587,19 @@ class CalendarResource extends JsonResource
                         //return  $current_service["appointment_pending"];
                         return  DamageType::where("id", $current_service["service_type_id2"])->first()["name"];
                     }
+
+                    if ($this->project_id != null) {
+                        $current_project = $this->calendarEntity;
+
+                        //$information = new \stdClass();
+                        //return  $current_service["appointment_pending"];
+                        return  DamageType::where("id", $current_project["title_id"])->first()["name"];
+                    }
                 }),
-                "techs" => $this->when($this->damage_id || $this->service_id, function () {
+                "techs" => $this->when($this->damage_id || $this->service_id || $this->project_id, function () {
                     if ($this->damage_id != null) {
+                        $current = $this->calendarEntity;
+                    } else if ($this->project_id) {
                         $current = $this->calendarEntity;
                     } else {
                         $current = $this->calendarEntity;
@@ -459,8 +619,10 @@ class CalendarResource extends JsonResource
                     //$information = new \stdClass();
 
                 }),
-                "devices" =>  $this->when($this->damage_id || $this->service_id, function () {
+                "devices" =>  $this->when($this->damage_id || $this->service_id || $this->project_id, function () {
                     if ($this->damage_id != null) {
+                        $current = $this->calendarEntity;
+                    } else if ($this->service_id) {
                         $current = $this->calendarEntity;
                     } else {
                         $current = $this->calendarEntity;
@@ -493,13 +655,16 @@ class CalendarResource extends JsonResource
                 // $information->appointment_pending = $current_damage["appointment_pending"] == true ? "ΝΑΙ" : "ΟΧΙ";
                 // //$information->device = Device::where("id", $current_damage["device_id"])->first()['name'];
                 // $information->comments = $current_damage['damage_comments'] != null ? $current_damage['damage_comments'] : "";
-                "task_comments" => $this->when($this->damage_id || $this->service_id, function () {
+                "task_comments" => $this->when($this->damage_id || $this->service_id || $this->project_id, function () {
                     if ($this->damage_id) {
                         $current = $this->calendarEntity;
                         $response =  $current["damage_comments"];
-                    } else {
+                    } else if ($this->service_id) {
                         $current = $this->calendarEntity;
                         $response =  $current["service_comments"];
+                    } else {
+                        $current = $this->calendarEntity;
+                        $response =  $current["comments"];
                     }
 
                     if ($response) {
@@ -508,7 +673,7 @@ class CalendarResource extends JsonResource
                         return "";
                     }
                 }),
-                "textColor" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
+                "textColor" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null || $this->project_id, function () {
                     if ($this->damage_id != null) {
                         $dmg = $this->calendarEntity;
                         /*commented out on 22052020
@@ -518,10 +683,10 @@ class CalendarResource extends JsonResource
                             return "#ffffff";
                         }
                         */
-                        if ($dmg['status'] == "Ολοκληρώθηκε") {
-                            return "#ff0000";
-                        } else {
+                        if ($dmg['status'] == "Ακυρώθηκε") {
                             return "#ffffff";
+                        } else {
+                            return "#000000";
                         }
                     }
                     if ($this->service_id != null) {
@@ -534,14 +699,31 @@ class CalendarResource extends JsonResource
                             return "#ffffff";
                         }
                         */
-                        if ($service['status'] == "Ολοκληρώθηκε") {
+                        if ($service['status'] == "Ακυρώθηκε") {
+                            return "#ffffff";
+                        } else {
+                            return "#000000";
+                        }
+                    }
+
+                    if ($this->project_id != null) {
+
+                        $project = $this->calendarEntity;
+                        /*commented out on 22052020
+                        if ($service['status'] != "Μη Ολοκληρωμένο") {
                             return "#ff0000";
                         } else {
                             return "#ffffff";
                         }
+                        */
+                        if ($project['status'] == "Ακυρώθηκε") {
+                            return "#ffffff";
+                        } else {
+                            return "#000000";
+                        }
                     }
                 }),
-                "color" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null, function () {
+                "color" => $this->when($this->note_id != null || $this->damage_id != null || $this->service_id != null || $this->project_id, function () {
                     if ($this->note_id != null) {
                         $importance = $this->calendarEntity["importance"];
                         switch ($importance) {
@@ -561,6 +743,7 @@ class CalendarResource extends JsonResource
                     }
                     if ($this->damage_id != null) {
                         $dmg = $this->calendarEntity;
+                        /*
                         $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
@@ -569,10 +752,22 @@ class CalendarResource extends JsonResource
                             return "#ff0000";
                         } else {
                             return "#5d5fea";
+                        }*/
+                        if ($dmg['status'] == "Ολοκληρώθηκε") {
+                            return "#ff0000";
+                        }
+
+                        if ($dmg['status'] == "Μη Ολοκληρωμένη") {
+                            return "#3ee110";
+                        }
+
+                        if ($dmg['status'] == "Ακυρώθηκε") {
+                            return "#000000";
                         }
                     }
                     if ($this->service_id != null) {
                         $dmg = $this->calendarEntity;
+                        /*
                         $appointment_start  = $dmg['appointment_start'];
                         $app_start_array = explode('.', $appointment_start);
                         $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
@@ -581,6 +776,43 @@ class CalendarResource extends JsonResource
                             return "#ff0000";
                         } else {
                             return "#bd391b";
+                        }
+                        */
+                        if ($dmg['status'] == "Ολοκληρώθηκε") {
+                            return "#ff0000";
+                        }
+
+                        if ($dmg['status'] == "Μη Ολοκληρωμένο") {
+                            return "#3ee110";
+                        }
+
+                        if ($dmg['status'] == "Ακυρώθηκε") {
+                            return "#000000";
+                        }
+                    }
+
+                    if ($this->project_id != null) {
+                        $proj = $this->calendarEntity;
+                        /*
+                        $appointment_start  = $dmg['appointment_start'];
+                        $app_start_array = explode('.', $appointment_start);
+                        $formatted_appointment = str_replace('T', ' ', $app_start_array[0]);
+                        $date_to_compare = strtotime($formatted_appointment) + 2 * 60 * 60;
+                        if (time() - $date_to_compare > 0 && $dmg['status'] != "Ολοκληρώθηκε") {
+                            return "#ff0000";
+                        } else {
+                            return "#5d5fea";
+                        }*/
+                        if ($proj['status'] == "Ολοκληρώθηκε") {
+                            return "#ff0000";
+                        }
+
+                        if ($proj['status'] == "Μη Ολοκληρωμένo") {
+                            return "#3ee110";
+                        }
+
+                        if ($proj['status'] == "Ακυρώθηκε") {
+                            return "#000000";
                         }
                     }
                 })
