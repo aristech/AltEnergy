@@ -28,7 +28,7 @@ class ZipController extends Controller
     public function downloadZip()
     {
         $the_folder = storage_path('Clients');
-        $zip_file_name = storage_path('client_files' . date('Y-m-d') . '.zip');
+        $zip_file_name = storage_path('client_files.zip');
 
         //return response()->json(exec('dir'));
         //$zip = $this->createZipFromDir(storage_path('Clients'), storage_path('files.zip'));
@@ -37,7 +37,7 @@ class ZipController extends Controller
         if ($res === TRUE) {
             $za->addDir($the_folder, basename($the_folder));
             $za->close();
-            return response()->download($zip_file_name, 'client_files' . date('Y-m-d') . '.zip', array('Content-Type: application/zip'));
+            return response()->download($zip_file_name, 'client_files.zip', array('Content-Type: application/zip'));
         } else {
             return response()->json(['message' => 'Could not create a zip archive'], 400);
         }
