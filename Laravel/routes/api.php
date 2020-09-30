@@ -105,6 +105,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'v1', 'middleware' => 'cors'], fu
                 Route::get('/offers-file/{offer}', 'NewOfferController@file');
 
                 Route::get('/convert-offer/{offerId}', 'NewOfferController@convertToProject');
+
+                Route::get('/download', 'ZipController@downloadZip');
             });
 
 
